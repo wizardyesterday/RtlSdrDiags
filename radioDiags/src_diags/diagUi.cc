@@ -1270,7 +1270,7 @@ static void cmdStopReceiver(char *bufferPtr)
 
   Name: cmdStartFrequencySweep
 
-  Purpose: The purpose of this function is to start sweeping the transmit
+  Purpose: The purpose of this function is to start sweeping the operating
   frequency.
 
   The syntax for the corresponding command is the following:
@@ -1567,16 +1567,11 @@ static void cmdHelp(void)
   nprintf(stderr,"set fmdemodgain <gain>\n");
   nprintf(stderr,"set wbfmdemodgain <gain>\n");
   nprintf(stderr,"set ssbdemodgain <gain>\n");
-  nprintf(stderr,"set txgain <gain in dB>\n");
   nprintf(stderr,"set rxgain <gain in dB>\n");
-  nprintf(stderr,"set txfrequency <frequency in Hertz>\n");
   nprintf(stderr,"set rxfrequency <frequency in Hertz>\n");
-  nprintf(stderr,"set txbandwidth <bandwidth in Hertz>\n");
   nprintf(stderr,"set rxbandwidth <bandwidth in Hertz>\n");
   nprintf(stderr,"set rxsamplerate <samplerate in S/s>\n");
   nprintf(stderr,"set rxwarp <warp in ppm>\n");
-  nprintf(stderr,"start transmitter\n");
-  nprintf(stderr,"stop transmitter\n");
   nprintf(stderr,"start receiver\n");
   nprintf(stderr,"stop receiver\n");
 
