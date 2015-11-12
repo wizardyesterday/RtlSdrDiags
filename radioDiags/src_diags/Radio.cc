@@ -14,7 +14,6 @@ extern "C"
 }
 
 #define RECEIVE_BUFFER_SIZE (32768)
-#define TRANSMIT_BUFFER_SIZE (32768)
 
 #define RECEIVE_AUTO_GAIN (99999)
 
@@ -27,14 +26,11 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
   Purpose: The purpose of this function is to serve as the constructor
   of a Radio object.
 
-  Calling Sequence: Radio(deviceNumber,txSampleRate,rxSampleRate)
+  Calling Sequence: Radio(deviceNumber,rxSampleRate)
 
   Inputs:
 
     deviceNumber - The device number of interest.  Just use 0.
-
-    txSampleRate - The sample rate of the baseband portion of the
-    transmitter in samples per second.
 
     rxSampleRate - The sample rate of the baseband portion of the
     receiver in samples per second.
@@ -44,13 +40,12 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
     None.
 
 **************************************************************************/
-Radio::Radio(int deviceNumber,uint32_t txSampleRate,uint32_t rxSampleRate)
+Radio::Radio(int deviceNumber,uint32_t rxSampleRate)
 { 
   int i;
   bool success;
 
   // Save for later use.
-  this->transmitSampleRate = txSampleRate;
   this->receiveSampleRate = rxSampleRate;
 
   // Save for later use.
@@ -62,12 +57,10 @@ Radio::Radio(int deviceNumber,uint32_t txSampleRate,uint32_t rxSampleRate)
   // Ensure that we don't have any dangling pointers.
   receiveDataProcessorPtr = 0;
   dataConsumerPtr = 0;
-  dataProviderPtr = 0;
 
   // Start with a clean slate.
   receiveTimeStamp = 0;
   receiveBlockCount = 0;
-  transmitBlockCount = 0;
 
   // Indicate that the radio is not requested to stop.
   requestReceiverToStop = false;
@@ -80,27 +73,8 @@ Radio::Radio(int deviceNumber,uint32_t txSampleRate,uint32_t rxSampleRate)
 
   if (success)
   {
-    // Set up the transmitter with a default configuration.
-    success = setupTransmitter();
-
-    if (!success)
-    {
-      fprintf(stderr,"Could not initialize transmitter.\n");
-    } // if
-  } // if
-  else
-  {
-    fprintf(stderr,"Could not initialize receiver.\n");
-  } // else
-
-  if (success)
-  {
     // Allocate the receive buffer that is to be used for IQ samples.
     receiveBufferPtr = (uint8_t *)calloc(RECEIVE_BUFFER_SIZE,sizeof(uint8_t));
-
-    // Instantiate the data provider object. The transmit method will
-    // need this.
-    dataProviderPtr = new DataProvider(); 
 
     // Instantiate the IQ data processor object.  The data consumer object
     // will need this.
@@ -141,6 +115,11 @@ Radio::Radio(int deviceNumber,uint32_t txSampleRate,uint32_t rxSampleRate)
     pthread_create(&eventConsumerThread,0,
                    (void *(*)(void *))eventConsumerProcedure,this);
   } // if
+  else
+  {
+    fprintf(stderr,"Could not initialize receiver.\n");
+  } // else
+
  
   return;
  
@@ -177,9 +156,6 @@ Radio::~Radio(void)
   // We're done with the receiver.
   tearDownReceiver();
 
-  // We're done with the transmitter.
-  tearDownTransmitter();
-
   //-------------------------------------
   // Release resources in this order.
   //-------------------------------------
@@ -191,11 +167,6 @@ Radio::~Radio(void)
   if (receiveDataProcessorPtr != 0)
   {
     delete receiveDataProcessorPtr;
-  } // if
-
-  if (dataProviderPtr != 0)
-  {
-    delete dataProviderPtr;
   } // if
 
   if (amDemodulatorPtr != 0)
@@ -280,58 +251,6 @@ bool Radio::setupReceiver(void)
 
 /**************************************************************************
 
-  Name: setupTransmitter
-
-  Purpose: The purpose of this function is to set up the transmitter with
-  a default configuration.
-
-  Calling Sequence: success = setupTransmitter()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    success - A boolean that indicates the outcome of the operation.  A
-    value of true indicates success, and a value of false indicates
-    failure.
-
-**************************************************************************/
-bool Radio::setupTransmitter(void)
-{
-  bool success;
-  int error;
-
-  // Default to success.
-  success = true;
-
-  // Indicate that the transmit process is disabled.
-  transmitEnabled = false;
-
-  // Indicate that the system is not transmitting modulated data.
-  transmittingData = false;
-
-  // Default to 100MHz.
-  transmitFrequency = 100000000LL;
-
-  // Use a transmit filter bandwidth of 10MHz
-  transmitBandwidth = 10000000;
-
-  // Minimize the transmit gain.
-  transmitGainInDb = 0;
-
-  // set the transmit frequency.
-  // Set the transmit sample rate.
-  // set the transmi bandwidth.
-  // set the transmit gain.
-
-  return (success);
- 
-} // setupTransmitter
-
-/**************************************************************************
-
   Name: tearDownReceiver
 
   Purpose: The purpose of this function is to tear down the receiver.
@@ -356,33 +275,6 @@ void Radio::tearDownReceiver(void)
   return;
   
 } // tearDownReceiver
-
-/**************************************************************************
-
-  Name: tearDownTransmitter
-
-  Purpose: The purpose of this function is to tear down the transmitter.
-
-  Calling Sequence: tearDownTransmitter()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    None.
-
-**************************************************************************/
-void Radio::tearDownTransmitter(void)
-{
-
-  // Indicate that the transmit process is disabled.
-  transmitEnabled = false;
-
-  return;
-  
-} // tearDownTransmitter
 
 /**************************************************************************
 
@@ -574,129 +466,6 @@ void Radio::stopReceiver(void)
   return;
   
 } // stopReceiver
-
-/**************************************************************************
-
-  Name: startTransmitter
-
-  Purpose: The purpose of this function is to enable the transmitter.  The
-  underlying system software will enable the transmit path for the RFICs
-  of interest, configure the hardware to enable DMA for the transmit path,
-  and enable transmit event generation.
-
-  Calling Sequence: startTransmitter()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    None.
-
-**************************************************************************/
-void Radio::startTransmitter(void)
-{
-
-  if (!transmitEnabled)
-  {
-    // Ensure that the system will allow transmission of data.
-    transmitEnabled = true;
-
-    // Do whatever is necessary to start the transmit process.
-  } // if
-
-  return;
-  
-} // startTransmitter
-
-/**************************************************************************
-
-  Name: stopTransmitter
-
-  Purpose: The purpose of this function is to disable the transmitter.  The
-  underlying system software will disable the transmit path for the RFICs
-  of interest, configure the hardware to disable DMA for the transmit path,
-  and disable transmit event generation.
-
-  Calling Sequence: stopTransmitter()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    None.
-
-**************************************************************************/
-void Radio::stopTransmitter(void)
-{
-
-  if (transmitEnabled)
-  {
-    // Ensure that the system will disallow transmission of data.
-    transmitEnabled = false;
-
-    // Ensure that we indicate that we are not modulating the carrier.
-    transmittingData = false;
-
-    // Do whatever is necessary to stop the transmit process.
-  } // if
-
-  return;
-  
-} // stopTransmitter
-
-/**************************************************************************
-
-  Name: startTransmitData
-
-  Purpose: The purpose of this function is to disable the transmitter.  The
-  underlying system software will disable the transmit path for the RFICs
-  of interest, configure the hardware to disable DMA for the transmit path,
-  and disable transmit event generation.
-
-  Calling Sequence: startTransmitData()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    None.
-
-**************************************************************************/
-void Radio::startTransmitData(void)
-{
-  int i;
-  uint32_t timeStamp;
-
-  if (transmitEnabled)
-  {
-    if (!transmittingData)
-    {
-      timeStamp = 0;
-
-      // Get the current timestamp from the hardware
-
-      // Let the first block be transmitted 0.1 seconds into the future.
-      timeStamp += (transmitSampleRate / 10);
-
-      // Inform the data provider about the initial timestamp value.
-      dataProviderPtr->setInitialTimeStamp(timeStamp);
-
-      // Buffer the data to be transmitted.
-
-      // Indicate that system is transmitting data.
-      transmittingData = true;
-    } // if
-  } // if
-
-  return;
-  
-} // startTransmitData
 
 /**************************************************************************
 
@@ -1011,235 +780,6 @@ bool Radio::setReceiveWarpInPartsPerMillion(int warp)
 
 /**************************************************************************
 
-  Name: setTransmitFrequency
-
-  Purpose: The purpose of this function is to set the operating frequency
-  of the transmitter.  If the transmitter is not enabled, the appropriate
-  attribute is updated.  The attribute will be used at a later time to
-  set up the transmitter.
-
-  Calling Sequence: success = setTransmitFrequency(frequency)
-
-  Inputs:
-
-    frequency - The transmitter frequency in Hertz.
-
-  Outputs:
-
-    success - A boolean that indicates the outcome of the operation.  A
-    value of true indicates success, and a value of false indicates
-    failure.
-
-**************************************************************************/
-bool Radio::setTransmitFrequency(uint64_t frequency)
-{
-  bool success;
-  int error;
-
-  // Default to failure.
-  success = false;
-
-  if (transmitEnabled)
-  {
-    // Notify the driver of the new frequency.
-    error = 0;
-
-    if (error == 0)
-    {
-      // Update attribute.
-      transmitFrequency = frequency;
-
-      // indicate sucess.
-      success = true;
-    } // if
-  } // if
-  else
-  {
-    // Update attribute.
-    transmitFrequency = frequency;
-
-    // indicate sucess.
-    success = true;
-  } // else
-
-  return (success);
-  
-} // setTransmitFrequency
-
-/**************************************************************************
-
-  Name: setTransmitBandwidth
-
-  Purpose: The purpose of this function is to set the baseband filter
-  bandwidth of the transmitterr.  If the transmitter is not enabled, the
-  appropriate attribute is updated.  The attribute will be used at a later
-  time to set up the transmitter.
-
-  Calling Sequence: success = setTransmitBandwidth(bandwidth)
-
-  Inputs:
-
-    bandwidth - The bandwidth in Hertz.
-
-  Outputs:
-
-    success - A boolean that indicates the outcome of the operation.  A
-    value of true indicates success, and a value of false indicates
-    failure.
-
-**************************************************************************/
-bool Radio::setTransmitBandwidth(uint32_t bandwidth)
-{
-  bool success;
-  int error;
-
-  // Default to failure.
-  success = false;
-
-  if (transmitEnabled)
-  {
-    // Notify the driver of the new bandwidth.
-    error = 0;
-
-    if (error == 0)
-    {
-      // Update attribute.
-      transmitBandwidth = bandwidth;
-
-      // indicate success.
-      success = true;
-    } // if
-  } // if
-  else
-  {
-    // Update attribute.
-    transmitBandwidth = bandwidth;
-
-    // indicate success.
-    success = true;
-  } // else
-
-  return (success);
-  
-} // setTransmitBandwidth
-
-/**************************************************************************
-
-  Name: setTransmitGainInDb
-
-  Purpose: The purpose of this function is to set the gain of the
-  transmitter.  If the transmitter is not enabled, the appropriate
-  attribute is updated.  The attribute will be used at a later time to
-  set up the transmitter.
-
-  Calling Sequence: success = setTransmitGainInDb(gain)
-
-  Inputs:
-
-    gain - The gain in units of decibels.
-
-  Outputs:
-
-    success - A boolean that indicates the outcome of the operation.  A
-    value of true indicates success, and a value of false indicates
-    failure.
-
-**************************************************************************/
-bool Radio::setTransmitGainInDb(uint32_t gain)
-
-{
-  bool success;
-  int error;
-
-  // Default to failure.
-  success = false;
-
-  if (transmitEnabled)
-  {
-    // Notify the driver of the new gain.  We don't know the units yet.
-    error = 0;
-
-    if (error == 0)
-    {
-      // Update attribute.
-      transmitGainInDb = gain;
-
-      // indicate success.
-      success = true;
-    } // if
-  } // if
-  else
-  {
-    // Update attribute.
-    transmitGainInDb = gain;
-
-    // indicate success.
-    success = true;
-  } // else
-
-  return (success);
-  
-} // setTransmitGain
-
-/**************************************************************************
-
-  Name: setTransmitSampleRate
-
-  Purpose: The purpose of this function is to set the sample rate
-  of the transmitter.  If the transmitter is not enabled, the appropriate
-  attribute is updated.  The attribute will be used at a later time to
-  set up the transmitter.
-
-  Calling Sequence: success = setTransmitSampleRate(sampleRate)
-
-  Inputs:
-
-    sampleRate - The transmit sample rate in samples per second.
-
-  Outputs:
-
-    success - A boolean that indicates the outcome of the operation.  A
-    value of true indicates success, and a value of false indicates
-    failure.
-
-**************************************************************************/
-bool Radio::setTransmitSampleRate(uint32_t sampleRate)
-{
-  bool success;
-  int error;
-
-  // Default to failure.
-  success = false;
-
-  if (transmitEnabled)
-  {
-    // Notify the driver of the new sample rate.
-    error = 0;
-
-    if (error == 0)
-    {
-      // Update attribute.
-      transmitSampleRate = sampleRate;
-
-      // indicate success.
-      success = true;
-    } // if
-  } // if
-  else
-  {
-    // Update attribute.
-    transmitSampleRate = sampleRate;
-
-    // indicate success.
-    success = true;
-  } // else
-
-  return (success);
-  
-} // setTransmitSampleRate
-
-/**************************************************************************
-
   Name: getReceiveFrequency
 
   Purpose: The purpose of this function is to get the operating frequency
@@ -1365,132 +905,6 @@ int Radio::getReceiveWarpInPartsPerMillion(void)
 
 /**************************************************************************
 
-  Name: getTransmitFrequency
-
-  Purpose: The purpose of this function is to get the operating frequency
-  of the transmitter.
-
-  Calling Sequence: frequency = getTransmitFrequency()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    frequency - The transmitter frequency in Hertz.
-
-**************************************************************************/
-uint64_t Radio::getTransmitFrequency(void)
-{
-
-  return (transmitFrequency);
-  
-} // getTransmitFrequency
-
-/**************************************************************************
-
-  Name: getTransmitBandwidth
-
-  Purpose: The purpose of this function is to get the baseband filter
-  bandwidth of the receiver.
-
-  Calling Sequence: bandwidth = getTransmitBandwidth()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    bandwidth - The bandwidth in Hertz.
-
-**************************************************************************/
-uint32_t Radio::getTransmitBandwidth(void)
-{
-
-  return (transmitBandwidth);
-  
-} // getTransmitBandwidth
-
-/**************************************************************************
-
-  Name: getTransmitGainInDb
-
-  Purpose: The purpose of this function is to get the gain of the
-  transmitter.
-
-  Calling Sequence: gain = getTransmitGainInDb()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    gain - The gain in units of decibels.
-
-**************************************************************************/
-uint32_t Radio::getTransmitGainInDb(void)
-
-{
-
-  return (transmitGainInDb);
-  
-} // getTransmitGainInDb
-
-/**************************************************************************
-
-  Name: getTransmitSampleRate
-
-  Purpose: The purpose of this function is to get the sample rate
-  of the transmitter.
-
-  Calling Sequence: sampleRate = getTransmitSampleRate()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    sampleRate - The transmit sample rate in samples per second.
-
-**************************************************************************/
-uint32_t Radio::getTransmitSampleRate(void)
-{
-
-  return (transmitSampleRate);
-  
-} // getTransmitSampleRate
-
-/**************************************************************************
-
-  Name: getDataProvider
-
-  Purpose: The purpose of this function is to get the pointer to the
-  transmit data provider.
-
-  Calling Sequence: providerPtr = getDataProvider()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    providerPtr - A pointer to the transmit data provider object.
-
-**************************************************************************/
-DataProvider * Radio::getDataProvider(void)
-{
-
-  return (dataProviderPtr);
-
-} // getDataProvider
-
-/**************************************************************************
-
   Name: isReceiving
 
   Purpose: The purpose of this function is to indicate whether or not the
@@ -1515,33 +929,6 @@ bool  Radio::isReceiving(void)
   return (receiveEnabled);
   
 } // isReceiving
-
-/**************************************************************************
-
-  Name: isTransmitting
-
-  Purpose: The purpose of this function is to indicate whether or not the
-  transmitter is enabled for the RF path of interest.
-
-  Calling Sequence: enabled = isTransmitting()
-
-  Inputs:
-
-    None.
-
-  Outputs:
-
-    Enabled - A boolean that indicates whether or not the transmitter is
-    enabled.  A value of true indicates that the transmitter is enabled,
-    and a value of false indicates that the transmitter is disabled.
-
-**************************************************************************/
-bool  Radio::isTransmitting(void)
-{
-
-  return (transmitEnabled);
-  
-} // isTransmitting
 
 /**************************************************************************
 
@@ -1747,43 +1134,8 @@ void Radio::displayInternalInformation(void)
   nprintf(stderr,"Receive Block Count                 : %u\n",
           receiveBlockCount);
 
-  nprintf(stderr,"Transmit Enabled                    : ");
-  if (transmitEnabled)
-  {
-    nprintf(stderr,"Yes\n");
-  } // if
-  else
-  {
-     nprintf(stderr,"No\n");
-   } // else
-
-  nprintf(stderr,"Transmitting Data                   : ");
-  if (transmittingData)
-  {
-    nprintf(stderr,"Yes\n");
-  } // if
-  else
-  {
-     nprintf(stderr,"No\n");
-   } // else
-
-  nprintf(stderr,"Transmit Gain:                      : %d\n",
-          (unsigned int)transmitGainInDb);
-  nprintf(stderr,"Transmit Frequency                  : %llu Hz\n",
-          transmitFrequency);
-  nprintf(stderr,"Transmit Bandwidth                  : %u Hz\n",
-          transmitBandwidth);
-  nprintf(stderr,"Transmit Sample Rate                : %u S/s\n",
-          transmitSampleRate);
- 
-  nprintf(stderr,"Transmit Block Count                : %u\n",
-          transmitBlockCount);
-
   // Display data consumer information.
   dataConsumerPtr->displayInternalInformation();
-
-  // Display data provider information.
-  dataProviderPtr->displayInternalInformation();
 
   // Display IQ data processor information.
   receiveDataProcessorPtr->displayInternalInformation();

@@ -79,21 +79,15 @@ static void cmdSetAmDemodGain(char *bufferPtr);
 static void cmdSetFmDemodGain(char *bufferPtr);
 static void cmdSetWbFmDemodGain(char *bufferPtr);
 static void cmdSetSsbDemodGain(char *bufferPtr);
-static void cmdSetTxGain(char *bufferPtr);
 static void cmdSetRxGain(char *bufferPtr);
-static void cmdSetTxFrequency(char *bufferPtr);
 static void cmdSetRxFrequency(char *bufferPtr);
-static void cmdSetTxBandwidth(char *bufferPtr);
 static void cmdSetRxBandwidth(char *bufferPtr);
 static void cmdSetRxSampleRate(char *bufferPtr);
 static void cmdSetRxWarp(char *bufferPtr);
-static void cmdStartTransmitter(char *bufferPtr);
-static void cmdStopTransmitter(char *bufferPtr);
 static void cmdStartReceiver(char *bufferPtr);
 static void cmdStopReceiver(char *bufferPtr);
 static void cmdStartFrequencySweep(char *bufferPtr);
 static void cmdStopFrequencySweep(char *bufferPtr);
-static void cmdLoadIqFile(char *bufferPtr);
 static void cmdGetRadioInfo(char *bufferPtr);
 static void cmdGetSweeperInfo(char *bufferPtr);
 static void cmdExitSystem(char *bufferPtr);
@@ -124,22 +118,16 @@ static const commandEntry commandTable[] =
   {"set","fmdemodgain",cmdSetFmDemodGain},   // set fmdemodgain gain
   {"set","wbfmdemodgain",cmdSetWbFmDemodGain},  // set wbfmdemodgain gain
   {"set","ssbdemodgain",cmdSetSsbDemodGain},  // set ssbdemodgain gain
-  {"set","txgain",cmdSetTxGain},             // set txgain gain
   {"set","rxgain",cmdSetRxGain},// set rxgain gain
-  {"set","txfrequency",cmdSetTxFrequency},   // set txfrequency frequency
-  {"set","rxfrequency",cmdSetRxFrequency},   // set txfrequency frequency
-  {"set","txbandwidth",cmdSetTxBandwidth},   // set txbandwidth bandwidth 
+  {"set","rxfrequency",cmdSetRxFrequency},   // set rxfrequency frequency
   {"set","rxbandwidth",cmdSetRxBandwidth},   // set rxbandwidth bandwidth 
   {"set","rxsamplerate",cmdSetRxSampleRate}, // set rxsamplerate samplerate 
   {"set","rxwarp",cmdSetRxWarp},             // set rxwarp warp 
-  {"start","transmitter",cmdStartTransmitter}, // start transmitter
-  {"stop","transmitter",cmdStopTransmitter}, // stop transmitter
   {"start","receiver",cmdStartReceiver}, // start receiver
   {"stop","receiver",cmdStopReceiver}, // stop receiver
   {"start","frequencysweep",cmdStartFrequencySweep}, 
     // start frequencysweep startfrequency stepsize count dwelltime
   {"stop","frequencysweep",cmdStopFrequencySweep}, // stop frequencysweep
-  {"load","iqfile",cmdLoadIqFile},       // load iqfile filename
   {"get","radioinfo",cmdGetRadioInfo},   // get radioinfo
   {"get","sweeperinfo",cmdGetSweeperInfo}, // get sweeperinfo
   {"exit","system",cmdExitSystem},       // exit system
@@ -631,59 +619,6 @@ static void cmdSetSsbDemodGain(char *bufferPtr)
 
 /*****************************************************************************
 
-  Name: cmdSetTxGain
-
-  Purpose: The purpose of this function is to set the transmit gain of
-  the system.
-
-  The syntax for the corresponding command is the following:
-
-    "set txgain gain"
-
-  Calling Sequence: cmdSetTxGain(bufferPtr)
-
-  Inputs:
-
-    bufferPtr - A pointer to the command parameters.
-
-  Outputs:
-
-    None.
-
-*****************************************************************************/
-static void cmdSetTxGain(char *bufferPtr)
-{
-  bool success;
-  unsigned int gain;
-
-  // Retrieve value
-  sscanf(bufferPtr,"%u",&gain);
-
-  if ((gain >= 0) && (gain <= 50))
-  {
-    // Set the transmitter gain.
-    success = diagUi_radioPtr->setTransmitGainInDb(gain);
-
-    if (success)
-    {
-    nprintf(stderr,"Transmit gain set to %udB.\n",gain);
-    } // if
-    else
-    {
-      nprintf(stderr,"Error: Could not set the transmit gain.\n");
-    } // else
-  } // if
-  else
-  {
-    nprintf(stderr,"Error: 0 <= gain <= 50.\n");
-  } // else
-
-  return;
-
-} // cmdSetTxGain
-
-/*****************************************************************************
-
   Name: cmdSetRxGain
 
   Purpose: The purpose of this function is to set the receive gain of
@@ -744,61 +679,6 @@ static void cmdSetRxGain(char *bufferPtr)
 
 /*****************************************************************************
 
-  Name: cmdSetTxFrequency
-
-  Purpose: The purpose of this function is to set the transmit frequency of
-  the system.
-
-  The syntax for the corresponding command is the following:
-
-    "set txfrequency frequency"
-
-  Calling Sequence: cmdSetTxFrequency(bufferPtr)
-
-  Inputs:
-
-    bufferPtr - A pointer to the command parameters.
-
-  Outputs:
-
-    None.
-
-*****************************************************************************/
-static void cmdSetTxFrequency(char *bufferPtr)
-{
-  bool success;
-  uint64_t frequency;
-
-  success = true;
-
-  // Retrieve value
-  sscanf(bufferPtr,"%llu",&frequency);
-
-  if ((frequency >= 24000000) && (frequency <= 1700000000LL))
-  {
-    // Set the transmitter frequency.
-    success = diagUi_radioPtr->setTransmitFrequency(frequency);
-
-    if (success)
-    {
-      nprintf(stderr,"Transmit frequency set to %llu Hz.\n",frequency);
-    } // if
-    else
-    {
-      nprintf(stderr,"Error: Could not set the transmit frequency.\n");
-    } // else
-  } // if
-  else
-  {
-    nprintf(stderr,"Error: 24000000 <= frequency 1700000000 Hz.\n");
-  } // else
-
-  return;
-
-} // cmdSetTxFrequency
-
-/*****************************************************************************
-
   Name: cmdSetRxFrequency
 
   Purpose: The purpose of this function is to set the receive frequency of
@@ -851,61 +731,6 @@ static void cmdSetRxFrequency(char *bufferPtr)
   return;
 
 } // cmdSetRxFrequency
-
-/*****************************************************************************
-
-  Name: cmdSetTxBandwidth
-
-  Purpose: The purpose of this function is to set the transmit bandwidth of
-  the system.
-
-  The syntax for the corresponding command is the following:
-
-    "set txbandwidth bandwidth"
-
-  Calling Sequence: cmdSetTxBandwidth(bufferPtr)
-
-  Inputs:
-
-    bufferPtr - A pointer to the command parameters.
-
-  Outputs:
-
-    None.
-
-*****************************************************************************/
-static void cmdSetTxBandwidth(char *bufferPtr)
-{
-  bool success;
-  uint32_t bandwidth;
-
-  success = true;
-
-  // Retrieve value
-  sscanf(bufferPtr,"%lu",&bandwidth);
-
-  if ((bandwidth >= 625000) && (bandwidth <= 20000000))
-  {
-    // Set the transmitter bandwidth.
-    success = diagUi_radioPtr->setTransmitBandwidth(bandwidth);
-
-    if (success)
-    {
-      nprintf(stderr,"Transmit bandwidth set to %lu Hz.\n",bandwidth);
-    } // if
-    else
-    {
-      nprintf(stderr,"Error: Could not set the transmit bandwidth.\n");
-    } // else
-  } // if
-  else
-  {
-    nprintf(stderr,"Error: 625000 <= bandwidth 20000000 Hz.\n");
-  } // else
-
-  return;
-
-} // cmdSetTxBandwidth
 
 /*****************************************************************************
 
@@ -1058,111 +883,6 @@ static void cmdSetRxWarp(char *bufferPtr)
   return;
 
 } // cmdSetRxWarp
-
-/*****************************************************************************
-
-  Name: cmdStartTransmitter
-
-  Purpose: The purpose of this function is to start the transmitter of
-  the system.  There is more to this than merely keying up the transmitter.
-  A baseband data stream is presented to the transmit chain, and this
-  allows any type of baseband signal to be used for various experiments.
-
-  The syntax for the corresponding command is the following:
-
-    "start transmitter"
-
-  Calling Sequence: cmdStartTransmitter(bufferPtr)
-
-  Inputs:
-
-    bufferPtr - A pointer to the command parameters.
-
-  Outputs:
-
-    None.
-
-*****************************************************************************/
-static void cmdStartTransmitter(char *bufferPtr)
-{
-  bool enabled;
-
-  // Retrieve transmitter state.
-  enabled = diagUi_radioPtr->isTransmitting();
-
-  if (!enabled)
-  {
-    // Start the transmitter.
-    diagUi_radioPtr->startTransmitter();
-
-    // Start modulation.
-    diagUi_radioPtr->startTransmitData();
-
-    nprintf(stderr,"Transmitter started.\n");
-  } // if
-  else
-  {
-    nprintf(stderr,"Error: Transmitter is already started.\n");
-  } // else
- 
-  return;
-
-} // cmdStartTransmitter
-
-/*****************************************************************************
-
-  Name: cmdStopTransmitter
-
-  Purpose: The purpose of this function is to stop the transmitter of
-  the system.  This will turn off both the transmitter and the baseband
-  data stream that is presented to the transmit chain.
-
-  The syntax for the corresponding command is the following:
-
-    "stop transmitter"
-
-  Calling Sequence: cmdStopTransmitter(bufferPtr)
-
-  Inputs:
-
-    bufferPtr - A pointer to the command parameters.
-
-  Outputs:
-
-    None.
-
-*****************************************************************************/
-static void cmdStopTransmitter(char *bufferPtr)
-{
-  bool enabled;
-
-  // Retrieve transmitter state.
-  enabled = diagUi_radioPtr->isTransmitting();
-
-  if (enabled)
-  {
-    if (diagUi_frequencySweeperPtr != 0)
-    {
-      // Stop the frequency sweeper if it's enabled.
-      delete diagUi_frequencySweeperPtr;
-
-      // We don't want dangling pointers.
-      diagUi_frequencySweeperPtr = 0;
-    } // if
-
-    // Stop the transmitter.
-    diagUi_radioPtr->stopTransmitter();
-
-    nprintf(stderr,"Transmitter stopped.\n");
-  } // if
-  else
-  {
-    nprintf(stderr,"Error: Transmitter is already stopped.\n");
-  } // else
- 
-  return;
-
-} // cmdStopTransmitter
 
 /*****************************************************************************
 
@@ -1386,59 +1106,6 @@ static void cmdStopFrequencySweep(char *bufferPtr)
 
 /*****************************************************************************
 
-  Name: cmdLoadIqFile
-
-  Purpose: The purpose of this function is to load a file, that contains
-  IQ samples into the system.  The format of the IQ samples is 8-bit binary
-  offset.  The data is organized as IQ pairs, so that we have:
-
-    I1,Q1; I2,Q2...
-
-  The syntax for the corresponding command is the following:
-
-    "load iqfile filename"
-
-  Calling Sequence: cmdLoadIqFile(bufferPtr)
-
-  Inputs:
-
-    bufferPtr - A pointer to the command parameters.
-
-  Outputs:
-
-    None.
-
-*****************************************************************************/
-void cmdLoadIqFile(char *bufferPtr)
-{
-  DataProvider *providerPtr;
-  char fileName[256];
-  bool success;
-
-  // Retrieve the file name.
-  sscanf(bufferPtr,"%s",fileName);
-
-  // Retrieve a pointer to the data provider.
-  providerPtr = diagUi_radioPtr->getDataProvider();
-
-  // Load the data.
-  success = providerPtr->loadIqFile(fileName);
-
-  if (success)
-  {
-    nprintf(stderr,"Loaded %s\n",fileName);
-  } // if
-  else
-  {
-    nprintf(stderr,"Error: Could not load %s\n",fileName);
-  } // else
-
-  return;
-
-} // cmdLoadIqFile
-
-/*****************************************************************************
-
   Name: cmdGetRadioInfo
 
   Purpose: The purpose of this function is to display radio information
@@ -1579,7 +1246,6 @@ static void cmdHelp(void)
       "start frequencysweep <startfrequency> <stepsize> <count> <dwelltime>\n");
 
   nprintf(stderr,"stop frequencysweep\n");
-  nprintf(stderr,"load iqfile <filename>\n");
   nprintf(stderr,"get radioinfo\n");
   nprintf(stderr,"get sweeperinfo\n");
   nprintf(stderr,"exit system\n");
