@@ -182,7 +182,7 @@ n = n + 4 - modulo(n,4);
 // This will be an antialiasing filter the preceeds the 4:1
 // compressor.
 //------------------------------------------------------------------
-h = eqfir(n,F/Fsample,[1 0],[1 1]);
+h = eqfir(n,F/Fsample,[1 0],[1/deltaP 1/deltaS]);
 
 // Compute magnitude and frequency points.
 [hm,fr] = frmag(h,1024);

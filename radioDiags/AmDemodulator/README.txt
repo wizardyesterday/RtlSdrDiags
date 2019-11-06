@@ -3,6 +3,13 @@ This directory contains all of the files, build scripts, and Scilab filter
 design scripts for implementing an AM demodulator.
 The file descriptions are listed below.	
 Chris G. 07/02/2017
+
+Filter coefficients have been updated in the Scilab files for the decimator
+filters to increase the stopband attenuation.  I finally realized that the
+values of the weight vector, that is passed to the eqfir() function should
+have the reciprocal of the passband ripple and stopband ripple rather unity
+as the examples in some DSP books have liberally used.
+Chris G. 10/26/2019
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
