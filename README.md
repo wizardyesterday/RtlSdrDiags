@@ -29,7 +29,8 @@ What if you don't have a sound card on the computer for which the software is ex
 Black to run the SDR code (it's fast enough to do all the signal processing), and I use a 200MHz Pentium 2 computer to
 play the sound?  Here's what I do.
 
-On the BeagleBone Black, type the following:
+On the BeagleBone Black, type the following (note that the -u argument to netcat
+forces UDP usage.  If you don't have UDP support, don't use the -u argument):
 1. "bin/radioDiags | netcat -u <IP address of host computer> 8000"
 2. Perform steps t to 3 above to listen to your local FM station on 91.5MHz.
   
@@ -61,4 +62,3 @@ Oh one last thing.  Anybody can use my software without grief.  I guess I'll hav
 beginning of my files, and that will happen later.  Either way, feel free to use my software, sell it, or give it away.  I
 believe in sharing what I create to benefit the Open Source Community.
 
-2. In another t
