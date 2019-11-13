@@ -70,103 +70,103 @@ set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)
                       | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]  
 set amdemodgain <gain>  
 set fmdemodgain <gain>  
-set wbfmdemodgain <gain>
-set ssbdemodgain <gain>
-set txgain <gain in dB>
-set rxgain <gain in dB>
-set txfrequency <frequency in Hertz>
-set rxfrequency <frequency in Hertz>
-set txbandwidth <bandwidth in Hertz>
-set rxbandwidth <bandwidth in Hertz>
-set rxsamplerate <samplerate in S/s>
-set rxwarp <warp in ppm>
-start transmitter
-stop transmitter
-start receiver
-stop receiver
-start frequencysweep <startfrequency> <stepsize> <count> <dwelltime>
-stop frequencysweep
-load iqfile <filename>
-get radioinfo
-get sweeperinfo
-exit system
-help
-Type <^B><enter> key sequence to repeat last command
->
-********************************************************************************
-End of help output.
-********************************************************************************
+set wbfmdemodgain <gain>  
+set ssbdemodgain <gain>  
+set txgain <gain in dB>  
+set rxgain <gain in dB>  
+set txfrequency <frequency in Hertz>  
+set rxfrequency <frequency in Hertz>  
+set txbandwidth <bandwidth in Hertz>  
+set rxbandwidth <bandwidth in Hertz>  
+set rxsamplerate <samplerate in S/s>  
+set rxwarp <warp in ppm>  
+start transmitter  
+stop transmitter  
+start receiver  
+stop receiver  
+start frequencysweep <startfrequency> <stepsize> <count> <dwelltime>  
+stop frequencysweep  
+load iqfile <filename>  
+get radioinfo  
+get sweeperinfo  
+exit system  
+help  
+Type <^B><enter> key sequence to repeat last command  
+>  
+********************************************************************************  
+End of help output.  
+********************************************************************************  
 
 The output of the "get radioinfo" command appears next.
 
-********************************************************************************
-Start of radioinfo output.
-********************************************************************************
->get radioinfo
-
-------------------------------------------------------
-Radio Internal Information
-------------------------------------------------------
-Receive Enabled                     : No
-Receive Gain:                       : Auto
-Receive Frequency                   : 162550000 Hz
-Receive Bandwidth                   : 0 Hz
-Receive Sample Rate:                : 256000 S/s
-Receive Frequency Warp:             : 0 ppm
-Receive Timestamp                   : 0
-Receive Block Count                 : 0
-Transmit Enabled                    : No
-Transmitting Data                   : No
-Transmit Gain:                      : 0
-Transmit Frequency                  : 162550000 Hz
-Transmit Bandwidth                  : 10000000 Hz
-Transmit Sample Rate                : 256000 S/s
-Transmit Block Count                : 0
-
---------------------------------------------
-Data Consumer Internal Information
---------------------------------------------
-Last Timestamp           : 0
-Short Block Count        : 0
-
---------------------------------------------
-Data Provider Internal Information
---------------------------------------------
-Timestamp               : 0
-IQ File Name            : 
-IQ Sample Buffer Length : 0
-IQ Sample Buffer Index  : 0
-
---------------------------------------------
-IQ Data Processor Internal Information
---------------------------------------------
-Demodulator Mode         : FM
-
---------------------------------------------
-AM Demodulator Internal Information
---------------------------------------------
-Demodulator Gain         : 300.000000
-
---------------------------------------------
-FM Demodulator Internal Information
---------------------------------------------
-Demodulator Gain         : 10185.916016
-
---------------------------------------------
-Wideband FM Demodulator Internal Information
---------------------------------------------
-Demodulator Gain         : 10185.916016
-
---------------------------------------------
-SSB Demodulator Internal Information
---------------------------------------------
-Demodulation Mode        : LSB
-Demodulator Gain         : 300.000000
->
-********************************************************************************
-End of radioinfo output.
-********************************************************************************
-
+********************************************************************************  
+Start of radioinfo output.  
+********************************************************************************  
+>get radioinfo  
+  
+------------------------------------------------------  
+Radio Internal Information  
+------------------------------------------------------  
+Receive Enabled                     : No  
+Receive Gain:                       : Auto  
+Receive Frequency                   : 162550000 Hz  
+Receive Bandwidth                   : 0 Hz  
+Receive Sample Rate:                : 256000 S/s  
+Receive Frequency Warp:             : 0 ppm  
+Receive Timestamp                   : 0  
+Receive Block Count                 : 0  
+Transmit Enabled                    : No  
+Transmitting Data                   : No  
+Transmit Gain:                      : 0  
+Transmit Frequency                  : 162550000 Hz  
+Transmit Bandwidth                  : 10000000 Hz  
+Transmit Sample Rate                : 256000 S/s  
+Transmit Block Count                : 0  
+  
+--------------------------------------------  
+Data Consumer Internal Information  
+--------------------------------------------  
+Last Timestamp           : 0  
+Short Block Count        : 0  
+  
+--------------------------------------------  
+Data Provider Internal Information  
+--------------------------------------------  
+Timestamp               : 0  
+IQ File Name            :   
+IQ Sample Buffer Length : 0  
+IQ Sample Buffer Index  : 0  
+  
+--------------------------------------------  
+IQ Data Processor Internal Information  
+--------------------------------------------  
+Demodulator Mode         : FM  
+  
+--------------------------------------------  
+AM Demodulator Internal Information  
+--------------------------------------------  
+Demodulator Gain         : 300.000000  
+  
+--------------------------------------------  
+FM Demodulator Internal Information  
+--------------------------------------------  
+Demodulator Gain         : 10185.916016  
+  
+--------------------------------------------  
+Wideband FM Demodulator Internal Information  
+--------------------------------------------  
+Demodulator Gain         : 10185.916016  
+  
+--------------------------------------------  
+SSB Demodulator Internal Information  
+--------------------------------------------  
+Demodulation Mode        : LSB  
+Demodulator Gain         : 300.000000  
+>  
+********************************************************************************  
+End of radioinfo output.  
+********************************************************************************  
+  
 Anyway, if you have any questions, you can always catch me on freenode IRC.  I use the nick wizardyesterday or adhoc_rf_rocks.
 
 Oh one last thing.  Anybody can use my software without grief.  I guess I'll have to put the GNU open source stuff at the
