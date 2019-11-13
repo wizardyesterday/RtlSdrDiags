@@ -37,7 +37,7 @@ forces UDP usage.  If you don't have UDP support, don't use the -u argument):
 On the host computer (the one with the sound card), type the following:
 1. "netcat -l -u -p 8000 | aplay -f S16_LE -r 8000"
 2. On a separate shell, type "netcat <IP address of BeagleBone Black> 20280.
-3. Peform steps 1 to 3 above to listen to your local FM station on 91.5Mhz.
+3. Perform steps 1 to 3 above to listen to your local FM station on 91.5Mhz.
   
 Let it be noted that all demodulated output is 8000Samples/s PCM (for all demodulation modes).  I made this decision
 because I wanted to be able to change demodulation modes on the fly.  Also note that steps 1 to 3 can be performed in
@@ -60,16 +60,16 @@ For those who are interested, here is what gets presented to the user when the h
 also captured what gets displayed when a connection is initially made to the command and control link to the diags
 application (the welcome message).
 
-********************************************************************************
-Start of help output.
-********************************************************************************
-Welcome to System Diagnostics
->help
-
-set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)
-                      | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]
-set amdemodgain <gain>
-set fmdemodgain <gain>
+********************************************************************************  
+Start of help output.  
+********************************************************************************  
+Welcome to System Diagnostics  
+>help  
+  
+set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)  
+                      | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]  
+set amdemodgain <gain>  
+set fmdemodgain <gain>  
 set wbfmdemodgain <gain>
 set ssbdemodgain <gain>
 set txgain <gain in dB>
