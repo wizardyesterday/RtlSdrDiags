@@ -61,7 +61,7 @@ also captured what gets displayed when a connection is initially made to the com
 application (the welcome message).
 
 `**********************************************************************************`  
-## Start of help output.  
+Start of help output.  
 `**********************************************************************************`  
 Welcome to System Diagnostics  
 \>help  
@@ -93,12 +93,14 @@ help
 Type <^B><enter> key sequence to repeat last command  
 \>  
 `**********************************************************************************`  
-## End of help output.   
+End of help output.   
 `**********************************************************************************`  
-The output of the "get radioinfo" command appears next.
+  
+The output of the "get radioinfo" command appears next.  It took a little
+massaging to get things right but we're good enough for now.  
 
 `**********************************************************************************`  
-## Start of radioinfo output.  
+Start of radioinfo output.  
 `**********************************************************************************`  
 \>get radioinfo  
   
@@ -162,7 +164,7 @@ Demodulation Mode        : LSB
 Demodulator Gain         : 300.000000  
 \>  
 `**********************************************************************************`    
-## End of radioinfo output.  
+End of radioinfo output.  
 `**********************************************************************************`  
   
 Anyway, if you have any questions, you can always catch me on freenode IRC.  I use the nick wizardyesterday or adhoc_rf_rocks.
