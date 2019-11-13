@@ -66,8 +66,7 @@ application (the welcome message).
 Welcome to System Diagnostics  
 \>help  
   
-set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)  
-`                      | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]`
+set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM) | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]
 set amdemodgain <gain>  
 set fmdemodgain <gain>  
 set wbfmdemodgain <gain>  
