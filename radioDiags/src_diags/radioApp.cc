@@ -75,19 +75,18 @@ FrequencySweeper *diagUi_frequencySweeperPtr;
 int main(int argc,char **argv)
 {
   bool success;
-  uint64_t transceiveFrequency;
+  uint64_t receiveFrequency;
   uint32_t sampleRate;
   struct timeval timeout;
 
-  transceiveFrequency = 162550000;
+  receiveFrequency = 162550000;
   sampleRate = 256000;
 
   // Instantiate a radio.
-  diagUi_radioPtr = new Radio(0,sampleRate,sampleRate);
+  diagUi_radioPtr = new Radio(0,sampleRate);
 
   // Set the desired frequency.
-  diagUi_radioPtr->setTransmitFrequency(transceiveFrequency);
-  diagUi_radioPtr->setReceiveFrequency(transceiveFrequency);
+  diagUi_radioPtr->setReceiveFrequency(receiveFrequency);
 
   // Indicate that no frequency sweeper has been allocated.
   diagUi_frequencySweeperPtr = 0;
