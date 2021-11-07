@@ -31,6 +31,12 @@ IqDataProcessor::IqDataProcessor(void)
   // Default to no demodulation of the signal
   demodulatorMode = None;
 
+  // Let all signal exceed threshold.
+  signalDetectThreshold = 0;
+
+  // Instantiate a signal tracker.
+  trackerPtr = new SignalTracker(signalDetectThreshold);
+
   return; 
 
 } // IqDataProcessor
@@ -55,6 +61,9 @@ IqDataProcessor::IqDataProcessor(void)
 **************************************************************************/
 IqDataProcessor::~IqDataProcessor()
 {
+
+  // Release resources.
+  delete trackerPtr;
 
   return; 
 
@@ -222,6 +231,38 @@ void IqDataProcessor::setDemodulatorMode(demodulatorType mode)
 
 /**************************************************************************
 
+  Name: setSignalDetectThreshold
+
+  Purpose: The purpose of this function is to set the signal detect
+  threshold.  A signal is considered as detected if a signal magnitude
+  matches or exceeds the threshold value.
+
+  Calling Sequence: success = setSignalDetectThreshold(threshold)
+
+  Inputs:
+
+    threshold - The signal detection threshold.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::setSignalDetectThreshold(uint32_t threshold)
+{
+
+  // Update for later use.
+  this->signalDetectThreshold = threshold;
+
+  // Notify the signal tracker of the new threshold.
+  trackerPtr->setThreshold(threshold);
+
+  return;
+
+} // setSignalDetectThreshold
+
+/**************************************************************************
+
   Name: acceptIqData
 
   Purpose: The purpose of this function is to queue data to be transmitted
@@ -249,7 +290,9 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
                                    unsigned long byteCount)
 {
   int i;
+  uint16_t signalPresenceIndicator;
   int8_t *signedBufferPtr;
+  bool signalAllowed;
 
   // Reference IQ samples as a set of signed values.
   signedBufferPtr = (int8_t *)bufferPtr;
@@ -260,47 +303,84 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
     signedBufferPtr[i] -= 128;
   } // for
 
-  switch (demodulatorMode)
+  // Determine if a signal is available.
+  signalPresenceIndicator = trackerPtr->run(signedBufferPtr,byteCount);
+
+  switch (signalPresenceIndicator)
   {
-    case None:
+    case SIGNALTRACKER_NOISE:
     {
+      // We have no signal.
+      signalAllowed = false;
       break;
     } // case
 
-    case Am:
+    case SIGNALTRACKER_STARTOFSIGNAL:
+    case SIGNALTRACKER_SIGNALPRESENT:
     {
-      // Demodulate as an AM signal.
-      amDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
+      // We have a signal.
+      signalAllowed = true;
       break;
     } // case
 
-    case Fm:
+    case SIGNALTRACKER_ENDOFSIGNAL:
     {
-      // Demodulate as an FM signal.
-      fmDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
-      break;
-    } // case
-
-    case WbFm:
-    {
-      // Demodulate as a wideband FM signal.
-      wbFmDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
-      break;
-    } // case
-
-    case Lsb:
-    case Usb:
-    {
-      // Demodulate as a single sideband signal.
-      ssbDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
+      // We like a squelch tail.
+      signalAllowed = true;
       break;
     } // case
 
     default:
     {
+      signalAllowed = false;
       break;
     } // case
   } // switch
+
+  if (signalAllowed)
+  {
+    switch (demodulatorMode)
+    {
+      case None:
+      {
+        break;
+      } // case
+
+      case Am:
+      {
+        // Demodulate as an AM signal.
+        amDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
+        break;
+      } // case
+
+      case Fm:
+      {
+        // Demodulate as an FM signal.
+        fmDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
+        break;
+      } // case
+
+      case WbFm:
+      {
+        // Demodulate as a wideband FM signal.
+        wbFmDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
+        break;
+      } // case
+
+      case Lsb:
+      case Usb:
+      {
+        // Demodulate as a single sideband signal.
+        ssbDemodulatorPtr->acceptIqData(signedBufferPtr,byteCount);
+        break;
+      } // case
+
+      default:
+      {
+        break;
+      } // case
+    } // switch
+  } // if
 
   return;
 
@@ -375,8 +455,9 @@ void IqDataProcessor::displayInternalInformation(void)
     {
       break;
     } // case
-
   } // switch
+
+  nprintf(stderr,"Signal Detect Threhold   : %u\n",signalDetectThreshold);
 
   return;
 

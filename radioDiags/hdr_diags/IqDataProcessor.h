@@ -10,6 +10,8 @@
 #include "FmDemodulator.h"
 #include "WbFmDemodulator.h"
 #include "SsbDemodulator.h"
+#include "SignalDetector.h"
+#include "SignalTracker.h"
 
 class IqDataProcessor
 {
@@ -25,6 +27,7 @@ class IqDataProcessor
   void setFmDemodulator(FmDemodulator *demodulatorPtr);
   void setWbFmDemodulator(WbFmDemodulator *demodulatorPtr);
   void setSsbDemodulator(SsbDemodulator *demodulatorPtr);
+  void setSignalDetectThreshold(uint32_t threshold);
 
   void acceptIqData(unsigned long timeStamp,
                     unsigned char *bufferPtr,
@@ -39,11 +42,17 @@ private:
   // The demodulator operating mode.
   demodulatorType demodulatorMode;
 
+  // This is used for the squelch system.
+  uint32_t signalDetectThreshold;
+
   // Demodulator support.
   AmDemodulator *amDemodulatorPtr;
   FmDemodulator *fmDemodulatorPtr;
   WbFmDemodulator *wbFmDemodulatorPtr;
   SsbDemodulator *ssbDemodulatorPtr;
+
+  // Squelch support.
+  SignalTracker *trackerPtr;
 
 };
 
