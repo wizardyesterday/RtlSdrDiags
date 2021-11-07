@@ -162,17 +162,11 @@ uint32_t SignalTracker::getThreshold(void)
   of the signal detector. The format of the signal, within the input buffer,
   appears below.
 
-  phase0,magnitude0,phase1,magnitude1,
+  I0,Q0,I1,Q1,...
 
-  where,
-
-  magnitude = max(I,Q) + 0.5*min(I,Q),
-
-  phase is represented as a signed fractional quantity with a sign bit,
-  2 mantissa bits, and 13 fractional bits formated as SMMFFFFFFFFFFFFF.
-  This represents a value bounded by -PI < phase < PI.  The only reason
-  that this format is being presented is due to the fact that the FPGA
-  presents phase in this format.
+  In is the in-phase component of the signal, and Qn is the quadrature
+  component of the signal.  Each component is an 8-bit 2's complement
+  value.
 
   Calling Sequence: signalPresenceIndicator = run(bufferPtr,bufferLength)
 
