@@ -33,6 +33,7 @@ class Radio
   bool setReceiveGainInDb(uint32_t gain);
   bool setReceiveSampleRate(uint32_t sampleRate);
   bool setReceiveWarpInPartsPerMillion(int warp);
+  bool setSignalDetectThreshold(uint32_t threshold);
 
   // Getters.
   uint64_t getReceiveFrequency(void);

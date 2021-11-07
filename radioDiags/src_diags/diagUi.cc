@@ -84,6 +84,7 @@ static void cmdSetRxFrequency(char *bufferPtr);
 static void cmdSetRxBandwidth(char *bufferPtr);
 static void cmdSetRxSampleRate(char *bufferPtr);
 static void cmdSetRxWarp(char *bufferPtr);
+static void cmdSetSquelch(char *bufferPtr);
 static void cmdStartReceiver(char *bufferPtr);
 static void cmdStopReceiver(char *bufferPtr);
 static void cmdStartFrequencySweep(char *bufferPtr);
@@ -123,6 +124,7 @@ static const commandEntry commandTable[] =
   {"set","rxbandwidth",cmdSetRxBandwidth},   // set rxbandwidth bandwidth 
   {"set","rxsamplerate",cmdSetRxSampleRate}, // set rxsamplerate samplerate 
   {"set","rxwarp",cmdSetRxWarp},             // set rxwarp warp 
+  {"set","squelch",cmdSetSquelch},           // set squelch threshold
   {"start","receiver",cmdStartReceiver}, // start receiver
   {"stop","receiver",cmdStopReceiver}, // stop receiver
   {"start","frequencysweep",cmdStartFrequencySweep}, 
@@ -886,6 +888,53 @@ static void cmdSetRxWarp(char *bufferPtr)
 
 /*****************************************************************************
 
+  Name: cmdSetSquelch
+
+  Purpose: The purpose of this function is to set the squelch threshold of
+  the system.
+
+  The syntax for the corresponding command is the following:
+
+    "set squelch threshold"
+
+  Calling Sequence: cmdSetSquelch(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetSquelch(char *bufferPtr)
+{
+  bool success;
+  uint32_t threshold;
+
+  success = true;
+
+  // Retrieve value
+  sscanf(bufferPtr,"%u",&threshold);
+
+  success = diagUi_radioPtr->setSignalDetectThreshold(threshold);
+
+  if (success)
+  {
+    nprintf(stderr,"Squelch threshold set to %u.\n",threshold);
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Could not set the squelch threshold.\n");
+  } // else
+
+  return;
+
+} // cmdSetSquelch
+
+/*****************************************************************************
+
   Name: cmdStartReceiver
 
   Purpose: The purpose of this function is to start the receiver of
@@ -1239,6 +1288,7 @@ static void cmdHelp(void)
   nprintf(stderr,"set rxbandwidth <bandwidth in Hertz>\n");
   nprintf(stderr,"set rxsamplerate <samplerate in S/s>\n");
   nprintf(stderr,"set rxwarp <warp in ppm>\n");
+  nprintf(stderr,"set squelch <threshold>\n");
   nprintf(stderr,"start receiver\n");
   nprintf(stderr,"stop receiver\n");
 

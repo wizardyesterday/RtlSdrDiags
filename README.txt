@@ -89,6 +89,7 @@ set rxfrequency <frequency in Hertz>
 set rxbandwidth <bandwidth in Hertz>
 set rxsamplerate <samplerate in S/s>
 set rxwarp <warp in ppm>
+set squelch <threshold>
 start receiver
 stop receiver
 start frequencysweep <startfrequency> <stepsize> <count> <dwelltime>
@@ -144,6 +145,7 @@ IQ Sample Buffer Index  : 0
 IQ Data Processor Internal Information
 --------------------------------------------
 Demodulator Mode         : FM
+Signal Detect Threshold  : 8
  
 --------------------------------------------
 AM Demodulator Internal Information
