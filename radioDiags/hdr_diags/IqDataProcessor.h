@@ -10,7 +10,6 @@
 #include "FmDemodulator.h"
 #include "WbFmDemodulator.h"
 #include "SsbDemodulator.h"
-#include "SignalDetector.h"
 #include "SignalTracker.h"
 
 class IqDataProcessor
