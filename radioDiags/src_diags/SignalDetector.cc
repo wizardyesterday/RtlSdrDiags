@@ -161,8 +161,8 @@ bool SignalDetector::detectSignal(int8_t *bufferPtr,uint32_t bufferLength)
   bool signalIsPresent;
   uint32_t i;
   uint32_t magnitude;
-  uint16_t *magnitudePtr;
-  int8_t iMagnitude, qMagnitude;
+  uint8_t *magnitudePtr;
+  uint8_t iMagnitude, qMagnitude;
   uint32_t magnitudeBufferLength;
 
   if (threshold == 0)
@@ -210,7 +210,7 @@ bool SignalDetector::detectSignal(int8_t *bufferPtr,uint32_t bufferLength)
     } // for
 
     // Finalize the average.
-    magnitude /= bufferLength;
+    magnitude /= magnitudeBufferLength;
 
     if (magnitude >= threshold)
     {

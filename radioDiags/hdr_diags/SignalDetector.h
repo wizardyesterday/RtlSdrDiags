@@ -31,7 +31,7 @@ class SignalDetector
   // The threshold is in linear units.
   uint32_t threshold;
 
-  uint16_t magnitudeBuffer[16384];
+  uint8_t magnitudeBuffer[16384];
 };
 
 #endif // __SIGNALDETECTOR__
