@@ -134,14 +134,6 @@ Last Timestamp           : 1228800
 Short Block Count        : 0
  
 --------------------------------------------
-Data Provider Internal Information
---------------------------------------------
-Timestamp               : 0
-IQ File Name            :
-IQ Sample Buffer Length : 0
-IQ Sample Buffer Index  : 0
- 
---------------------------------------------
 IQ Data Processor Internal Information
 --------------------------------------------
 Demodulator Mode         : FM
