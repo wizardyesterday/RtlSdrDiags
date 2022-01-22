@@ -84,7 +84,7 @@ set amdemodgain <gain>
 set fmdemodgain <gain>
 set wbfmdemodgain <gain>
 set ssbdemodgain <gain>
-set rxgain <gain in dB>
+set rxgain [<gain in dB> | a | A]
 set rxfrequency <frequency in Hertz>
 set rxbandwidth <bandwidth in Hertz>
 set rxsamplerate <samplerate in S/s>

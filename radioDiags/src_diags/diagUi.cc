@@ -630,6 +630,8 @@ static void cmdSetSsbDemodGain(char *bufferPtr)
 
     "set rxgain gain"
 
+  // Note that if 'a' or 'A' was chosen, the AGC will be enabled.
+
   Calling Sequence: cmdSetRxGain(bufferPtr)
 
   Inputs:
@@ -645,9 +647,29 @@ static void cmdSetRxGain(char *bufferPtr)
 {
   bool success;
   uint32_t gain;
+  char alphaBuffer[80];
 
-  // Retrieve value
+  // Retrieve numeric context.
   sscanf(bufferPtr,"%u",&gain);
+
+  // Retrieve alpha context.
+  sscanf(bufferPtr,"%s",alphaBuffer);
+
+  switch (alphaBuffer[0])
+  { 
+    case 'a':
+    case 'A':
+    {
+      // Enable AGC.
+      gain = 99999;
+      break;
+    } // case
+
+    default:
+    {
+      break;
+    } // case
+  } // switch
 
   if (((gain >= 0) && (gain <= 50)) || (gain == 99999))
   {
@@ -1283,7 +1305,7 @@ static void cmdHelp(void)
   nprintf(stderr,"set fmdemodgain <gain>\n");
   nprintf(stderr,"set wbfmdemodgain <gain>\n");
   nprintf(stderr,"set ssbdemodgain <gain>\n");
-  nprintf(stderr,"set rxgain <gain in dB>\n");
+  nprintf(stderr,"set rxgain [<gain in dB> | a | A]\n");
   nprintf(stderr,"set rxfrequency <frequency in Hertz>\n");
   nprintf(stderr,"set rxbandwidth <bandwidth in Hertz>\n");
   nprintf(stderr,"set rxsamplerate <samplerate in S/s>\n");
