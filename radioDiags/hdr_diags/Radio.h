@@ -20,6 +20,8 @@
 #include "WbFmDemodulator.h"
 #include "SsbDemodulator.h"
 
+#define RADIO_RECEIVE_AUTO_GAIN (99999)
+
 class Radio
 {
   public:

@@ -15,8 +15,6 @@ extern "C"
 
 #define RECEIVE_BUFFER_SIZE (32768)
 
-#define RECEIVE_AUTO_GAIN (99999)
-
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 
 /**************************************************************************
@@ -239,7 +237,7 @@ bool Radio::setupReceiver(void)
   receiveBandwidth = 0;
 
   // Default to automatic gain mode.
-  receiveGainInDb = RECEIVE_AUTO_GAIN;
+  receiveGainInDb = RADIO_RECEIVE_AUTO_GAIN;
 
   // Default to no frequency error.
   receiveWarpInPartsPerMillion = 0;
@@ -623,7 +621,7 @@ bool Radio::setReceiveGainInDb(uint32_t gain)
   if (devicePtr != 0)
   {
     // Notify the driver of the new gain.
-    if (gain == RECEIVE_AUTO_GAIN)
+    if (gain == RADIO_RECEIVE_AUTO_GAIN)
     {
       // Set to automatic gain mode.
       error = verbose_auto_gain((rtlsdr_dev_t *)devicePtr);
@@ -1152,7 +1150,7 @@ void Radio::displayInternalInformation(void)
      nprintf(stderr,"No\n");
    } // else
 
-  if (receiveGainInDb == RECEIVE_AUTO_GAIN)
+  if (receiveGainInDb == RADIO_RECEIVE_AUTO_GAIN)
   {
     nprintf(stderr,"Receive Gain:                       : Auto\n");
   } // if

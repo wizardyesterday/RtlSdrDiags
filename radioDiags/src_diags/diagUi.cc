@@ -661,7 +661,7 @@ static void cmdSetRxGain(char *bufferPtr)
     case 'A':
     {
       // Enable AGC.
-      gain = 99999;
+      gain = RADIO_RECEIVE_AUTO_GAIN;
       break;
     } // case
 
@@ -671,7 +671,7 @@ static void cmdSetRxGain(char *bufferPtr)
     } // case
   } // switch
 
-  if (((gain >= 0) && (gain <= 50)) || (gain == 99999))
+  if (((gain >= 0) && (gain <= 50)) || (gain == RADIO_RECEIVE_AUTO_GAIN))
   {
     // Set the receiver attenuation.
     success = diagUi_radioPtr->setReceiveGainInDb(gain);
