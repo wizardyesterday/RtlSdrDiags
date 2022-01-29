@@ -127,7 +127,8 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
     None.
 
 *****************************************************************************/
-SsbDemodulator::SsbDemodulator(void)
+SsbDemodulator::SsbDemodulator(
+    void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength))
 {
   int numberOfStage1DecimatorTaps;
   int numberOfStage2DecimatorTaps;
@@ -230,6 +231,9 @@ SsbDemodulator::SsbDemodulator(void)
                                      numberOfDcRemovalDenominatorTaps,
                                      dcRemovalDenominatorCoefficients);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // This is needed for outputting of PCM data.
+  this->pcmCallbackPtr = pcmCallbackPtr;
 
   return;
 
@@ -647,8 +651,8 @@ void SsbDemodulator::sendPcmData(uint32_t bufferLength)
 {
   uint32_t i;
 
-  // Send the PCM samples to stdout for now.
-  fwrite(pcmData,2,bufferLength,stdout);
+  // Send the PCM samples to the client callback.
+  pcmCallbackPtr(pcmData,bufferLength);
 
   return;
 

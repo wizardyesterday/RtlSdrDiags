@@ -152,7 +152,8 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
     None.
 
 *****************************************************************************/
-AmDemodulator::AmDemodulator(void)
+AmDemodulator::AmDemodulator(
+    void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength))
 {
   int numberOfTunerDecimatorTaps;
   int numberOfPostDemodDecimatorTaps;
@@ -222,6 +223,9 @@ AmDemodulator::AmDemodulator(void)
                                      numberOfDcRemovalDenominatorTaps,
                                      dcRemovalDenominatorCoefficients);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  // This is needed for outputting of PCM data.
+  this->pcmCallbackPtr = pcmCallbackPtr;
 
   return;
 
@@ -570,8 +574,8 @@ void AmDemodulator::sendPcmData(uint32_t bufferLength)
 {
   uint32_t i;
 
-  // Send the PCM samples to stdout for now.
-  fwrite(pcmData,2,bufferLength,stdout);
+  // Send the PCM samples to the client callback.
+  pcmCallbackPtr(pcmData,bufferLength);
 
   return;
 

@@ -38,7 +38,8 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
     None.
 
 **************************************************************************/
-Radio::Radio(int deviceNumber,uint32_t rxSampleRate)
+Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
+             void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength))
 { 
   int i;
   bool success;
@@ -83,25 +84,25 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate)
     dataConsumerPtr = new DataConsumer(receiveDataProcessorPtr);
 
     // Instantiate the AM demodulator.
-    amDemodulatorPtr = new AmDemodulator;
+    amDemodulatorPtr = new AmDemodulator(pcmCallbackPtr);
 
     // Associate the AM demodulator with the Iq data processor.
     receiveDataProcessorPtr->setAmDemodulator(amDemodulatorPtr);
 
     // Instantiate the FM demodulator.
-    fmDemodulatorPtr = new FmDemodulator;
+    fmDemodulatorPtr = new FmDemodulator(pcmCallbackPtr);
 
     // Associate the FM demodulator with the Iq data processor.
     receiveDataProcessorPtr->setFmDemodulator(fmDemodulatorPtr);
 
     // Instantiate the wideband FM demodulator.
-    wbFmDemodulatorPtr = new WbFmDemodulator;
+    wbFmDemodulatorPtr = new WbFmDemodulator(pcmCallbackPtr);
 
     // Associate the FM demodulator with the Iq data processor.
     receiveDataProcessorPtr->setWbFmDemodulator(wbFmDemodulatorPtr);
 
     // Instantiate the SSB demodulator.
-    ssbDemodulatorPtr = new SsbDemodulator;
+    ssbDemodulatorPtr = new SsbDemodulator(pcmCallbackPtr);
 
     // Associate the SSB demodulator with the Iq data processor.
     receiveDataProcessorPtr->setSsbDemodulator(ssbDemodulatorPtr);
