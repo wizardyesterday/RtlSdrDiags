@@ -17,6 +17,39 @@ extern "C"
 
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 
+/*****************************************************************************
+
+  Name: nullPcmDataHandler
+
+  Purpose: The purpose of this function is to serve as the callback
+  function to accept PCM data from a demodulator in the event that a
+  callback is not passed to the constructor to an instance of a Radio.
+  This prevents the demodulators from invocation a NULL address in this
+  case.  This handler will merely discard any PCM data that is passed
+  to it.
+
+  Calling Sequence: nullPcmDataHandler(bufferPtr,bufferLength).
+
+  Inputs:
+
+    bufferPtr - A pointer to a buffer of PCM samples.
+
+    bufferLength - The number of PCM samples in the buffer.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void nullPcmDataHandler(int16_t *bufferPtr,uint32_t bufferLength)
+{
+
+  // Discard the data.
+
+  return;
+
+} // nullPcmDataHandler
+
 /**************************************************************************
 
   Name: Radio
@@ -24,7 +57,7 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
   Purpose: The purpose of this function is to serve as the constructor
   of a Radio object.
 
-  Calling Sequence: Radio(deviceNumber,rxSampleRate)
+  Calling Sequence: Radio(deviceNumber,rxSampleRate,pcmCallbackPtr)
 
   Inputs:
 
@@ -32,6 +65,9 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
 
     rxSampleRate - The sample rate of the baseband portion of the
     receiver in samples per second.
+
+    pcmCallbackPtr - A pointer to a callback function that is to
+    process demodulated data.
 
   Outputs:
 
@@ -43,6 +79,12 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
 { 
   int i;
   bool success;
+
+  if (pcmCallbackPtr == NULL)
+  {
+    // Set the pointer to something sane.
+    pcmCallbackPtr = nullPcmDataHandler;
+  } // if
 
   // Save for later use.
   this->receiveSampleRate = rxSampleRate;

@@ -141,11 +141,12 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
   Purpose: The purpose of this function is to serve as the contructor for
   an instance of an AmDemodulator.
 
-  Calling Sequence: AmDemodulator()
+  Calling Sequence: AmDemodulator(pcmCallbackPtr)
 
   Inputs:
 
-    None.
+    pcmCallbackPtr - A pointer to a callback function that is to process
+    demodulated data.
 
  Outputs:
 
