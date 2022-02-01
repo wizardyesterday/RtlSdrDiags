@@ -19,7 +19,9 @@ class FmDemodulator
 
   public:
 
-  FmDemodulator(void);
+  FmDemodulator(
+    void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength));
+
   ~FmDemodulator(void);
 
   void resetDemodulator(void);
@@ -67,6 +69,9 @@ class FmDemodulator
   Decimator *qTunerDecimatorPtr;
   Decimator *postDemodDecimatorPtr;
   Decimator *audioDecimatorPtr;
+
+  // Client callback support.
+  void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength);
 };
 
 #endif // __FMDEMODULATOR__

@@ -20,7 +20,9 @@ class AmDemodulator
 
   public:
 
-  AmDemodulator(void);
+  AmDemodulator(
+      void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength));
+
   ~AmDemodulator(void);
 
   void resetDemodulator(void);
@@ -67,6 +69,9 @@ class AmDemodulator
   Decimator *audioDecimatorPtr;
 
   IirFilter *dcRemovalFilterPtr;
+
+  // Client callback support.
+  void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength);
 };
 
 #endif // __AMDEMODULATOR__

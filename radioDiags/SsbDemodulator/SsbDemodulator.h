@@ -20,7 +20,9 @@ class SsbDemodulator
 
   public:
 
-  SsbDemodulator(void);
+  SsbDemodulator(
+      void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength));
+
   ~SsbDemodulator(void);
 
   void resetDemodulator(void);
@@ -82,6 +84,9 @@ class SsbDemodulator
   FirFilter *phaseShifterPtr;
 
   IirFilter *dcRemovalFilterPtr;
+
+  // Client callback support.
+  void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength);
 };
 
 #endif // __SSBDEMODULATOR__
