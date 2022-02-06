@@ -57,6 +57,8 @@ class Radio
   void setWbFmDemodulatorGain(float gain);
   void setSsbDemodulatorGain(float gain);
 
+  IqDataProcessor *getIqProcessor(void);
+
   void displayInternalInformation(void);
 
   private:

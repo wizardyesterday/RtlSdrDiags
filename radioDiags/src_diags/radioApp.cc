@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "Radio.h"
+#include "FrequencyScanner.h"
 #include "FrequencySweeper.h"
 #include "diagUi.h"
 
@@ -21,6 +22,7 @@ extern bool diagUi_timeToExit;
 // All of our object pointers are defined here to make things simple.
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 Radio *diagUi_radioPtr;
+FrequencyScanner *diagUi_frequencyScannerPtr;
 FrequencySweeper *diagUi_frequencySweeperPtr;
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -121,6 +123,9 @@ int main(int argc,char **argv)
 
   // Set the desired frequency.
   diagUi_radioPtr->setReceiveFrequency(receiveFrequency);
+
+  // Indicate that no frequency scanner has been allocated.
+  diagUi_frequencyScannerPtr = 0;
 
   // Indicate that no frequency sweeper has been allocated.
   diagUi_frequencySweeperPtr = 0;
