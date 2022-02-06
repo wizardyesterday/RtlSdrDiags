@@ -302,7 +302,7 @@ int FrequencyScanner::wait(void)
 
   // Compute a time 1 second into the future.
   gettimeofday(&now,NULL);
-  timeout.tv_sec = now.tv_sec + 3;
+  timeout.tv_sec = now.tv_sec + 1;
   timeout.tv_nsec = now.tv_usec * 1000;
 
   // Wait on the condition variable.
