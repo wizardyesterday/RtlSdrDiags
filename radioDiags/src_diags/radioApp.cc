@@ -45,12 +45,6 @@ FrequencySweeper *diagUi_frequencySweeperPtr;
 // interface, only one additional thread will be running -- the network
 // listener thread.
 //
-// The Makefile provides all of the required information to build this
-// jammer application.  At the minimum, if only a diag test program were
-// built, the following compiler command would be used.
-//
-//    g++ -o radioApp radioApp.cc console.cc diagUi.cc -lm -lpthread
-//
 // When diagUi_start() is invoked, a TCP listener thread will be launched
 // that waits for a network connection.  When the user connects to the
 // user interface subsystem they would connect to port 20240 for this test

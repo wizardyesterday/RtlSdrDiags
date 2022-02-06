@@ -1099,10 +1099,10 @@ static void cmdStartFscan(char *bufferPtr)
     // Retrieve parameters
     sscanf(bufferPtr,"%llu %llu %llu",&startFrequency,&endFrequency,&stepSize);
 
-    if ((startFrequency >= 24000000) && (startFrequency < 1700000000LL)
+    if ((startFrequency >= 24000000LL) && (startFrequency < 1700000000LL)
         && (endFrequency <= 1700000000LL) && (startFrequency < endFrequency))
     {
-      // Start the swept jammer.  The services of the spot jammer are used.
+      // Start the frequency scanner.
       diagUi_frequencyScannerPtr = new FrequencyScanner(diagUi_radioPtr,
                                                         startFrequency,
                                                         endFrequency,
@@ -1151,7 +1151,7 @@ static void cmdStopFscan(char *bufferPtr)
 
   if (diagUi_frequencyScannerPtr != 0)
   {
-    // Stop the swept jammer.
+    // Stop the frequency scanner.
     delete diagUi_frequencyScannerPtr;
 
     // Indicate that frequency scan has been stopped.
@@ -1204,14 +1204,14 @@ static void cmdStartFrequencySweep(char *bufferPtr)
            &count,
            &dwellTime);
 
-    if ((frequency >= 24000000) && (frequency <= 1700000000LL))
+    if ((frequency >= 24000000LL) && (frequency <= 1700000000LL))
     {
       // Computer upper frequency limit.
       upperFrequency = frequency + (stepSize * count);
 
       if (upperFrequency <= 1700000000LL)
       {
-        // Start the swept jammer.  The services of the spot jammer are used.
+        // Start the frequency sweeper.
         diagUi_frequencySweeperPtr = new FrequencySweeper(diagUi_radioPtr,
                                                           frequency,
                                                           stepSize,
@@ -1268,7 +1268,7 @@ static void cmdStopFrequencySweep(char *bufferPtr)
 
   if (diagUi_frequencySweeperPtr != 0)
   {
-    // Stop the swept jammer.
+    // Stop the frequency sweeperr.
     delete diagUi_frequencySweeperPtr;
 
     // Indicate that frequency sweep has been stopped.
