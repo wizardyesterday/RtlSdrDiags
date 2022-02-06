@@ -1157,6 +1157,32 @@ void Radio::setSsbDemodulatorGain(float gain)
 
 } // setSsbDemodulatorGain
 
+/*****************************************************************************
+
+  Name: getIqProcessor
+
+  Purpose: The purpose of this function is to retrieve the address of the
+  IqDataProcessor object.
+
+  Calling Sequence: dataProcessorPtr = getIqProcessor()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    dataProcessorPtr - A pointer to an instance of an IqDataProcessor
+    that is used by the Radio.
+
+*****************************************************************************/
+IqDataProcessor * Radio::getIqProcessor(void)
+{
+
+  return (receiveDataProcessorPtr);
+
+} // getIqProcessorPtr
+
 /**************************************************************************
 
   Name: displayInternalInformation

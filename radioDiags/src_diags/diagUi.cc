@@ -24,6 +24,7 @@
 #include <sys/time.h>
 
 #include "Radio.h"
+#include "FrequencyScanner.h"
 #include "FrequencySweeper.h"
 #include "diagUi.h"
 #include "console.h"
@@ -31,6 +32,7 @@
 using namespace std;
 
 extern Radio *diagUi_radioPtr;
+extern FrequencyScanner *diagUi_frequencyScannerPtr;
 extern FrequencySweeper *diagUi_frequencySweeperPtr;
 
 /************************************************************************/
@@ -87,9 +89,12 @@ static void cmdSetRxWarp(char *bufferPtr);
 static void cmdSetSquelch(char *bufferPtr);
 static void cmdStartReceiver(char *bufferPtr);
 static void cmdStopReceiver(char *bufferPtr);
+static void cmdStartFscan(char *bufferPtr);
+static void cmdStopFscan(char *bufferPtr);
 static void cmdStartFrequencySweep(char *bufferPtr);
 static void cmdStopFrequencySweep(char *bufferPtr);
 static void cmdGetRadioInfo(char *bufferPtr);
+static void cmdGetFscanInfo(char *bufferPtr);
 static void cmdGetSweeperInfo(char *bufferPtr);
 static void cmdExitSystem(char *bufferPtr);
 static void cmdHelp(void);
@@ -127,10 +132,14 @@ static const commandEntry commandTable[] =
   {"set","squelch",cmdSetSquelch},           // set squelch threshold
   {"start","receiver",cmdStartReceiver}, // start receiver
   {"stop","receiver",cmdStopReceiver}, // stop receiver
+  {"start","fscan",cmdStartFscan},
+    // start fscan startfrequency stopfrequency stepsize
+  {"stop","fscan",cmdStopFscan}, // stop fscan
   {"start","frequencysweep",cmdStartFrequencySweep}, 
     // start frequencysweep startfrequency stepsize count dwelltime
   {"stop","frequencysweep",cmdStopFrequencySweep}, // stop frequencysweep
   {"get","radioinfo",cmdGetRadioInfo},   // get radioinfo
+  {"get","fscaninfo",cmdGetFscanInfo}, // get fscaninfo
   {"get","sweeperinfo",cmdGetSweeperInfo}, // get sweeperinfo
   {"exit","system",cmdExitSystem},       // exit system
   {"\0","\0",0}                          // last entry in command table
@@ -1059,6 +1068,104 @@ static void cmdStopReceiver(char *bufferPtr)
 
 /*****************************************************************************
 
+  Name: cmdStartFscan
+
+  Purpose: The purpose of this function is to start the frequency
+  scanner.
+
+  The syntax for the corresponding command is the following:
+
+    "start fscan startfrequency endfrequency stepsize"
+
+  Calling Sequence: cmdCStartSweptJamming(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdStartFscan(char *bufferPtr)
+{
+  uint64_t startFrequency;
+  uint64_t endFrequency;
+  uint64_t stepSize;
+
+  if (diagUi_frequencyScannerPtr == 0)
+  {
+    // Retrieve parameters
+    sscanf(bufferPtr,"%llu %llu %llu",&startFrequency,&endFrequency,&stepSize);
+
+    if ((startFrequency >= 24000000LL) && (startFrequency < 1700000000LL)
+        && (endFrequency <= 1700000000LL) && (startFrequency < endFrequency))
+    {
+      // Start the frequency scanner.
+      diagUi_frequencyScannerPtr = new FrequencyScanner(diagUi_radioPtr,
+                                                        startFrequency,
+                                                        endFrequency,
+                                                        stepSize);
+
+      nprintf(stderr,"Frequency scanning started.\n");
+    } // if
+    else
+    {
+      nprintf(stderr,"Error: 24000000 <= frequency 17000000000 Hz.\n");
+    } // else
+
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Frequency scanning is already in progress.\n");
+  } // else
+
+  return;
+
+} // cmdStartFscan
+
+/*****************************************************************************
+
+  Name: cmdStopFscan
+
+  Purpose: The purpose of this function is to stop a frequency scan.
+
+  The syntax for the corresponding command is the following:
+
+    "stop fscan"
+
+  Calling Sequence: cmdStopFscan(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdStopFscan(char *bufferPtr)
+{
+
+  if (diagUi_frequencyScannerPtr != 0)
+  {
+    // Stop the frequency scanner.
+    delete diagUi_frequencyScannerPtr;
+
+    // Indicate that frequency scan has been stopped.
+    diagUi_frequencyScannerPtr = 0;
+
+    nprintf(stderr,"Frequency scan stopped.\n");
+  } // if
+
+  return;
+
+} // cmdStopFscan
+
+/*****************************************************************************
+
   Name: cmdStartFrequencySweep
 
   Purpose: The purpose of this function is to start sweeping the operating
@@ -1068,7 +1175,7 @@ static void cmdStopReceiver(char *bufferPtr)
 
     "start frequencysweep startfrequency stepsize count dwelltime"
 
-  Calling Sequence: cmdCStartSweptJamming(bufferPtr)
+  Calling Sequence: cmdStartFrequencySweep(bufferPtr)
 
   Inputs:
 
@@ -1097,14 +1204,14 @@ static void cmdStartFrequencySweep(char *bufferPtr)
            &count,
            &dwellTime);
 
-    if ((frequency >= 24000000) && (frequency <= 1700000000LL))
+    if ((frequency >= 24000000LL) && (frequency <= 1700000000LL))
     {
       // Computer upper frequency limit.
       upperFrequency = frequency + (stepSize * count);
 
       if (upperFrequency <= 1700000000LL)
       {
-        // Start the swept jammer.  The services of the spot jammer are used.
+        // Start the frequency sweeper.
         diagUi_frequencySweeperPtr = new FrequencySweeper(diagUi_radioPtr,
                                                           frequency,
                                                           stepSize,
@@ -1161,7 +1268,7 @@ static void cmdStopFrequencySweep(char *bufferPtr)
 
   if (diagUi_frequencySweeperPtr != 0)
   {
-    // Stop the swept jammer.
+    // Stop the frequency sweeperr.
     delete diagUi_frequencySweeperPtr;
 
     // Indicate that frequency sweep has been stopped.
@@ -1169,7 +1276,6 @@ static void cmdStopFrequencySweep(char *bufferPtr)
 
     nprintf(stderr,"Frequency sweep stopped.\n");
   } // if
-
 
   return;
 
@@ -1206,6 +1312,41 @@ static void cmdGetRadioInfo(char *bufferPtr)
   return;
 
 } // cmdGetRadioInfo
+
+/*****************************************************************************
+
+  Name: cmdGetFscanInfo
+
+  Purpose: The purpose of this function is to display frequency scanner
+  information to the user.
+
+  The syntax for the corresponding command is the following:
+
+    "get scannerinfo"
+
+  Calling Sequence: cmdGetFscanInfo(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdGetFscanInfo(char *bufferPtr)
+{
+
+  if (diagUi_frequencyScannerPtr != 0)
+  {
+    // Display frequency scanner information to the user.
+    diagUi_frequencyScannerPtr->displayInternalInformation();
+  } // if
+
+  return;
+
+} // cmdGetFscanInfoo
 
 /*****************************************************************************
 
@@ -1313,12 +1454,15 @@ static void cmdHelp(void)
   nprintf(stderr,"set squelch <threshold>\n");
   nprintf(stderr,"start receiver\n");
   nprintf(stderr,"stop receiver\n");
+  nprintf(stderr,"start fscan <startfrequency> <endfrequency> <stepsize>\n");
+  nprintf(stderr,"stop fscan\n");
 
- nprintf(stderr,  
+  nprintf(stderr,  
       "start frequencysweep <startfrequency> <stepsize> <count> <dwelltime>\n");
 
   nprintf(stderr,"stop frequencysweep\n");
   nprintf(stderr,"get radioinfo\n");
+  nprintf(stderr,"get fscaninfo\n");
   nprintf(stderr,"get sweeperinfo\n");
   nprintf(stderr,"exit system\n");
   nprintf(stderr,"help\n");
