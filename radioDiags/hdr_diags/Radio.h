@@ -106,6 +106,9 @@ class Radio
   pthread_mutex_t radioLock;
   pthread_t eventConsumerThread;
 
+  // Multi-thread support.
+  pthread_mutex_t ioSubsystemLock;
+
   // Statistics.
   uint32_t receiveTimeStamp;
   uint32_t receiveBlockCount;
