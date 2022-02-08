@@ -79,6 +79,7 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
 { 
   int i;
   bool success;
+  pthread_mutexattr_t mutexAttribute;
 
   if (pcmCallbackPtr == NULL)
   {
@@ -109,8 +110,21 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
   // Initialize radio lock.
   pthread_mutex_init(&radioLock,0);
 
-  // Initialize the I/O subsystem lock.
-  pthread_mutex_init(&ioSubsystemLock,0);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Initialize the I/O subsystem lock.  This occurs
+  // since some functions that lock the mutex invoke
+  // other functions that lock the same mutex.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Set up the attribute.
+  pthread_mutexattr_init(&mutexAttribute);
+  pthread_mutexattr_settype(&mutexAttribute,PTHREAD_MUTEX_RECURSIVE_NP);
+
+  // Initialize the mutex using the attribute.
+  pthread_mutex_init(&ioSubsystemLock,&mutexAttribute);
+
+  // This is no longer needed.
+  pthread_mutexattr_destroy(&mutexAttribute);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Set up the receiver with a default configuration.
   success = setupReceiver();
@@ -353,6 +367,9 @@ bool Radio::startReceiver(void)
   int error;
   int errorCount;
 
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
   // Default to success
   success = true;
 
@@ -455,6 +472,9 @@ bool Radio::startReceiver(void)
     } // else
   } // if
 
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
   return (success);
   
 } // startReceiver
@@ -482,6 +502,9 @@ bool Radio::startReceiver(void)
 void Radio::stopReceiver(void)
 {
 
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
   if (receiveEnabled)
   {
     // Request to stop the receiver.
@@ -508,6 +531,9 @@ void Radio::stopReceiver(void)
     // Release the radio lock.
     pthread_mutex_unlock(&radioLock);
   } // if
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
 
   return;
   
