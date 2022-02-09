@@ -1051,10 +1051,6 @@ static void cmdStopReceiver(char *bufferPtr)
 
   if (enabled)
   {
-    // Stop the scanner and sweeper if they're running.
-    cmdStopFscan(bufferPtr);
-    cmdStopFrequencySweep(bufferPtr);
-
     // Stop the receiverr.
     diagUi_radioPtr->stopReceiver();
 
