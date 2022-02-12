@@ -1076,7 +1076,7 @@ static void cmdStopReceiver(char *bufferPtr)
 
     "start fscan startfrequency endfrequency stepsize"
 
-  Calling Sequence: cmdCStartSweptJamming(bufferPtr)
+  Calling Sequence: cmdStartFscan(bufferPtr)
 
   Inputs:
 
@@ -1091,12 +1091,15 @@ static void cmdStartFscan(char *bufferPtr)
 {
   uint64_t startFrequency;
   uint64_t endFrequency;
-  uint64_t stepSize;
+  int64_t stepSize;
 
   if (diagUi_frequencyScannerPtr == 0)
   {
     // Retrieve parameters
-    sscanf(bufferPtr,"%llu %llu %llu",&startFrequency,&endFrequency,&stepSize);
+    sscanf(bufferPtr,"%llu %llu %lld",&startFrequency,&endFrequency,&stepSize);
+
+    // Enforce nonnegative values.
+    stepSize = abs(stepSize);
 
     if ((startFrequency >= 24000000LL) && (startFrequency < 1700000000LL)
         && (endFrequency <= 1700000000LL) && (startFrequency < endFrequency))
@@ -1105,7 +1108,7 @@ static void cmdStartFscan(char *bufferPtr)
       diagUi_frequencyScannerPtr = new FrequencyScanner(diagUi_radioPtr,
                                                         startFrequency,
                                                         endFrequency,
-                                                        stepSize);
+                                                        (uint64_t)stepSize);
 
       nprintf(stderr,"Frequency scanning started.\n");
     } // if
@@ -1188,7 +1191,7 @@ static void cmdStopFscan(char *bufferPtr)
 static void cmdStartFrequencySweep(char *bufferPtr)
 {
   uint64_t frequency;
-  uint64_t stepSize;
+  int64_t stepSize;
   uint64_t count;
   uint64_t upperFrequency;
   uint32_t dwellTime;
@@ -1197,11 +1200,15 @@ static void cmdStartFrequencySweep(char *bufferPtr)
   if (diagUi_frequencySweeperPtr == 0)
   {
     // Retrieve parameters
-    sscanf(bufferPtr,"%llu %llu %llu %u",
+    // Retrieve parameters
+    sscanf(bufferPtr,"%llu %lld %llu %lu",
            &frequency,
            &stepSize,
            &count,
            &dwellTime);
+
+    // Enforce nonnegative values.
+    stepSize = abs(stepSize);
 
     if ((frequency >= 24000000LL) && (frequency <= 1700000000LL))
     {
@@ -1213,7 +1220,7 @@ static void cmdStartFrequencySweep(char *bufferPtr)
         // Start the frequency sweeper.
         diagUi_frequencySweeperPtr = new FrequencySweeper(diagUi_radioPtr,
                                                           frequency,
-                                                          stepSize,
+                                                          (uint64_t)stepSize,
                                                           count,
                                                           dwellTime);
 
