@@ -68,7 +68,6 @@ FrequencySweeper *diagUi_frequencySweeperPtr;
 //
 // Anyway, enjoy! Chris G.06/06/2017
 //*************************************************************************
-
 /*****************************************************************************
 
   Name: processPcmData
@@ -119,7 +118,7 @@ int main(int argc,char **argv)
   diagUi_radioPtr->setReceiveFrequency(receiveFrequency);
 
   // Indicate that no frequency scanner has been allocated.
-  diagUi_frequencyScannerPtr = 0;
+  diagUi_frequencyScannerPtr = new FrequencyScanner(diagUi_radioPtr);
 
   // Indicate that no frequency sweeper has been allocated.
   diagUi_frequencySweeperPtr = 0;
