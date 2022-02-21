@@ -89,6 +89,7 @@ static void cmdSetRxWarp(char *bufferPtr);
 static void cmdSetSquelch(char *bufferPtr);
 static void cmdStartReceiver(char *bufferPtr);
 static void cmdStopReceiver(char *bufferPtr);
+static void cmdSetFscanValues(char *bufferPtr);
 static void cmdStartFscan(char *bufferPtr);
 static void cmdStopFscan(char *bufferPtr);
 static void cmdStartFrequencySweep(char *bufferPtr);
@@ -132,8 +133,9 @@ static const commandEntry commandTable[] =
   {"set","squelch",cmdSetSquelch},           // set squelch threshold
   {"start","receiver",cmdStartReceiver}, // start receiver
   {"stop","receiver",cmdStopReceiver}, // stop receiver
-  {"start","fscan",cmdStartFscan},
-    // start fscan startfrequency stopfrequency stepsize
+  {"set","fscanvalues",cmdSetFscanValues},
+    // set fscanvalues startfrequency stopfrequency stepsize
+  {"start","fscan",cmdStartFscan},           // start fscan
   {"stop","fscan",cmdStopFscan}, // stop fscan
   {"start","frequencysweep",cmdStartFrequencySweep}, 
     // start frequencysweep startfrequency stepsize count dwelltime
@@ -1067,6 +1069,71 @@ static void cmdStopReceiver(char *bufferPtr)
 
 /*****************************************************************************
 
+  Name: cmdSetFscanValues
+
+  Purpose: The purpose of this function is to set the frequency
+  scanner sweep parameters.
+
+  The syntax for the corresponding command is the following:
+
+    "set fscanvalues startfrequency endfrequency stepsize"
+
+  Calling Sequence: cmdSetFscanValues(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetFscanValues(char *bufferPtr)
+{
+  bool success;
+  uint64_t startFrequency;
+  uint64_t endFrequency;
+  int64_t stepSize;
+
+  // Default to failure.
+  success = false;
+
+  // Retrieve parameters
+  sscanf(bufferPtr,"%llu %llu %lld",&startFrequency,&endFrequency,&stepSize);
+
+  // Enforce nonnegative values.
+  stepSize = abs(stepSize);
+
+  if ((startFrequency >= 24000000LL) && (startFrequency <  1700000000L)
+      && (endFrequency <= 1700000000LL) && (startFrequency < endFrequency))
+  {
+    // Configure the frequency scanner.
+    success =
+      diagUi_frequencyScannerPtr->setScanParameters(startFrequency,
+                                                    endFrequency,
+                                                    (uint64_t)stepSize);
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: 24000000 <= frequency 17000000000 Hz.\n");
+  } // else
+
+  if (success)
+  {
+    nprintf(stderr,"Frequency scanner parameters set.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Frequency scanner cannot be scanning.\n");
+  } // else
+
+  return;
+
+} // cmdSetFscanValues
+
+/*****************************************************************************
+
   Name: cmdStartFscan
 
   Purpose: The purpose of this function is to start the frequency
@@ -1074,7 +1141,7 @@ static void cmdStopReceiver(char *bufferPtr)
 
   The syntax for the corresponding command is the following:
 
-    "start fscan startfrequency endfrequency stepsize"
+    "start fscan"
 
   Calling Sequence: cmdStartFscan(bufferPtr)
 
@@ -1089,34 +1156,14 @@ static void cmdStopReceiver(char *bufferPtr)
 *****************************************************************************/
 static void cmdStartFscan(char *bufferPtr)
 {
-  uint64_t startFrequency;
-  uint64_t endFrequency;
-  int64_t stepSize;
+  bool success;
 
-  if (diagUi_frequencyScannerPtr == 0)
+  // Start the scanner.
+  success = diagUi_frequencyScannerPtr->start();
+
+  if (success)
   {
-    // Retrieve parameters
-    sscanf(bufferPtr,"%llu %llu %lld",&startFrequency,&endFrequency,&stepSize);
-
-    // Enforce nonnegative values.
-    stepSize = abs(stepSize);
-
-    if ((startFrequency >= 24000000LL) && (startFrequency < 1700000000LL)
-        && (endFrequency <= 1700000000LL) && (startFrequency < endFrequency))
-    {
-      // Start the frequency scanner.
-      diagUi_frequencyScannerPtr = new FrequencyScanner(diagUi_radioPtr,
-                                                        startFrequency,
-                                                        endFrequency,
-                                                        (uint64_t)stepSize);
-
-      nprintf(stderr,"Frequency scanning started.\n");
-    } // if
-    else
-    {
-      nprintf(stderr,"Error: 24000000 <= frequency 17000000000 Hz.\n");
-    } // else
-
+    nprintf(stderr,"Frequency scanning started.\n");
   } // if
   else
   {
@@ -1150,17 +1197,19 @@ static void cmdStartFscan(char *bufferPtr)
 *****************************************************************************/
 static void cmdStopFscan(char *bufferPtr)
 {
+  bool success;
 
-  if (diagUi_frequencyScannerPtr != 0)
+  // Start the scanner.
+  success = diagUi_frequencyScannerPtr->stop();
+
+  if (success)
   {
-    // Stop the frequency scanner.
-    delete diagUi_frequencyScannerPtr;
-
-    // Indicate that frequency scan has been stopped.
-    diagUi_frequencyScannerPtr = 0;
-
     nprintf(stderr,"Frequency scan stopped.\n");
   } // if
+  else
+  {
+    nprintf(stderr,"Error: Frequency scanning is already stopped.\n");
+  } // else
 
   return;
 
@@ -1460,7 +1509,10 @@ static void cmdHelp(void)
   nprintf(stderr,"set squelch <threshold>\n");
   nprintf(stderr,"start receiver\n");
   nprintf(stderr,"stop receiver\n");
-  nprintf(stderr,"start fscan <startfrequency> <endfrequency> <stepsize>\n");
+  nprintf(stderr,
+      "set fscanvalues <startfrequency> <endfrequency> <stepsize>\n");
+
+  nprintf(stderr,"start fscan\n");
   nprintf(stderr,"stop fscan\n");
 
   nprintf(stderr,  
