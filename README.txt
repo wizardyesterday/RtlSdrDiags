@@ -179,9 +179,9 @@ the scan will stop so that you can hear the demodulated audio of the
 signal. When the signal goes away, frequency scan will continue.
 
 When the user types "get fscaninfo" (for the frequency scanner), the
-output appears as illustratedbelow.  Not that the start frequency, the
+output appears as illustrated below.  Not that the start frequency, the
 end frequency, and the frequency increment are configurable.  See the
-help command output for the syntax of the commands realated to the
+help command output for the syntax of the commands related to the
 frequency scanner (fscan).
 
 ******************** Begin GetFscainfo Info Output **********************
