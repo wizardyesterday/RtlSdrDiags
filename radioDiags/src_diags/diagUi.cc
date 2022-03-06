@@ -82,6 +82,7 @@ static void cmdSetFmDemodGain(char *bufferPtr);
 static void cmdSetWbFmDemodGain(char *bufferPtr);
 static void cmdSetSsbDemodGain(char *bufferPtr);
 static void cmdSetRxGain(char *bufferPtr);
+static void cmdSetRxIfGain(char *bufferPtr);
 static void cmdSetRxFrequency(char *bufferPtr);
 static void cmdSetRxBandwidth(char *bufferPtr);
 static void cmdSetRxSampleRate(char *bufferPtr);
@@ -125,7 +126,8 @@ static const commandEntry commandTable[] =
   {"set","fmdemodgain",cmdSetFmDemodGain},   // set fmdemodgain gain
   {"set","wbfmdemodgain",cmdSetWbFmDemodGain},  // set wbfmdemodgain gain
   {"set","ssbdemodgain",cmdSetSsbDemodGain},  // set ssbdemodgain gain
-  {"set","rxgain",cmdSetRxGain},// set rxgain gain
+  {"set","rxgain",cmdSetRxGain},             // set rxgain gain
+  {"set","rxifgain",cmdSetRxIfGain},         // setrxifgain gain
   {"set","rxfrequency",cmdSetRxFrequency},   // set rxfrequency frequency
   {"set","rxbandwidth",cmdSetRxBandwidth},   // set rxbandwidth bandwidth 
   {"set","rxsamplerate",cmdSetRxSampleRate}, // set rxsamplerate samplerate 
@@ -684,7 +686,7 @@ static void cmdSetRxGain(char *bufferPtr)
 
   if (((gain >= 0) && (gain <= 50)) || (gain == RADIO_RECEIVE_AUTO_GAIN))
   {
-    // Set the receiver attenuation.
+    // Set the receiver gain.
     success = diagUi_radioPtr->setReceiveGainInDb(gain);
 
     if (success)
@@ -711,6 +713,59 @@ static void cmdSetRxGain(char *bufferPtr)
   return;
 
 } // cmdSetRxGain
+
+/*****************************************************************************
+
+  Name: cmdSetRxIfGain
+
+  Purpose: The purpose of this function is to set the receive IF gain of
+  the system.
+
+  The syntax for the corresponding command is the following:
+
+    "set rxifgain gain"
+
+  Calling Sequence: cmdSetRxGain(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetRxIfGain(char *bufferPtr)
+{
+  bool success;
+  uint32_t gain;
+
+  // Retrieve numeric context.
+  sscanf(bufferPtr,"%u",&gain);
+
+  if ((gain >= 0) && (gain <= 46))
+  {
+    // Set the receiver gain.
+    success = diagUi_radioPtr->setReceiveIfGainInDb(0,gain);
+
+    if (success)
+    {
+      nprintf(stderr,"Receive IF gain set to %udB.\n",gain);
+    } // if
+    else
+    {
+      nprintf(stderr,"Error: Could not set the receive gain.\n");
+    } // else
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: 0 <= IF gain <= 46.\n");
+  } // else
+
+  return;
+
+} // cmdSetRxIfGain
 
 /*****************************************************************************
 
@@ -1502,6 +1557,7 @@ static void cmdHelp(void)
   nprintf(stderr,"set wbfmdemodgain <gain>\n");
   nprintf(stderr,"set ssbdemodgain <gain>\n");
   nprintf(stderr,"set rxgain [<gain in dB> | a | A]\n");
+  nprintf(stderr,"set rxifgain <gain in dB>\n");
   nprintf(stderr,"set rxfrequency <frequency in Hertz>\n");
   nprintf(stderr,"set rxbandwidth <bandwidth in Hertz>\n");
   nprintf(stderr,"set rxsamplerate <samplerate in S/s>\n");

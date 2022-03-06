@@ -256,6 +256,12 @@ int r820t_set_gain(void *dev, int gain) {
   rtlsdr_dev_t* devt = (rtlsdr_dev_t*)dev;
   return r82xx_set_gain(&devt->r82xx_p, 1, gain);
 }
+
+int r820t_set_if_gain(void *dev, int stage, int gain) {
+  rtlsdr_dev_t* devt = (rtlsdr_dev_t*)dev;
+  return r82xx_set_if_gain(&devt->r82xx_p,stage,gain);
+}
+
 int r820t_set_gain_mode(void *dev, int manual) {
   rtlsdr_dev_t* devt = (rtlsdr_dev_t*)dev;
   return r82xx_set_gain(&devt->r82xx_p, manual, 0);
@@ -288,12 +294,12 @@ static rtlsdr_tuner_iface_t tuners[] = {
   },
   {
     r820t_init, r820t_exit,
-    r820t_set_freq, r820t_set_bw, r820t_set_gain, NULL,
+    r820t_set_freq, r820t_set_bw, r820t_set_gain, r820t_set_if_gain,
     r820t_set_gain_mode
   },
   {
     r820t_init, r820t_exit,
-    r820t_set_freq, r820t_set_bw, r820t_set_gain, NULL,
+    r820t_set_freq, r820t_set_bw, r820t_set_gain, r820t_set_if_gain,
     r820t_set_gain_mode
   },
 };

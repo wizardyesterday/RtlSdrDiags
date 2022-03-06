@@ -35,6 +35,7 @@ class Radio
   bool setReceiveFrequency(uint64_t frequency);
   bool setReceiveBandwidth(uint32_t bandwidth);
   bool setReceiveGainInDb(uint32_t gain);
+  bool setReceiveIfGainInDb(uint8_t stage,uint32_t gain);
   bool setReceiveSampleRate(uint32_t sampleRate);
   bool setReceiveWarpInPartsPerMillion(int warp);
   bool setSignalDetectThreshold(uint32_t threshold);
@@ -78,6 +79,7 @@ class Radio
   uint32_t receiveSampleRate;
   uint32_t receiveBandwidth;
   uint32_t receiveGainInDb;
+  uint32_t receiveIfGainInDb;
   int receiveWarpInPartsPerMillion;
 
   // RtlSdr device support.

@@ -229,8 +229,15 @@ static int r82xx_xtal_capacitor[][2] = {
   { 0x10, XTAL_HIGH_CAP_0P },
 };
 
-/*
- * I2C read/write code and shadow registers logic
+/* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
+/* New IF gain adjustment support.  Note that units    */
+/* in 0.1dB.                                           */
+/* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
+/* Initialize to 24dB. */
+static int tuner_if_gain = 240;
+/* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
+
+ /* I2C read/write code and shadow registers logic
  */
 static void shadow_store(struct r82xx_priv *priv, uint8_t reg, const uint8_t *val,
        int len)
@@ -1007,11 +1014,18 @@ static const int r82xx_mixer_gain_steps[]  = {
 int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
 {
   int rc;
+  int i, total_gain = 0, vga_gain = 0;
+  uint8_t mix_index = 0, lna_index = 0, vga_index = 0;
+  uint8_t data[4];
+
+  for (i = 0; i < 15; i++) {
+    vga_gain += r82xx_vga_gain_steps[++vga_index];
+
+    if (vga_gain >= tuner_if_gain)
+      break;
+  }
 
   if (set_manual_gain) {
-    int i, total_gain = 0;
-    uint8_t mix_index = 0, lna_index = 0;
-    uint8_t data[4];
 
     /* LNA auto off */
     rc = r82xx_write_reg_mask(priv, 0x05, 0x10, 0x10);
@@ -1027,8 +1041,8 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
     if (rc < 0)
       return rc;
 
-    /* set fixed VGA gain for now (16.3 dB) */
-    rc = r82xx_write_reg_mask(priv, 0x0c, 0x08, 0x9f);
+    /* set VGA gain */
+    rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
     if (rc < 0)
       return rc;
 
@@ -1053,7 +1067,8 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
     rc = r82xx_write_reg_mask(priv, 0x07, mix_index, 0x0f);
     if (rc < 0)
       return rc;
-  } else {
+  } 
+  else {
     /* LNA */
     rc = r82xx_write_reg_mask(priv, 0x05, 0, 0x10);
     if (rc < 0)
@@ -1064,13 +1079,41 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
     if (rc < 0)
       return rc;
 
-    /* set fixed VGA gain for now (26.5 dB) */
-    rc = r82xx_write_reg_mask(priv, 0x0c, 0x0b, 0x9f);
+    /* set VGA gain */
+    rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
     if (rc < 0)
       return rc;
   }
 
   return 0;
+}
+
+int r82xx_set_if_gain(struct r82xx_priv *priv, uint8_t stage, int gain)
+{
+  int rc;
+  int i, total_gain = 0;
+  uint8_t vga_index = 0;
+
+  for (i = 0; i < 15; i++) {
+    if (total_gain >= gain) {
+
+      break;
+    }
+    else {
+      /* save in the attribute */
+      tuner_if_gain = gain; 
+    }
+
+    total_gain += r82xx_vga_gain_steps[++vga_index];
+
+    if (total_gain >= gain)
+      break;
+  }
+    
+  /* set the new gain */
+  rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
+
+  return rc;
 }
 
 /* Bandwidth contribution by low-pass filter. */
