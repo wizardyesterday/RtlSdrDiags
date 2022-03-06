@@ -235,14 +235,6 @@ static int r82xx_xtal_capacitor[][2] = {
 /* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
 /* Initialize to 24.2dB. */
 static int tuner_if_gain_index = 9;
-
-/* This table maps the IF gain index to gains */
-/* with a resolution of 0.1dB.                */
-static int tuner_if_gain_table[] =
-{
-  0,26,52,82,124,159,183,196,210,
-  242,278,312,347,384,419,455 
-};
 /* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
 
  /* I2C read/write code and shadow registers logic
