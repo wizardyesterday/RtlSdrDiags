@@ -233,8 +233,16 @@ static int r82xx_xtal_capacitor[][2] = {
 /* New IF gain adjustment support.  Note that units    */
 /* in 0.1dB.                                           */
 /* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
-/* Initialize to 24dB. */
-static int tuner_if_gain = 240;
+/* Initialize to 24.2dB. */
+static int tuner_if_gain_index = 9;
+
+/* This table maps the IF gain index to gains */
+/* with a resolution of 0.1dB.                */
+static int tuner_if_gain_table[] =
+{
+  0,26,52,82,124,159,183,196,210,
+  242,278,312,347,384,419,455 
+};
 /* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
 
  /* I2C read/write code and shadow registers logic
@@ -1015,15 +1023,8 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
 {
   int rc;
   int i, total_gain = 0, vga_gain = 0;
-  uint8_t mix_index = 0, lna_index = 0, vga_index = 0;
+  uint8_t mix_index = 0, lna_index = 0;
   uint8_t data[4];
-
-  for (i = 0; i < 15; i++) {
-    vga_gain += r82xx_vga_gain_steps[++vga_index];
-
-    if (vga_gain >= tuner_if_gain)
-      break;
-  }
 
   if (set_manual_gain) {
 
@@ -1042,7 +1043,7 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
       return rc;
 
     /* set VGA gain */
-    rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
+    rc = r82xx_write_reg_mask(priv, 0x0c, tuner_if_gain_index, 0x9f);
     if (rc < 0)
       return rc;
 
@@ -1080,7 +1081,7 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
       return rc;
 
     /* set VGA gain */
-    rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
+    rc = r82xx_write_reg_mask(priv, 0x0c, tuner_if_gain_index, 0x9f);
     if (rc < 0)
       return rc;
   }
@@ -1099,16 +1100,15 @@ int r82xx_set_if_gain(struct r82xx_priv *priv, uint8_t stage, int gain)
 
       break;
     }
-    else {
-      /* save in the attribute */
-      tuner_if_gain = gain; 
-    }
 
     total_gain += r82xx_vga_gain_steps[++vga_index];
 
     if (total_gain >= gain)
       break;
   }
+
+  // this format works out nicely for later use.
+  tuner_if_gain_index = vga_index;
     
   /* set the new gain */
   rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
