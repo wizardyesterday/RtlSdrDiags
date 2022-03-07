@@ -12,8 +12,9 @@ Executable="bin/radioDiags"
 CcFiles="\
     src_diags/radioApp.cc \
     src_diags/DataConsumer.cc \
-    src_diags/FrequencySweeper.cc \
     src_diags/FrequencyScanner.cc \
+    src_diags/FrequencySweeper.cc \
+    src_diags/AutomaticGainControl.cc \
     src_diags/IqDataProcessor.cc \
     src_diags/Radio.cc \
     src_diags/SignalDetector.cc \

@@ -83,6 +83,13 @@ static void cmdSetWbFmDemodGain(char *bufferPtr);
 static void cmdSetSsbDemodGain(char *bufferPtr);
 static void cmdSetRxGain(char *bufferPtr);
 static void cmdSetRxIfGain(char *bufferPtr);
+static void cmdEnableAgc(char *bufferPtr);
+static void cmdDisableAgc(char *bufferPtr);
+static void cmdSetAgcType(char *bufferPtr);
+static void cmdSetAgcDeadband(char *bufferPtr);
+static void cmdSetAgcAlpha(char *bufferPtr);
+static void cmdSetAgcLevel(char *bufferPtr);
+static void cmdGetAgcInfo(char *buffeerPtr);
 static void cmdSetRxFrequency(char *bufferPtr);
 static void cmdSetRxBandwidth(char *bufferPtr);
 static void cmdSetRxSampleRate(char *bufferPtr);
@@ -128,6 +135,13 @@ static const commandEntry commandTable[] =
   {"set","ssbdemodgain",cmdSetSsbDemodGain},  // set ssbdemodgain gain
   {"set","rxgain",cmdSetRxGain},             // set rxgain gain
   {"set","rxifgain",cmdSetRxIfGain},         // setrxifgain gain
+  {"enable","agc",cmdEnableAgc},             // enable agc
+  {"disable","agc",cmdDisableAgc},           // disable agc
+  {"set","agctype",cmdSetAgcType},           // set agctype type
+  {"set","agcdeadband",cmdSetAgcDeadband},   // set agcdeadband deadband
+  {"set","agcalpha",cmdSetAgcAlpha},         // set agcalpha alpha
+  {"set","agclevel",cmdSetAgcLevel},         // set agclevel level
+  {"get","agcinfo",cmdGetAgcInfo},           // get agcinfo
   {"set","rxfrequency",cmdSetRxFrequency},   // set rxfrequency frequency
   {"set","rxbandwidth",cmdSetRxBandwidth},   // set rxbandwidth bandwidth 
   {"set","rxsamplerate",cmdSetRxSampleRate}, // set rxsamplerate samplerate 
@@ -769,6 +783,299 @@ static void cmdSetRxIfGain(char *bufferPtr)
 
 /*****************************************************************************
 
+  Name: cmdEnableAgc
+
+  Purpose: The purpose of this function is to enable the automatic gain
+  control in the receiver.
+
+  The syntax for the corresponding command is the following:
+
+    "enable agc"
+
+  Calling Sequence: cmdEnableAgc(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdEnableAgc(char *bufferPtr)
+{
+  bool success;
+
+  // Enable the AGC.
+  success = diagUi_radioPtr->enableAgc();
+
+  if (success)
+  {
+    nprintf(stderr,"AGC enabled.\n");  
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: AGC is already enabled.\n");  
+  } // else
+
+  return;
+
+} // cmdEnableAgc
+
+/*****************************************************************************
+
+  Name: cmdDisableAgc
+
+  Purpose: The purpose of this function is to disable the automatic gain
+  control in the receiver.
+
+  The syntax for the corresponding command is the following:
+
+    "disable agc"
+
+  Calling Sequence: cmdDisableAgc(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdDisableAgc(char *bufferPtr)
+{
+  bool success;
+
+  // Disable the AGC.
+  success = diagUi_radioPtr->disableAgc();
+
+  if (success)
+  {
+    nprintf(stderr,"AGC disabled.\n");  
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: AGC is already disabled.\n");  
+  } // else
+
+  return;
+
+} // cmdDisableAgc
+
+/*****************************************************************************
+
+  Name: cmdSetAgcDeadband
+
+  Purpose: The purpose of this function is to set the automatic gain
+  control deadband.
+
+  The syntax for the corresponding command is the following:
+
+    "set agcdeadband deadband"
+
+  Calling Sequence: cmdSetAgcDeadband(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetAgcDeadband(char *bufferPtr)
+{
+  uint32_t deadbandInDb;
+  bool success;
+
+  // Retrieve parameter.
+  sscanf(bufferPtr,"%u",&deadbandInDb);
+
+  // Update the AGC type.
+  success = diagUi_radioPtr->setAgcDeadband(deadbandInDb);
+
+  if (success)
+  {
+    nprintf(stderr,"AGC deadband set to set to: %u.\n",deadbandInDb);
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Invalid AGC deadband.\n");
+  } // else
+  
+  return;
+
+} // cmdSetAgcDeadband
+
+/*****************************************************************************
+
+  Name: cmdSetAgcType
+
+  Purpose: The purpose of this function is to set the automatic gain
+  control type.
+
+  The syntax for the corresponding command is the following:
+
+    "set agctype type"
+
+  Calling Sequence: cmdSetAgcType(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetAgcType(char *bufferPtr)
+{
+  uint32_t type;
+  bool success;
+
+  // Retrieve parameter.
+  sscanf(bufferPtr,"%u",&type);
+
+  // Update the AGC type.
+  success = diagUi_radioPtr->setAgcType(type);
+
+  if (success)
+  {
+    nprintf(stderr,"AGC type set to set to: %u.\n",type);
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Invalid AGC type.\n");
+  } // else
+  
+  return;
+
+} // cmdSetAgcType
+
+/*****************************************************************************
+
+  Name: cmdSetAgcAlpha
+
+  Purpose: The purpose of this function is to set the automatic gain
+  control filter coefficient.  This coefficient determines the time
+  constant of the AGC.
+
+  The syntax for the corresponding command is the following:
+
+    "set agcalpha alpha"
+
+  Calling Sequence: cmdSetAgcAlpha(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetAgcAlpha(char *bufferPtr)
+{
+  float alpha;
+  bool success;
+
+  // Retrieve parameter.
+  sscanf(bufferPtr,"%f",&alpha);
+
+  // Set the AGC filter coefficient.
+  success = diagUi_radioPtr->setAgcFilterCoefficient(alpha);
+
+  if (success)
+  {
+    nprintf(stderr,"AGC filter coefficient set to: %f.\n",alpha);
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: 0.001 < alpha < 0.999.\n");
+  } // else
+
+  return;
+
+} // cmdSetAgcAlpha
+
+/*****************************************************************************
+
+  Name: cmdSetAgcLevel
+
+  Purpose: The purpose of this function is to set the automatic gain
+  control operating point in the receiver.  The units are decibels
+  referenced to full scale.
+
+  The syntax for the corresponding command is the following:
+
+    "set agclevel level"
+
+  Calling Sequence: cmdSetAgcLevel(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetAgcLevel(char *bufferPtr)
+{
+  int32_t operatingPointInDbFs;
+
+  // Retrieve parameter.
+  sscanf(bufferPtr,"%d",&operatingPointInDbFs);
+
+  // Set the operating point.
+  diagUi_radioPtr->setAgcOperatingPoint(operatingPointInDbFs);
+
+  nprintf(stderr,"AGC level set to: %d.\n",operatingPointInDbFs);
+
+  return;
+
+} // cmdSetAgcLevel
+
+/*****************************************************************************
+
+  Name: cmdGetAgcInfo
+
+  Purpose: The purpose of this function is to display the automatic gain
+  information in the receiver.
+
+  The syntax for the corresponding command is the following:
+
+    "get agcinfo"
+
+  Calling Sequence: cmdGetAgcInfo(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdGetAgcInfo(char *buffeerPtr)
+{
+
+  diagUi_radioPtr->displayAgcInternalInformation();
+
+  return;
+
+} // cmdGetAgcInfo
+
+/*****************************************************************************
+
   Name: cmdSetRxFrequency
 
   Purpose: The purpose of this function is to set the receive frequency of
@@ -999,18 +1306,18 @@ static void cmdSetRxWarp(char *bufferPtr)
 static void cmdSetSquelch(char *bufferPtr)
 {
   bool success;
-  uint32_t threshold;
+  int32_t threshold;
 
   success = true;
 
   // Retrieve value
-  sscanf(bufferPtr,"%u",&threshold);
+  sscanf(bufferPtr,"%d",&threshold);
 
   success = diagUi_radioPtr->setSignalDetectThreshold(threshold);
 
   if (success)
   {
-    nprintf(stderr,"Squelch threshold set to %u.\n",threshold);
+    nprintf(stderr,"Squelch threshold set to %d.\n",threshold);
   } // if
   else
   {
@@ -1558,11 +1865,17 @@ static void cmdHelp(void)
   nprintf(stderr,"set ssbdemodgain <gain>\n");
   nprintf(stderr,"set rxgain [<gain in dB> | a | A]\n");
   nprintf(stderr,"set rxifgain <gain in dB>\n");
+  nprintf(stderr,"enable agc\n");
+  nprintf(stderr,"disable agc\n");
+  nprintf(stderr,"set agctype <type: [0 (Lowpass) | 1 (Harris)]>\n");
+  nprintf(stderr,"set agcdeadband <deadband in dB: (0 < deadband < 10)>\n");
+  nprintf(stderr,"set agcalpha <alpha: (0.001 <= alpha < 0.999)>\n");
+  nprintf(stderr,"set agclevel <level in dBFs>\n");
   nprintf(stderr,"set rxfrequency <frequency in Hertz>\n");
   nprintf(stderr,"set rxbandwidth <bandwidth in Hertz>\n");
   nprintf(stderr,"set rxsamplerate <samplerate in S/s>\n");
   nprintf(stderr,"set rxwarp <warp in ppm>\n");
-  nprintf(stderr,"set squelch <threshold>\n");
+  nprintf(stderr,"set squelch <threshold in dBFs>\n");
   nprintf(stderr,"start receiver\n");
   nprintf(stderr,"stop receiver\n");
   nprintf(stderr,
@@ -1578,6 +1891,7 @@ static void cmdHelp(void)
   nprintf(stderr,"get radioinfo\n");
   nprintf(stderr,"get fscaninfo\n");
   nprintf(stderr,"get sweeperinfo\n");
+  nprintf(stderr,"get agcinfo\n");
   nprintf(stderr,"exit system\n");
   nprintf(stderr,"help\n");
   nprintf(stderr,"Type <^B><enter> key sequence to repeat last command\n");

@@ -77,7 +77,6 @@ receiver" command.
 The output of the help command appears below.
 
 ******************** Begin Help Output ********************************
-
 set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)
                       | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]
 set amdemodgain <gain>
@@ -86,11 +85,17 @@ set wbfmdemodgain <gain>
 set ssbdemodgain <gain>
 set rxgain [<gain in dB> | a | A]
 set rxifgain <gain in dB>
+enable agc
+disable agc
+set agctype <type: [0 (Lowpass) | 1 (Harris)]>
+set agcdeadband <deadband in dB: (0 < deadband < 10)>
+set agcalpha <alpha: (0.001 <= alpha < 0.999)>
+set agclevel <level in dBFs>
 set rxfrequency <frequency in Hertz>
 set rxbandwidth <bandwidth in Hertz>
 set rxsamplerate <samplerate in S/s>
 set rxwarp <warp in ppm>
-set squelch <threshold>
+set squelch <threshold in dBFs>
 start receiver
 stop receiver
 set fscanvalues <startfrequency> <endfrequency> <stepsize>
@@ -98,13 +103,14 @@ start fscan
 stop fscan
 start frequencysweep <startfrequency> <stepsize> <count> <dwelltime>
 stop frequencysweep
-load iqfile <filename>
 get radioinfo
 get fscaninfo
 get sweeperinfo
+get agcinfo
 exit system
 help
 Type <^B><enter> key sequence to repeat last command
+
 
 ******************** End Help Output ***********************************
 
@@ -113,52 +119,49 @@ The output of the get radioinfo command appears below.
 
 ******************** Begin Get Radio Info Output **********************
 
- ------------------------------------------------------
+------------------------------------------------------
 Radio Internal Information
 ------------------------------------------------------
 Receive Enabled                     : Yes
 Receive Gain:                       : Auto
-Receive IF Gain                     : 24 dB
-Receive Frequency                   : 162550000 Hz
+Receive IF Gain                     : 19 dB
+Receive Frequency                   : 120550000 Hz
 Receive Bandwidth                   : 0 Hz
 Receive Sample Rate:                : 256000 S/s
 Receive Frequency Warp:             : 0 ppm
-Receive Timestamp                   : 1064960
-Receive Block Count                 : 65
+Receive Timestamp                   : 582516736
+Receive Block Count                 : 35554
 
 --------------------------------------------
 Data Consumer Internal Information
 --------------------------------------------
-Last Timestamp           : 1228800
+Last Timestamp           : 582516736
 Short Block Count        : 0
- 
 --------------------------------------------
 IQ Data Processor Internal Information
 --------------------------------------------
-Demodulator Mode         : FM
-Signal Detect Threshold  : 8
- 
+Demodulator Mode         : WBFM
+Signal Detect Threhold   : -200 dBFs
 --------------------------------------------
 AM Demodulator Internal Information
 --------------------------------------------
 Demodulator Gain         : 300.000000
- 
+
 --------------------------------------------
 FM Demodulator Internal Information
 --------------------------------------------
 Demodulator Gain         : 10185.916016
- 
+
 --------------------------------------------
 Wideband FM Demodulator Internal Information
 --------------------------------------------
 Demodulator Gain         : 10185.916016
- 
+
 --------------------------------------------
 SSB Demodulator Internal Information
 --------------------------------------------
 Demodulation Mode        : LSB
 Demodulator Gain         : 300.000000
-
 
 ******************** End Get Radio Info Output *************************
 
@@ -172,6 +175,11 @@ frequency, and a frequency step. This collaborates with the squelch
 such that, when scanning, if a signal exceeds the squelch threshold,
 the scan will stop so that you can hear the demodulated audio of the
 signal. When the signal goes away, frequency scan will continue.
+
+3. A software automatic gain control (AGC) has been added that
+controls the IF amplifier.  In addition the user now has the
+capability to change the gain of the IF amplifier for more challenging
+signals.
 
 When the user types "get fscaninfo" (for the frequency scanner), the
 output appears as illustrated below.  Not that the start frequency, the
@@ -191,6 +199,31 @@ Frequency Increment       : 25000 Hz
 Current Frequency         : 120475000 Hz
 
 ******************** End Get Fscainfo Output  **** **********************
+
+When the user types "get agcinfo" (for the AGC), the output appears as
+illustrated below.  Note that the algorithm type, lowpass filter
+coefficient, and the operating point are user configurable.  See the
+ help command output for the syntax of the commands related to the AGC.
+
+******************** Begin Getagcinfo Info Output **********************
+
+--------------------------------------------
+AGC Internal Information
+--------------------------------------------
+AGC Emabled               : Yes
+AGC Type                  : Harris
+Lowpass Filter Coefficient: 0.800
+Deadband                  : 1 dB
+Operating Point           : -6 dBFs
+RF Gain                   : 0 dB
+IF Gain                   : 40 dB
+Baseband Gain             : 49 dB
+/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+Signal Magnitude          : 51
+RSSI (After IF Amplifier) : -56 dBFs
+/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+******************** End Get Agcinfo Output  **** **********************
 
 
 Anyway, if you have any questions, you can always catch me on libera IRC.

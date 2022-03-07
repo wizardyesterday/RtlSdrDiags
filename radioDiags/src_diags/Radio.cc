@@ -172,6 +172,9 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
     // Set the demodulation mode.
     receiveDataProcessorPtr->setDemodulatorMode(IqDataProcessor::Fm);
 
+    // Instantiate an AGC with an operating point of -12dBFs.
+    agcPtr = new AutomaticGainControl(this,-12);
+
     // Create the event consumer thread.
     pthread_create(&eventConsumerThread,0,
                    (void *(*)(void *))eventConsumerProcedure,this);
@@ -252,6 +255,11 @@ Radio::~Radio(void)
   if (receiveBufferPtr != 0)
   {
     free(receiveBufferPtr);
+  } // if
+
+  if (agcPtr != 0)
+  {
+    delete agcPtr;
   } // if
   //-------------------------------------
 
@@ -786,8 +794,7 @@ bool Radio::setReceiveGainInDb(uint32_t gain)
     stage - The amplifier stage for which the IF gain is to be
     modified.
 
-    gain - The gain in decibels.  A value of 0xffffffff indicates that
-    the system should be set to automatic gain mode.
+    gain - The gain in decibels.
 
   Outputs:
 
@@ -822,6 +829,9 @@ bool Radio::setReceiveIfGainInDb(uint8_t stage,uint32_t gain)
     {
       // Update attribute.
       receiveIfGainInDb = gain;
+
+      // This variable is used by other subsystems.
+      radio_adjustableReceiveGainInDb = receiveIfGainInDb;
 
       // indicate success.
       success = true;
@@ -981,15 +991,15 @@ bool Radio::setReceiveWarpInPartsPerMillion(int warp)
   Name: setSignalDetectThreshold
 
   Purpose: The purpose of this function is to set the signal detect
-  threshold.  A signal is considered as detected if a signal magnitude
-  matches or exceeds the threshold value.
+  threshold.  A signal is considered as detected if a signal level,
+  in dBFs, matches or exceeds the threshold value.
 
   Calling Sequence: success = setSignalDetectThreshold(threshold)
 
   Inputs:
 
     threshold - The signal detection threshold.  Valid values are,
-    0 <= threshold <= 400.
+    -100 <= threshold <= 10.
 
   Outputs:
 
@@ -998,14 +1008,14 @@ bool Radio::setReceiveWarpInPartsPerMillion(int warp)
     failure.
 
 **************************************************************************/
-bool Radio::setSignalDetectThreshold(uint32_t threshold)
+bool Radio::setSignalDetectThreshold(int32_t threshold)
 {
   bool success;
 
   // Default to failure.
   success = false;
 
-  if ((threshold >= 0) && (threshold <= 400))
+  if ((threshold >= (-100)) && (threshold <= 10))
   {
     // Inform data processor of new threshold.
     receiveDataProcessorPtr->setSignalDetectThreshold(threshold);
@@ -1340,6 +1350,253 @@ IqDataProcessor * Radio::getIqProcessor(void)
   return (receiveDataProcessorPtr);
 
 } // getIqProcessorPtr
+
+/**************************************************************************
+
+  Name: setAgcType
+
+  Purpose: The purpose of this function is to set the type of AGC
+  algorithm to be used.
+
+  Calling Sequence: success = setAgcType(type)
+
+  Inputs:
+
+    type - The type of AGC.  A value of 0 indicates that the lowpass AGC
+    is to be used, and a value of 1 indicates that the Harris AGC is to
+    be used.
+
+  Outputs:
+
+    success - A flag that indicates whether the the AGC type was set.
+    A value of true indicates that the AGC type was successfully set,
+    and a value of false indicates that the AGC type was not set due
+    to an invalid value for the AGC type was specified.
+
+**************************************************************************/
+bool Radio::setAgcType(uint32_t type)
+{
+  bool success;
+
+  // Update the AGC type.
+  success = agcPtr->setType(type);
+
+  return (success);
+
+} // setAgcType
+
+/**************************************************************************
+
+  Name: setAgcDeadband
+
+  Purpose: The purpose of this function is to set the deadband of the
+  AGC.  This presents gain setting oscillations
+
+  Calling Sequence: success = uint32_t deadband(deadbandInDb)
+
+  Inputs:
+
+    deadbandInDb - The deadband, in decibels, used to prevent unwanted
+    gain setting oscillations.  A window is created such that a gain
+    adjustment will not occur if the current gain is within the window
+    new gain <= current gain += deadband.
+
+  Outputs:
+
+    success - A flag that indicates whether or not the deadband parameter
+    was updated.  A value of true indicates that the deadband was
+    updated, and a value of false indicates that the parameter was not
+    updated due to an invalid specified deadband value.
+
+**************************************************************************/
+bool  Radio::setAgcDeadband(uint32_t deadbandInDb)
+{
+  bool success;
+
+  // Update the AGC deadband.
+  success = agcPtr->setDeadband(deadbandInDb);
+
+  return (success);
+
+} // setAgcDeadband
+
+/**************************************************************************
+
+  Name: setAgcOperatingPoint
+
+  Purpose: The purpose of this function is to set the operating point
+  of the AGC.
+
+  Calling Sequence: setAgcOperatingPoint(operatingPointInDbFs)
+  Inputs:
+
+    operatingPointInDbFs - The operating point in decibels referenced to
+    the full scale value.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void Radio::setAgcOperatingPoint(int32_t operatingPointInDbFs)
+{
+
+  // Update operating point.
+  agcPtr->setOperatingPoint(operatingPointInDbFs);
+
+  return;
+
+} // setAgcOperatingPoint
+
+/**************************************************************************
+
+  Name: setAgcFilterCoefficient
+
+  Purpose: The purpose of this function is to set the coefficient of
+  the first order lowpass filter that filters the baseband gain value.
+  In effect, the time constant of the filter is set.
+
+  Calling Sequence: success = setAgcFilterCoefficient(coefficient)
+
+  Inputs:
+
+    coefficient - The filter coefficient for the lowpass filter that
+    // filters the baseband gain value.
+
+  Outputs:
+
+    success - A flag that indicates whether the filter coefficient was
+    updated.  A value of true indicates that the coefficient was
+    updated, and a value of false indicates that the coefficient was
+    not updated due to an invalid coefficient value.
+
+**************************************************************************/
+bool  Radio::setAgcFilterCoefficient(float coefficient)
+{
+  bool success;
+
+  // Update the lowpass filter coefficient.
+  success = agcPtr->setAgcFilterCoefficient(coefficient);
+
+  return (success);
+
+} // setAgcFilterCoefficient
+
+/**************************************************************************
+
+  Name: enableAgc
+
+  Purpose: The purpose of this function is to enable the AGC.
+
+  Calling Sequence: success = enableAgc();
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    success - A flag that indicates whether or not the operation was
+    successful.  A value of true indicates that the operation was
+    successful, and a value of false indicates that the AGC was already
+    enabled.
+
+**************************************************************************/
+bool Radio::enableAgc(void)
+{
+  bool success;
+
+  // Enable the AGC.
+  success = agcPtr->enable();
+
+  return (success);
+
+} // enableAgc
+
+/**************************************************************************
+
+  Name: disableAgc
+
+  Purpose: The purpose of this function is to disable the AGC.
+
+  Calling Sequence: success = disableAgc();
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    success - A flag that indicates whether or not the operation was
+    successful.  A value of true indicates that the operation was
+    successful, and a value of false indicates that the AGC was already
+    disabled.
+
+**************************************************************************/
+bool Radio::disableAgc(void)
+{
+  bool success;
+
+  // Disable the AGC.
+  success = agcPtr->disable();
+
+  return (success);
+
+} // disableAgc
+
+/**************************************************************************
+
+  Name: isAgcEnabled
+
+  Purpose: The purpose of this function is to determine whether or not
+  the AGC is enabled.
+
+  Calling Sequence: status = isAgcEnabled()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    success - A flag that indicates whether or not the AGC is enabled.
+    A value of true indicates that the AGC is enabled, and a value of
+    false indicates that the AGC is disabled.
+
+**************************************************************************/
+bool Radio::isAgcEnabled(void)
+{
+
+  return (agcPtr->isEnabled());
+
+} // isAgcEnabled
+
+/**************************************************************************
+
+  Name: displayAgcInternalInformation
+
+  Purpose: The purpose of this function is to display information in the
+  AGC.
+
+  Calling Sequence: displayAgcInternalInformation()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void Radio::displayAgcInternalInformation(void)
+{
+
+  agcPtr->displayInternalInformation();
+
+  return;
+
+} // displayAgcInternalInformation
 
 /**************************************************************************
 

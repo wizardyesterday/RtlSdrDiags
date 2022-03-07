@@ -19,6 +19,7 @@
 #include "FmDemodulator.h"
 #include "WbFmDemodulator.h"
 #include "SsbDemodulator.h"
+#include "AutomaticGainControl.h"
 
 #define RADIO_RECEIVE_AUTO_GAIN (99999)
 
@@ -38,7 +39,7 @@ class Radio
   bool setReceiveIfGainInDb(uint8_t stage,uint32_t gain);
   bool setReceiveSampleRate(uint32_t sampleRate);
   bool setReceiveWarpInPartsPerMillion(int warp);
-  bool setSignalDetectThreshold(uint32_t threshold);
+  bool setSignalDetectThreshold(int32_t threshold);
 
   // Getters.
   uint64_t getReceiveFrequency(void);
@@ -59,6 +60,16 @@ class Radio
   void setSsbDemodulatorGain(float gain);
 
   IqDataProcessor *getIqProcessor(void);
+
+  // AGC support.
+  bool setAgcType(uint32_t type);
+  bool setAgcDeadband(uint32_t deadbandInDb);
+  void setAgcOperatingPoint(int32_t operatingPointInDbFs);
+  bool setAgcFilterCoefficient(float coefficient);
+  bool enableAgc(void);
+  bool disableAgc(void);
+  bool isAgcEnabled(void);
+  void displayAgcInternalInformation(void);
 
   void displayInternalInformation(void);
 
@@ -98,6 +109,9 @@ class Radio
   FmDemodulator *fmDemodulatorPtr;
   WbFmDemodulator *wbFmDemodulatorPtr;
   SsbDemodulator *ssbDemodulatorPtr;
+
+  // Automatic gain control support.
+  AutomaticGainControl *agcPtr;
 
   // Control information.
   bool receiveEnabled;
