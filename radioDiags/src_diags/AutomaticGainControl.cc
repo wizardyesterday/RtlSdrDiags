@@ -687,9 +687,13 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
 
   //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  // Update the receiver gain parameters.
+  // Update the receiver gain parameters only if a
+  // nonzero gain error resulted.
   //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  if (gainError != 0)
+  {
+    success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  } // if
   //+++++++++++++++++++++++++++++++++++++++++++++++++++
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -830,9 +834,13 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
 
   //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  // Update the receiver gain parameters.
+  // Update the receiver gain parameters only if a
+  // nonzero gain error resulted.
   //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  if (deltaGain != 0)
+  {
+    success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  } // if
   //+++++++++++++++++++++++++++++++++++++++++++++++++++
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
