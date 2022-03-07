@@ -85,6 +85,7 @@ set fmdemodgain <gain>
 set wbfmdemodgain <gain>
 set ssbdemodgain <gain>
 set rxgain [<gain in dB> | a | A]
+set rxifgain <gain in dB>
 set rxfrequency <frequency in Hertz>
 set rxbandwidth <bandwidth in Hertz>
 set rxsamplerate <samplerate in S/s>
@@ -112,25 +113,19 @@ The output of the get radioinfo command appears below.
 
 ******************** Begin Get Radio Info Output **********************
 
-------------------------------------------------------
+ ------------------------------------------------------
 Radio Internal Information
 ------------------------------------------------------
 Receive Enabled                     : Yes
 Receive Gain:                       : Auto
+Receive IF Gain                     : 24 dB
 Receive Frequency                   : 162550000 Hz
 Receive Bandwidth                   : 0 Hz
 Receive Sample Rate:                : 256000 S/s
 Receive Frequency Warp:             : 0 ppm
-Receive Timestamp                   : 1228800
-Receive Block Count                 : 75
-Transmit Enabled                    : No
-Transmitting Data                   : No
-Transmit Gain:                      : 0
-Transmit Frequency                  : 162550000 Hz
-Transmit Bandwidth                  : 10000000 Hz
-Transmit Sample Rate                : 256000 S/s
-Transmit Block Count                : 0
- 
+Receive Timestamp                   : 1064960
+Receive Block Count                 : 65
+
 --------------------------------------------
 Data Consumer Internal Information
 --------------------------------------------

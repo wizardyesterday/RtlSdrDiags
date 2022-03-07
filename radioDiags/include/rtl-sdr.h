@@ -216,6 +216,15 @@ RTLSDR_API int rtlsdr_get_tuner_gains(rtlsdr_dev_t *dev, int *gains);
 RTLSDR_API int rtlsdr_set_tuner_gain(rtlsdr_dev_t *dev, int gain);
 
 /*!
+ * Set the IF gain for the device.
+ *
+ * \param dev the device handle given by rtlsdr_open()
+ * \param gain in tenths of a dB, 115 means 11.5 dB.
+ * \return 0 on success
+ */
+RTLSDR_API int rtlsdr_set_tuner_if_gain(rtlsdr_dev_t *dev, int stage, int gain);
+
+/*!
  * Set the bandwidth for the device.
  *
  * \param dev the device handle given by rtlsdr_open()

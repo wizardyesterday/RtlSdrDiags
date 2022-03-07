@@ -15,6 +15,9 @@ extern "C"
 
 #define RECEIVE_BUFFER_SIZE (32768)
 
+// The current variable gain setting.
+int32_t radio_adjustableReceiveGainInDb;
+
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 
 /*****************************************************************************
@@ -302,6 +305,12 @@ bool Radio::setupReceiver(void)
   // Default to automatic gain mode.
   receiveGainInDb = RADIO_RECEIVE_AUTO_GAIN;
 
+  // Set to something sane.
+  receiveIfGainInDb = 24;
+
+  // Other subsystems need to know this.
+  receiveIfGainInDb = receiveIfGainInDb;
+
   // Default to no frequency error.
   receiveWarpInPartsPerMillion = 0;
 
@@ -411,6 +420,15 @@ bool Radio::startReceiver(void)
 
         // Set the receive bandwidth.
         status = setReceiveBandwidth(receiveBandwidth);
+
+        if (!status)
+        {
+          // Indicate that one more error occurred.
+          errorCount++;
+        } // if
+
+        // We need to do this since there is no VGA AGC.
+        status =  setReceiveIfGainInDb(0,receiveIfGainInDb);
 
         if (!status)
         {
@@ -749,6 +767,84 @@ bool Radio::setReceiveGainInDb(uint32_t gain)
   return (success);
   
 } // setReceiveGainInDb
+
+/**************************************************************************
+
+  Name: setReceiveIfGainInDb
+
+  Purpose: The purpose of this function is to set the If gain of the
+  receiver.  If the receiver is not enabled, the appropriate attribute is
+  updated.  The attribute will be used at a later time to set up the
+  receiver.
+  Note that the definition of receiver enabled is that devicePtr is not
+  equal to zero.
+
+  Calling Sequence: success = setReceiveIfGainInDb(stage,gain)
+
+  Inputs:
+
+    stage - The amplifier stage for which the IF gain is to be
+    modified.
+
+    gain - The gain in decibels.  A value of 0xffffffff indicates that
+    the system should be set to automatic gain mode.
+
+  Outputs:
+
+    success - A boolean that indicates the outcome of the operation.  A
+    value of true indicates success, and a value of false indicates
+    failure.
+
+**************************************************************************/
+bool Radio::setReceiveIfGainInDb(uint8_t stage,uint32_t gain)
+{
+  bool success;
+  int nearestGain;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  // Kludge to honor the librtlsdr interface.
+  nearestGain = (int)gain;
+
+  if (devicePtr != 0)
+  {
+    // Set the gain.
+    error = rtlsdr_set_tuner_if_gain((rtlsdr_dev_t *)devicePtr,
+                                     stage,
+                                     (gain * 10));
+
+    if (error == 0)
+    {
+      // Update attribute.
+      receiveIfGainInDb = gain;
+
+      // indicate success.
+      success = true;
+    } // if
+  } // if
+  else
+  {
+    // Update attribute.
+    receiveIfGainInDb = gain;
+
+    // This variable is used by other subsystems.
+    radio_adjustableReceiveGainInDb = receiveIfGainInDb;
+
+    // indicate success.
+    success = true;
+  } // else
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+  
+} // setReceiveIfGainInDb
 
 /**************************************************************************
 
@@ -1291,6 +1387,8 @@ void Radio::displayInternalInformation(void)
           receiveGainInDb);
   } // else
 
+  nprintf(stderr,"Receive IF Gain                     : %u dB\n",
+          receiveIfGainInDb);
   nprintf(stderr,"Receive Frequency                   : %llu Hz\n",
           receiveFrequency);
   nprintf(stderr,"Receive Bandwidth                   : %u Hz\n",
