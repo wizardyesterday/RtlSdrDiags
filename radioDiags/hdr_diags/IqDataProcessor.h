@@ -26,7 +26,7 @@ class IqDataProcessor
   void setFmDemodulator(FmDemodulator *demodulatorPtr);
   void setWbFmDemodulator(WbFmDemodulator *demodulatorPtr);
   void setSsbDemodulator(SsbDemodulator *demodulatorPtr);
-  void setSignalDetectThreshold(uint32_t threshold);
+  void setSignalDetectThreshold(int32_t threshold);
 
   void acceptIqData(unsigned long timeStamp,
                     unsigned char *bufferPtr,
@@ -41,6 +41,13 @@ class IqDataProcessor
       void *contextPtr);
 
 
+  void enableSignalMagnitudeNotification(void);
+  void disableSignalMagnitudeNotification(void);
+
+  void registerSignalMagnitudeCallback(
+      void (*callbackPtr)(uint32_t signalMagnitude,void *contextPtr),
+      void *contextPtr);
+
   void displayInternalInformation(void);
 
 private:
@@ -51,7 +58,7 @@ private:
   demodulatorType demodulatorMode;
 
   // This is used for the squelch system.
-  uint32_t signalDetectThreshold;
+  int32_t signalDetectThreshold;
 
   // Demodulator support.
   AmDemodulator *amDemodulatorPtr;
@@ -66,6 +73,12 @@ private:
   bool signalNotificationEnabled;
   void *signalCallbackContextPtr;
   void (*signalCallbackPtr)(bool signalPresent,void *contextPtr);
+
+  // Signal magnitude notification support.
+  bool signalMagnitudeNotificationEnabled;
+  void *signalMagnitudeCallbackContextPtr;
+  void (*signalMagnitudeCallbackPtr)(uint32_t signalMagnitude,
+                                     void *contextPtr);
 };
 
 #endif // _IQDATAPROCESSOR_H_

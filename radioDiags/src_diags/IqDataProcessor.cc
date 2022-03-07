@@ -32,7 +32,7 @@ IqDataProcessor::IqDataProcessor(void)
   demodulatorMode = None;
 
   // Let all signal exceed threshold.
-  signalDetectThreshold = 0;
+  signalDetectThreshold = -200;
 
   // Instantiate a signal tracker.
   trackerPtr = new SignalTracker(signalDetectThreshold);
@@ -42,6 +42,12 @@ IqDataProcessor::IqDataProcessor(void)
 
   // Default to no callback registered.
   signalCallbackPtr = NULL;
+
+  // Default to no notification of signal state.p
+  signalMagnitudeNotificationEnabled = false;
+
+  // Default to no callback registered.
+  signalMagnitudeCallbackPtr = NULL;
 
   return; 
 
@@ -247,14 +253,15 @@ void IqDataProcessor::setDemodulatorMode(demodulatorType mode)
 
   Inputs:
 
-    threshold - The signal detection threshold.
+    threshold - The signal detection threshold in decibels referenced
+    to full scale.
 
   Outputs:
 
     None.
 
 **************************************************************************/
-void IqDataProcessor::setSignalDetectThreshold(uint32_t threshold)
+void IqDataProcessor::setSignalDetectThreshold(int32_t threshold)
 {
 
   // Update for later use.
@@ -355,6 +362,93 @@ void IqDataProcessor::registerSignalStateCallback(
 
 /**************************************************************************
 
+  Name: enableSignalMagnitudeNotification
+
+  Purpose: The purpose of this function is to allow notification of
+  the average signal magnitude when a new block of IQ data arrives.
+
+  Calling Sequence: enableSignalMagnitudeNotification()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::enableSignalMagnitudeNotification(void)
+{
+
+  signalMagnitudeNotificationEnabled = true;
+
+  return;
+
+} // enableSignalMagnitudeNotification
+
+/**************************************************************************
+
+  Name: disableSignalMagnitudeNotification
+
+  Purpose: The purpose of this function is to disallow notification of
+  signal magnitude data when a new block of IQ data arrives.
+
+  Calling Sequence: disableSignalMagnitudeNotification()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::disableSignalMagnitudeNotification(void)
+{
+
+  signalMagnitudeNotificationEnabled = false;
+
+  return;
+
+} // disableSignalMagnitudeNotification
+
+/**************************************************************************
+
+  Name: registerSignalMagnitudeCallback
+
+  Purpose: The purpose of this function is to register a callback function
+  that will be invoked with signal magnitude information whenever a block
+  of IQ data is received.
+
+  Calling Sequence: registerSignalMagnitudeCallback(callbackPtr,contextPtr)
+
+  Inputs:
+
+    callbackPtr - A pointer to a callback function
+
+    contextPtr - A pointer to private data that will be passed to the
+    callback function upon invocation.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::registerSignalMagnitudeCallback(
+    void (*callbackPtr)(uint32_t signalMagnitude,void *contextPtr),
+    void *contextPtr)
+{
+
+  // Save for later use.
+  signalMagnitudeCallbackContextPtr = contextPtr;
+  this->signalMagnitudeCallbackPtr = callbackPtr;
+
+} // registerSignalStateCallback
+
+/**************************************************************************
+
   Name: acceptIqData
 
   Purpose: The purpose of this function is to queue data to be transmitted
@@ -385,6 +479,7 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   uint16_t signalPresenceIndicator;
   int8_t *signedBufferPtr;
   bool signalAllowed;
+  uint32_t signalMagnitude;
 
   // Reference IQ samples as a set of signed values.
   signedBufferPtr = (int8_t *)bufferPtr;
@@ -437,6 +532,21 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   {
     // Notify the client client of new signal state information.
     signalCallbackPtr(signalAllowed,signalCallbackContextPtr);
+  } // if
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Notify the client of signal magnitude information.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if ((signalMagnitudeNotificationEnabled) &&
+      (signalMagnitudeCallbackPtr != NULL))
+  {
+    // Retrieve the average magnitude of the last received IQ block.
+    signalMagnitude = trackerPtr->getSignalMagnitude();
+
+    // Notify the client client of new signal magnitude information.
+    signalMagnitudeCallbackPtr(signalMagnitude,
+                               signalMagnitudeCallbackContextPtr);
   } // if
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -560,7 +670,7 @@ void IqDataProcessor::displayInternalInformation(void)
     } // case
   } // switch
 
-  nprintf(stderr,"Signal Detect Threhold   : %u\n",signalDetectThreshold);
+  nprintf(stderr,"Signal Detect Threhold   : %d dBFs\n",signalDetectThreshold);
 
   return;
 
