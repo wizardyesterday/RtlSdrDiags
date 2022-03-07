@@ -794,8 +794,7 @@ bool Radio::setReceiveGainInDb(uint32_t gain)
     stage - The amplifier stage for which the IF gain is to be
     modified.
 
-    gain - The gain in decibels.  A value of 0xffffffff indicates that
-    the system should be set to automatic gain mode.
+    gain - The gain in decibels.
 
   Outputs:
 
@@ -830,6 +829,9 @@ bool Radio::setReceiveIfGainInDb(uint8_t stage,uint32_t gain)
     {
       // Update attribute.
       receiveIfGainInDb = gain;
+
+      // This variable is used by other subsystems.
+      radio_adjustableReceiveGainInDb = receiveIfGainInDb;
 
       // indicate success.
       success = true;
