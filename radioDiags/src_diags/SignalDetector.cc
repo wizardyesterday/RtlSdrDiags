@@ -5,6 +5,10 @@
 
 #include "SignalDetector.h"
 
+// These coefficients allow for a running average of length 8.
+static float signalAveragerCoefficients[] =
+{0.5, 0.5};
+
 // The current variable gain setting.
 extern int32_t radio_adjustableReceiveGainInDb;
 
@@ -33,6 +37,7 @@ SignalDetector::SignalDetector(int32_t threshold)
   uint32_t maximumMagnitude;
   float dbFsLevel;
   float maximumDbFsLevel;
+  int signalAveragerFilterLength;
 
   // Save for later use.
   this->threshold = threshold;
@@ -59,6 +64,12 @@ SignalDetector::SignalDetector(int32_t threshold)
   dbFsTable[0] = dbFsTable[1]; 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+  signalAveragerFilterLength = 
+    sizeof(signalAveragerCoefficients) / sizeof(float);
+
+  signalAveragerPtr = new FirFilter(signalAveragerFilterLength,
+                                    signalAveragerCoefficients);
+
 } // SignalDetector
 
 /*****************************************************************************
@@ -81,6 +92,11 @@ SignalDetector::SignalDetector(int32_t threshold)
 *****************************************************************************/
 SignalDetector::~SignalDetector(void)
 {
+
+  if (signalAveragerPtr != NULL)
+  {
+    delete signalAveragerPtr;
+  } // if
 
 } // ~SignalDetector
 
@@ -303,6 +319,9 @@ bool SignalDetector::detectSignal(int8_t *bufferPtr,uint32_t bufferLength)
 
   // Finalize the average.
   magnitude /= magnitudeBufferLength;
+
+  // Perform moving average.
+  magnitude = (uint32_t)signalAveragerPtr->filterData((float)magnitude);
 
   // Convert to decibels referenced to full scale.
   signalInDbFs = convertMagnitudeToDbFs(magnitude);
