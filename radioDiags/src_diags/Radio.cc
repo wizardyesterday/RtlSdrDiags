@@ -554,6 +554,9 @@ void Radio::stopReceiver(void)
     // The radio is stopped, so we're done..
     requestReceiverToStop = false;
 
+    // Disable the AGC to avoid startup transients later.
+    agcPtr->disable();
+
     // Release the radio lock.
     pthread_mutex_unlock(&radioLock);
   } // if
@@ -1015,7 +1018,7 @@ bool Radio::setSignalDetectThreshold(int32_t threshold)
   // Default to failure.
   success = false;
 
-  if ((threshold >= (-100)) && (threshold <= 10))
+  if ((threshold >= (-400)) && (threshold <= 10))
   {
     // Inform data processor of new threshold.
     receiveDataProcessorPtr->setSignalDetectThreshold(threshold);
