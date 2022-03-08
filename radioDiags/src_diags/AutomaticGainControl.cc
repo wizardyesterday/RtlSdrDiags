@@ -400,31 +400,41 @@ bool  AutomaticGainControl::setAgcFilterCoefficient(float coefficient)
 
     success - A flag that indicates whether or not the operation was
     successful.  A value of true indicates that the operation was
-    successful, and a value of false indicates that the AGC was already
-    enabled.
+    successful, and a value of false indicates that, eitherthe AGC
+    was already enabled, or the radio was not in a receiving state.
 
 **************************************************************************/
 bool AutomaticGainControl::enable(void)
 {
   bool success;
   IqDataProcessor *DataProcessorPtr;
+  Radio *RadioPtr;
 
-  // Reference the pointer in the proper context.
+  // Reference the pointers in the proper context.
   DataProcessorPtr = (IqDataProcessor *)dataProcessorPtr;
+  RadioPtr = (Radio *)radioPtr;
 
   // Default to failure.
   success = false;
 
-  if (!enabled)
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Ensure that the radio is already in the receiving state so
+  // that AGC transients do not occur when the receiver is
+  // first enabled.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if (RadioPtr->isReceiving())
   {
-    // Enable the AGC.
-    enabled = true;
+    if (!enabled)
+    {
+      // Enable the AGC.
+      enabled = true;
 
-    // Allow callback notification.
-    DataProcessorPtr->enableSignalMagnitudeNotification();
+      // Allow callback notification.
+      DataProcessorPtr->enableSignalMagnitudeNotification();
 
-    // Indicate success.
-    success = true;
+      // Indicate success.
+      success = true;
+    } // if
   } // if
 
   return (success);
