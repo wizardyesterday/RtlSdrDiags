@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#include "FirFilter.h"
+
 class SignalDetector
 {
   //***************************** operations **************************
@@ -42,6 +44,9 @@ class SignalDetector
 
   // The average magnitude of the last IQ data block processed.
   uint32_t signalMagnitude;
+
+  // This filter provides a moving average of signal values.
+  FirFilter *signalAveragerPtr;
 
   uint8_t magnitudeBuffer[16384];
 
