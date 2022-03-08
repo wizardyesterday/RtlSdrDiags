@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "Decimator.h"
+#include "Decimator_int16.h"
 
 class FmDemodulator
 {
@@ -49,8 +49,8 @@ class FmDemodulator
   float previousTheta;
 
   // Decimated in-phase and quadrature data samples.
-  float iData[4096];
-  float qData[4096];
+  int16_t iData[4096];
+  int16_t qData[4096];
 
   // Demodulated data is the demodulator gain times delta theta.
   float demodulatedData[4096];
@@ -65,10 +65,10 @@ class FmDemodulator
   // lowers the sample rate to 16000S/s. The fourth decimator lowers the
   // sample rate to that needed for 8000S/s PCM audio.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  Decimator *iTunerDecimatorPtr;
-  Decimator *qTunerDecimatorPtr;
-  Decimator *postDemodDecimatorPtr;
-  Decimator *audioDecimatorPtr;
+  Decimator_int16 *iTunerDecimatorPtr;
+  Decimator_int16 *qTunerDecimatorPtr;
+  Decimator_int16 *postDemodDecimatorPtr;
+  Decimator_int16 *audioDecimatorPtr;
 
   // Client callback support.
   void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength);

@@ -171,14 +171,14 @@ SsbDemodulator::SsbDemodulator(
   // 64000S/s.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the decimator for the in-phase component.
-  stage1IDecimatorPtr = new Decimator(numberOfStage1DecimatorTaps,
-                                      stage1DecimatorCoefficients,
-                                      4);
+  stage1IDecimatorPtr = new Decimator_int16(numberOfStage1DecimatorTaps,
+                                            stage1DecimatorCoefficients,
+                                            4);
 
   // Allocate the decimator for the quadrature component.
-  stage1QDecimatorPtr = new Decimator(numberOfStage1DecimatorTaps,
-                                      stage1DecimatorCoefficients,
-                                      4);
+  stage1QDecimatorPtr = new Decimator_int16(numberOfStage1DecimatorTaps,
+                                            stage1DecimatorCoefficients,
+                                            4);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -186,14 +186,14 @@ SsbDemodulator::SsbDemodulator(
   // 16000S/s.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the decimator for the in-phase component.
-  stage2IDecimatorPtr = new Decimator(numberOfStage2DecimatorTaps,
-                                      stage2DecimatorCoefficients,
-                                      4);
+  stage2IDecimatorPtr = new Decimator_int16(numberOfStage2DecimatorTaps,
+                                            stage2DecimatorCoefficients,
+                                            4);
 
   // Allocate the decimator for the quadrature component.
-  stage2QDecimatorPtr = new Decimator(numberOfStage2DecimatorTaps,
-                                      stage2DecimatorCoefficients,
-                                      4);
+  stage2QDecimatorPtr = new Decimator_int16(numberOfStage2DecimatorTaps,
+                                            stage2DecimatorCoefficients,
+                                            4);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -201,14 +201,14 @@ SsbDemodulator::SsbDemodulator(
   // 8000S/s.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the decimator for the in-phase component.
-  stage3IDecimatorPtr = new Decimator(numberOfStage3DecimatorTaps,
-                                      stage3DecimatorCoefficients,
-                                      2);
+  stage3IDecimatorPtr = new Decimator_int16(numberOfStage3DecimatorTaps,
+                                            stage3DecimatorCoefficients,
+                                            2);
 
   // Allocate the decimator for the quadrature component.
-  stage3QDecimatorPtr = new Decimator(numberOfStage3DecimatorTaps,
-                                      stage3DecimatorCoefficients,
-                                      2);
+  stage3QDecimatorPtr = new Decimator_int16(numberOfStage3DecimatorTaps,
+                                            stage3DecimatorCoefficients,
+                                            2);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -216,12 +216,12 @@ SsbDemodulator::SsbDemodulator(
   // SSB signal can be demodulated.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the delay line for the in-phase component.
-  delayLinePtr = new FirFilter(numberOfDelayLineTaps,
-                               delayLineCoefficients);
+  delayLinePtr = new FirFilter_int16(numberOfDelayLineTaps,
+                                     delayLineCoefficients);
 
   // Allocate the phase shifter for the quadrature component.
-  phaseShifterPtr = new FirFilter(numberOfPhaseShifterTaps,
-                                  phaseShifterCoefficients);
+  phaseShifterPtr = new FirFilter_int16(numberOfPhaseShifterTaps,
+                                        phaseShifterCoefficients);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -464,7 +464,7 @@ uint32_t SsbDemodulator::reduceSampleRate(int8_t *bufferPtr,uint32_t bufferLengt
   uint32_t i;
   uint32_t outputBufferIndex;
   bool sampleAvailable;
-  float sample;
+  int16_t sample;
 
   // Set to reference the beginning of the in-phase output buffer.
   outputBufferIndex = 0;
@@ -472,7 +472,7 @@ uint32_t SsbDemodulator::reduceSampleRate(int8_t *bufferPtr,uint32_t bufferLengt
   // Decimate the in-phase samples.
   for (i = 0; i < bufferLength; i += 2)
   {
-    sampleAvailable = stage1IDecimatorPtr->decimate((float)bufferPtr[i],
+    sampleAvailable = stage1IDecimatorPtr->decimate((int16_t)bufferPtr[i],
                                                     &sample);
 
     if (sampleAvailable)
@@ -501,7 +501,7 @@ uint32_t SsbDemodulator::reduceSampleRate(int8_t *bufferPtr,uint32_t bufferLengt
   // Decimate the quadrature samples.
   for (i = 1; i < (bufferLength + 1); i += 2)
   {
-    sampleAvailable = stage1QDecimatorPtr->decimate((float)bufferPtr[i],
+    sampleAvailable = stage1QDecimatorPtr->decimate((int16_t)bufferPtr[i],
                                                     &sample);
 
     if (sampleAvailable)
@@ -563,7 +563,7 @@ uint32_t SsbDemodulator::reduceSampleRate(int8_t *bufferPtr,uint32_t bufferLengt
 uint32_t SsbDemodulator::demodulateSignal(uint32_t bufferLength)
 {
   uint32_t i;
-  float iDelayed, qPhaseShifted;
+  int16_t iDelayed, qPhaseShifted;
   float outputValue;
 
   for (i = 0; i < bufferLength; i++)
@@ -577,19 +577,19 @@ uint32_t SsbDemodulator::demodulateSignal(uint32_t bufferLength)
     if (lsbDemodulationMode)
     {
       // Demodulate as lower sideband.
-      outputValue = iDelayed + qPhaseShifted;
+      outputValue = (float)(iDelayed + qPhaseShifted);
     } // if
     else
     {
       // Demodulate as upper sideband.
-      outputValue = iDelayed - qPhaseShifted;
+      outputValue = (float)(iDelayed - qPhaseShifted);
     } // else
 
     // Remove dc from the signal.
     outputValue = dcRemovalFilterPtr->filterData(outputValue);
 
     // Store the demodulated data.
-    demodulatedData[i] = demodulatorGain * outputValue;
+    demodulatedData[i] = (int16_t)(demodulatorGain * outputValue);
 
   } // for
 
@@ -623,7 +623,7 @@ uint32_t SsbDemodulator::createPcmData(uint32_t bufferLength)
   for (i = 0; i < bufferLength; i++)
   {
     // Store PCM sample with dc offset removed.
-    pcmData[i] = (int16_t)demodulatedData[i];
+    pcmData[i] = demodulatedData[i];
   } // for
 
   return (bufferLength);

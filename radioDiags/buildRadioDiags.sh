@@ -28,6 +28,7 @@ Includes="\
     -I pfkUtils \
     -I hdr_diags \
     -I Filters \
+    -I Filters/Int16 \
     -I AmDemodulator \
     -I FmDemodulator \
     -I WbFmDemodulator \

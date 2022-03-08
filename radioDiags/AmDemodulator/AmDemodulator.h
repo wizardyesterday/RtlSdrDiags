@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "Decimator.h"
+#include "Decimator_int16.h"
 #include "IirFilter.h"
 
 class AmDemodulator
@@ -23,7 +23,7 @@ class AmDemodulator
   AmDemodulator(
       void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength));
 
-  ~AmDemodulator(void);
+ ~AmDemodulator(void);
 
   void resetDemodulator(void);
   void setDemodulatorGain(float gain);
@@ -43,15 +43,15 @@ class AmDemodulator
   //*******************************************************************
   // Attributes.
   //*******************************************************************
-  // This gain maps the envelope to an information signal.
+  // This gain the envelope to an information signal.
   float demodulatorGain;
 
   // Decimated in-phase and quadrature data samples.
-  float iData[4096];
-  float qData[4096];
+  int16_t iData[4096];
+  int16_t qData[4096];
 
   // Demodulated data is the demodulator gain times delta theta.
-  float demodulatedData[4096];
+  int16_t demodulatedData[4096];
 
   // Demodulated data is converted into PCM data for listening.
   int16_t pcmData[512];
@@ -63,10 +63,10 @@ class AmDemodulator
   // lowers the sample rate to 16000S/s. The fourth decimator lowers the
   // sample rate to that needed for 8000S/s PCM audio.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  Decimator *iTunerDecimatorPtr;
-  Decimator *qTunerDecimatorPtr;
-  Decimator *postDemodDecimatorPtr;
-  Decimator *audioDecimatorPtr;
+  Decimator_int16 *iTunerDecimatorPtr;
+  Decimator_int16 *qTunerDecimatorPtr;
+  Decimator_int16 *postDemodDecimatorPtr;
+  Decimator_int16 *audioDecimatorPtr;
 
   IirFilter *dcRemovalFilterPtr;
 

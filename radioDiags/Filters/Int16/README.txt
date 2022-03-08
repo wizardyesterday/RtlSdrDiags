@@ -1,82 +1,72 @@
 ******************************************************************************
 This directory contains all of the files, build scripts, and Scilab filter
-design scripts for implementing an SSB demodulator.
+design scripts for implementing and testing all of the filter structures
+that have been implemented.
 The file descriptions are listed below.	
-Chris G. 08/18/2017
-
-Filter coefficients have been updated in the Scilab files for the decimator
-filters to increase the stopband attenuation.  I finally realized that the
-values of the weight vector, that is passed to the eqfir() function should
-have the reciprocal of the passband ripple and stopband ripple rather unity
-as the examples in some DSP books have liberally used.
-Chris G. 10/26/2019
+Chris G. 01/23/2018
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Scilab filter design programs.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-decimateBy4_1.sci - A scilab script that designs the first stage of the
-three stage decimator filter.  The decimation ration is 4:1.
+decimateHalfband1.sci - A Scilab script that designs a 2:1 decimator filter
+that decimates the sample rate from 2048000S/s to 1024000S/s.
 
-decimateBy4_2.sci - A scilab script that designs the second stage of the
-three stage decimator filter.  The decimation ration is 4:1.
+decimateHalfband2.sci - A Scilab script that designs a 2:1 decimator filter
+that decimates the sample rate from 1024000S/s to 512000S/s.
 
-decimateBy2_3.sci - A scilab script that designs the third stage of the
-three stage decimator filter.  The decimation ration is 2:1.
-
-phaseShifter.sci - A scilab script that designs the phase shifter.
+decimateHalfband3.sci - A Scilab script that designs a 2:1 decimator filter
+that decimates the sample rate from 512000S/s to 256000S/s.
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Design data.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-Stage1DecimatorFilter.pdf - A frequency response plot of the first stage of
-the decimator.
+halfbandStage1.pdf - The frequency response plot of stage 1 of the 8:1
+decimator.
 
-Stage2DecimatorFilter.pdf - A frequency response plot of the second stage of
-the decimator.
+halfbandStage2.pdf - The frequency response plot of stage 2 of the 8:1
+decimator.
 
-Stage3DecimatorFilter.pdf - A frequency response plot of the third stage of
-the decimator.
-
-PhaseShifter.pdf - A frequency response plot of the phase shifter.
+halfbandStage3.pdf - The frequency response plot of stage 3 of the 8:1
+decimator.
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Filter classes.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-SsbDemodulator.cc - The implementation fo the SSB demodulator.
-SsbDemodulator.h - The interface of the SSB demodulator.
+Decimator_int16.cc - The implementation of the  polyphase decimator.
+Decimator_int16.h - The interface of the polyphase decimator.
+FirFilter_int16.cc - The implementation of the  Fir filter.
+Firfilter_int16.h - The interface of the Fir filter.
+Interpolator_int16.cc - The implementation of the polyphase interpolator.
+Interpolator_int16.8 - The interface of the polyphase interpolator.
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Test applications.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-testSsDemodulator.cc - A test app that validates the SSB demodulator.
+decimateAudio.cc - A test app that accepts a 32000S/s audio file and
+outputs an 8000S/s audio file.
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Build scripts.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-buildTestSsbDemodulator.sh - The build script for the SSB demodulator test
-app.
+buildDecimateAAudio.sh - The build script for the audio decimator app.
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Audio capture and playback scripts.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-play.sh - A script that uses aplay to play demodulated 8000S/s audio.
-******************************************************************************
-
-/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
- Iq files.
-/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-lsb.iq - The sample file for the lower sideband signal.
-usb.iq - The sample file for the upper sideband signal.
+capture.sh - A script that uses arecord to capture 8000S/s audio.
+play.sh - A script that uses aplay to play captured 8000S/s audio.
 ******************************************************************************
 
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  Audio files.
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-audio.raw - The 8000S/s audio file that contains the demodulated data.
+original32000.raw - The 32000S/s audio file that is input to the
+decimateAudio app.
 ******************************************************************************
+

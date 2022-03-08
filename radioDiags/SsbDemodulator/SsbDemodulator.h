@@ -11,7 +11,8 @@
 
 #include <stdint.h>
 
-#include "Decimator.h"
+#include "Decimator_int16.h"
+#include "FirFilter_int16.h"
 #include "IirFilter.h"
 
 class SsbDemodulator
@@ -48,15 +49,15 @@ class SsbDemodulator
   // An indicator that LSB signals are to be demodulated.
   bool lsbDemodulationMode;
 
-  // This gain maps the envelope to an information signal.
+  // This gain maps the envelope  to an information signal.
   float demodulatorGain;
 
   // Decimated in-phase and quadrature data samples.
-  float iData[512];
-  float qData[512];
+  int16_t iData[512];
+  int16_t qData[512];
 
   // Demodulated data is the demodulator gain times delta theta.
-  float demodulatedData[512];
+  int16_t demodulatedData[512];
 
   // Demodulated data is converted into PCM data for listening.
   int16_t pcmData[512];
@@ -68,20 +69,23 @@ class SsbDemodulator
   // The demodulation process is applied to the signal at the final sample
   // rate.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  Decimator *stage1IDecimatorPtr;
-  Decimator *stage1QDecimatorPtr;
-  Decimator *stage2IDecimatorPtr;
-  Decimator *stage2QDecimatorPtr;
-  Decimator *stage3IDecimatorPtr;
-  Decimator *stage3QDecimatorPtr;
+  Decimator_int16 *stage1IDecimatorPtr;
+  Decimator_int16 *stage1QDecimatorPtr;
+  Decimator_int16 *stage2IDecimatorPtr;
+  Decimator_int16 *stage2QDecimatorPtr;
+  Decimator_int16 *stage3IDecimatorPtr;
+  Decimator_int16 *stage3QDecimatorPtr;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // The second filter performs a Hilbert transform operation, and the
   // first filter performs a delay line function that is used to compensate
-  // for the group delay of the Hilbert transformer.
+  // for the group delay of the Hilbert transformer.  Note that I'm using
+  // a decimator that will decimate by 1, thus, it'll be have like a
+  // normal FIR filter.  This saves me the time of creating an integer-based
+  // FIR filter.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  FirFilter *delayLinePtr;
-  FirFilter *phaseShifterPtr;
+  FirFilter_int16 *delayLinePtr;
+  FirFilter_int16 *phaseShifterPtr;
 
   IirFilter *dcRemovalFilterPtr;
 

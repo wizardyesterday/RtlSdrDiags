@@ -186,14 +186,14 @@ WbFmDemodulator::WbFmDemodulator(
   // decimator state.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the first post demodulator decimator.
-  postDemodDecimator1Ptr = new Decimator(numberOfStage1DecimatorTaps,
-                                         postDemodDecimator1Coefficients,
-                                         4);
+  postDemodDecimator1Ptr = new Decimator_int16(numberOfStage1DecimatorTaps,
+                                               postDemodDecimator1Coefficients,
+                                               4);
 
   // Allocate the second post demodulator decimator.
-  postDemodDecimator2Ptr = new Decimator(numberOfStage2DecimatorTaps,
-                                         postDemodDecimator2Coefficients,
-                                         4);
+  postDemodDecimator2Ptr = new Decimator_int16(numberOfStage2DecimatorTaps,
+                                               postDemodDecimator2Coefficients,
+                                               4);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -201,9 +201,9 @@ WbFmDemodulator::WbFmDemodulator(
   // output sample rate of 8000S/s.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the audio decimator.
-  audioDecimatorPtr = new Decimator(numberOfAudioDecimatorTaps,
-                                    audioDecimatorCoefficients,
-                                    2);
+  audioDecimatorPtr = new Decimator_int16(numberOfAudioDecimatorTaps,
+                                          audioDecimatorCoefficients,
+                                          2);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Initial phase angle for d(theta)/dt computation.
@@ -457,7 +457,7 @@ uint32_t WbFmDemodulator::createPcmData(uint32_t bufferLength)
   uint32_t i;
   uint32_t outputBufferIndex;
   bool sampleAvailable;
-  float sample;
+  int16_t sample;
 
   // Reference the beginning of the PCM output buffer.
   outputBufferIndex = 0;
@@ -465,8 +465,9 @@ uint32_t WbFmDemodulator::createPcmData(uint32_t bufferLength)
   for (i = 0; i < bufferLength; i++)
   {
     // Perform the first stage of decimation.
-    sampleAvailable = postDemodDecimator1Ptr->decimate(demodulatedData[i],
-                                                       &sample);
+    sampleAvailable =
+      postDemodDecimator1Ptr->decimate((int16_t)demodulatedData[i],
+                                       &sample);
     if (sampleAvailable)
     {
       // Perform the second stage of decimation.
@@ -480,7 +481,7 @@ uint32_t WbFmDemodulator::createPcmData(uint32_t bufferLength)
         if (sampleAvailable)
         {
           // Store PCM sample.
-          pcmData[outputBufferIndex] = (int16_t)sample;
+          pcmData[outputBufferIndex] = sample;
 
           // Reference the next storage location.
           outputBufferIndex++;

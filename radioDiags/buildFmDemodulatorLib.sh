@@ -1,16 +1,16 @@
 #!/bin/sh
 #*****************************************************************************
 # This build script creates a static library that can be used for creating
-# RtlSdr apps.  To run this script, type ./buildFmDemodulatorLib.sh.
-# Chris G. 06/29/2017
+# HackRf apps.  To run this script, type ./buildFmDemodulatorLib.sh.
+# Chris G. 03/22/2018
 #*****************************************************************************
 
 CcFiles="\
-    Filters/Decimator.cc \
+    Filters/Int16/Decimator_int16.cc \
     FmDemodulator/FmDemodulator.cc"
 
 Includes="\
-    -I Filters \
+    -I Filters/Int16 \
     -I FmDemodulator"
  
 # Compile string.

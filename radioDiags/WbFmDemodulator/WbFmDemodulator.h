@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 #include "IirFilter.h"
-#include "Decimator.h"
+#include "Decimator_int16.h"
 
 class WbFmDemodulator
 {
@@ -59,9 +59,9 @@ class WbFmDemodulator
   // decimates a signal from a sample rate of 256000S/s down to 8000S/s
   // that is needed for 8000S/s PCM audio.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  Decimator *postDemodDecimator1Ptr;
-  Decimator *postDemodDecimator2Ptr;
-  Decimator *audioDecimatorPtr;
+  Decimator_int16 *postDemodDecimator1Ptr;
+  Decimator_int16 *postDemodDecimator2Ptr;
+  Decimator_int16 *audioDecimatorPtr;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // This filter represents an FM deemphasis filter that follows the FM

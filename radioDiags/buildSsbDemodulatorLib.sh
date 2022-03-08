@@ -1,18 +1,19 @@
 #!/bin/sh
 #*****************************************************************************
 # This build script creates a static library that can be used for creating
-# RtlSdr apps.  To run this script, type ./buildSsbDemodulatorLib.sh.
-# Chris G. 07/05/2017
+# HackRf apps.  To run this script, type ./buildSsbDemodulatorLib.sh.
+# Chris G. 03/22/2018
 #*****************************************************************************
 
 CcFiles="\
-    Filters/Decimator.cc \
-    Filters/FirFilter.cc \
+    Filters/Int16/Decimator_int16.cc \
+    Filters/Int16/FirFilter_int16.cc \
     Filters/IirFilter.cc \
     SsbDemodulator/SsbDemodulator.cc"
 
 Includes="\
     -I Filters \
+    -I Filters/Int16 \
     -I SsbDemodulator"
  
 # Compile string.

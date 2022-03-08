@@ -170,14 +170,14 @@ FmDemodulator::FmDemodulator(
   // 64000S/s for use by the FM demodulator.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the decimator for the in-phase component.
-  iTunerDecimatorPtr = new Decimator(numberOfTunerDecimatorTaps,
-                                     tunerDecimatorCoefficients,
-                                     4);
+  iTunerDecimatorPtr = new Decimator_int16(numberOfTunerDecimatorTaps,
+                                           tunerDecimatorCoefficients,
+                                           4);
 
   // Allocate the decimator for the quadrature component.
-  qTunerDecimatorPtr = new Decimator(numberOfTunerDecimatorTaps,
-                                     tunerDecimatorCoefficients,
-                                     4);
+  qTunerDecimatorPtr = new Decimator_int16(numberOfTunerDecimatorTaps,
+                                           tunerDecimatorCoefficients,
+                                           4);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -186,9 +186,9 @@ FmDemodulator::FmDemodulator(
   // decimator state.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the post demodulator decimator.
-  postDemodDecimatorPtr = new Decimator(numberOfPostDemodDecimatorTaps,
-                                        postDemodDecimatorCoefficients,
-                                        4);
+  postDemodDecimatorPtr = new Decimator_int16(numberOfPostDemodDecimatorTaps,
+                                              postDemodDecimatorCoefficients,
+                                              4);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -196,9 +196,9 @@ FmDemodulator::FmDemodulator(
   // output sample rate of 8000S/s.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the audio decimator.
-  audioDecimatorPtr = new Decimator(numberOfAudioDecimatorTaps,
-                                    audioDecimatorCoefficients,
-                                    2);
+  audioDecimatorPtr = new Decimator_int16(numberOfAudioDecimatorTaps,
+                                          audioDecimatorCoefficients,
+                                          2);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Initial phase angle for d(theta)/dt computation.
@@ -374,7 +374,7 @@ uint32_t FmDemodulator::reduceSampleRate(
   uint32_t i;
   uint32_t outputBufferIndex;
   bool sampleAvailable;
-  float sample;
+  int16_t sample;
 
   // Set to reference the beginning of the in-phase output buffer.
   outputBufferIndex = 0;
@@ -382,7 +382,7 @@ uint32_t FmDemodulator::reduceSampleRate(
   // Decimate the in-phase samples.
   for (i = 0; i < bufferLength; i += 2)
   {
-    sampleAvailable = iTunerDecimatorPtr->decimate((float)bufferPtr[i],
+    sampleAvailable = iTunerDecimatorPtr->decimate((int16_t)bufferPtr[i],
                                                    &sample);
     if (sampleAvailable)
     {
@@ -400,7 +400,7 @@ uint32_t FmDemodulator::reduceSampleRate(
   // Decimate the quadrature samples.
   for (i = 1; i < (bufferLength + 1); i += 2)
   {
-    sampleAvailable = qTunerDecimatorPtr->decimate((float)bufferPtr[i],
+    sampleAvailable = qTunerDecimatorPtr->decimate((int16_t)bufferPtr[i],
                                                    &sample);
     if (sampleAvailable)
     {
@@ -455,7 +455,7 @@ uint32_t FmDemodulator::demodulateSignal(uint32_t bufferLength)
   {
     // Kludge to prevent 0/0 condition for the atan2() function.
     qData[i] = qData[i] + 1e-10;
-
+  
     // Compute phase angle.
     theta = atan2((double)qData[i],(double)iData[i]);
 
@@ -515,7 +515,7 @@ uint32_t FmDemodulator::createPcmData(uint32_t bufferLength)
   uint32_t i;
   uint32_t outputBufferIndex;
   bool sampleAvailable;
-  float sample;
+  int16_t sample;
 
   // Reference the beginning of the PCM output buffer.
   outputBufferIndex = 0;
@@ -523,8 +523,8 @@ uint32_t FmDemodulator::createPcmData(uint32_t bufferLength)
   for (i = 0; i < bufferLength; i++)
   {
     // Perform the first stage of decimation.
-    sampleAvailable = postDemodDecimatorPtr->decimate(demodulatedData[i],
-                                                      &sample);
+    sampleAvailable =
+      postDemodDecimatorPtr->decimate((int16_t)demodulatedData[i],&sample);
     if (sampleAvailable)
     {
       // Perform the second stage of decimation.
@@ -533,7 +533,7 @@ uint32_t FmDemodulator::createPcmData(uint32_t bufferLength)
       if (sampleAvailable)
       {
         // Store PCM sample.
-        pcmData[outputBufferIndex] = (int16_t)sample;
+        pcmData[outputBufferIndex] = sample;
 
         // Reference the next storage location.
         outputBufferIndex++;
