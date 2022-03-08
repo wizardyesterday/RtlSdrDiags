@@ -185,14 +185,14 @@ AmDemodulator::AmDemodulator(
   // 64000S/s for use by the AM demodulator.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the decimator for the in-phase component.
-  iTunerDecimatorPtr = new Decimator(numberOfTunerDecimatorTaps,
-                                     tunerDecimatorCoefficients,
-                                     4);
+  iTunerDecimatorPtr = new Decimator_int16(numberOfTunerDecimatorTaps,
+                                          tunerDecimatorCoefficients,
+                                          4);
 
   // Allocate the decimator for the quadrature component.
-  qTunerDecimatorPtr = new Decimator(numberOfTunerDecimatorTaps,
-                                     tunerDecimatorCoefficients,
-                                     4);
+  qTunerDecimatorPtr = new Decimator_int16(numberOfTunerDecimatorTaps,
+                                          tunerDecimatorCoefficients,
+                                          4);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -201,9 +201,9 @@ AmDemodulator::AmDemodulator(
   // decimator state.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the post demodulator decimator.
-  postDemodDecimatorPtr = new Decimator(numberOfPostDemodDecimatorTaps,
-                                        postDemodDecimatorCoefficients,
-                                        4); 
+  postDemodDecimatorPtr = new Decimator_int16(numberOfPostDemodDecimatorTaps,
+                                             postDemodDecimatorCoefficients,
+                                             4); 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -211,9 +211,9 @@ AmDemodulator::AmDemodulator(
   // output sample rate of 8000S/s.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the audio decimator.
-  audioDecimatorPtr = new Decimator(numberOfAudioDecimatorTaps,
-                                    audioDecimatorCoefficients,
-                                    2);
+  audioDecimatorPtr = new Decimator_int16(numberOfAudioDecimatorTaps,
+                                         audioDecimatorCoefficients,
+                                         2);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -394,7 +394,7 @@ uint32_t AmDemodulator::reduceSampleRate(
   uint32_t i;
   uint32_t outputBufferIndex;
   bool sampleAvailable;
-  float sample;
+  int16_t sample;
 
   // Set to reference the beginning of the in-phase output buffer.
   outputBufferIndex = 0;
@@ -402,7 +402,7 @@ uint32_t AmDemodulator::reduceSampleRate(
   // Decimate the in-phase samples.
   for (i = 0; i < bufferLength; i += 2)
   {
-    sampleAvailable = iTunerDecimatorPtr->decimate((float)bufferPtr[i],
+    sampleAvailable = iTunerDecimatorPtr->decimate((int16_t)bufferPtr[i],
                                                    &sample);
     if (sampleAvailable)
     {
@@ -420,7 +420,7 @@ uint32_t AmDemodulator::reduceSampleRate(
   // Decimate the quadrature samples.
   for (i = 1; i < (bufferLength + 1); i += 2)
   {
-    sampleAvailable = qTunerDecimatorPtr->decimate((float)bufferPtr[i],
+    sampleAvailable = qTunerDecimatorPtr->decimate((int16_t)bufferPtr[i],
                                                    &sample);
     if (sampleAvailable)
     {
@@ -463,14 +463,15 @@ uint32_t AmDemodulator::reduceSampleRate(
 uint32_t AmDemodulator::demodulateSignal(uint32_t bufferLength)
 {
   uint32_t i;
-  float iMagnitude, qMagnitude;
-  float inputMagnitude, outputMagnitude;
+  int16_t iMagnitude, qMagnitude;
+  int16_t inputMagnitude;
+  float outputMagnitude;
 
   for (i = 0; i < bufferLength; i++)
   {
     // Grab these values for the magnitude estimator.
-    iMagnitude = fabs(iData[i]);
-    qMagnitude = fabs(qData[i]);
+    iMagnitude = abs(iData[i]);
+    qMagnitude = abs(qData[i]);
 
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     // This block of code performs a magnitude estimation of
@@ -478,19 +479,19 @@ uint32_t AmDemodulator::demodulateSignal(uint32_t bufferLength)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     if (iMagnitude > qMagnitude)
     {
-      inputMagnitude = iMagnitude  + (0.5 * qMagnitude);
+      inputMagnitude = iMagnitude  + (qMagnitude >> 1);
     } // if
     else
     {
-      inputMagnitude = qMagnitude + (0.5 * iMagnitude);
+      inputMagnitude = qMagnitude + (iMagnitude >> 1);
     } // else
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     // Remove dc from the signal.
-    outputMagnitude = dcRemovalFilterPtr->filterData(inputMagnitude);
+    outputMagnitude = dcRemovalFilterPtr->filterData((float)inputMagnitude);
 
     // Store the demodulated data.
-    demodulatedData[i] = demodulatorGain * outputMagnitude;
+    demodulatedData[i] = (int16_t)(demodulatorGain * outputMagnitude);
 
   } // for
 
@@ -522,7 +523,7 @@ uint32_t AmDemodulator::createPcmData(uint32_t bufferLength)
   uint32_t i;
   uint32_t outputBufferIndex;
   bool sampleAvailable;
-  float sample;
+  int16_t sample;
 
   // Reference the beginning of the PCM output buffer.
   outputBufferIndex = 0;
@@ -540,7 +541,7 @@ uint32_t AmDemodulator::createPcmData(uint32_t bufferLength)
       if (sampleAvailable)
       {
         // Store PCM sample with dc offset removed.
-        pcmData[outputBufferIndex] = (int16_t)sample;
+        pcmData[outputBufferIndex] = sample;
 
         // Reference the next storage location.
         outputBufferIndex++;
