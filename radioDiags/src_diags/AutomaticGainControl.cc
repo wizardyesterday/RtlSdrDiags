@@ -694,17 +694,8 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   // Update the attribute.
   ifGainInDb = (uint32_t)filteredIfGainInDb;
 
-  //+++++++++++++++++++++++++++++++++++++++++++
-
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  // Update the receiver gain parameters only if a
-  // nonzero gain error resulted.
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  if (gainError != 0)
-  {
-    success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
-  } // if
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++
+  // Update the receiver gain parameters.
+  success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   return;
@@ -822,12 +813,9 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
   // Limit the gain to valid values.
   //+++++++++++++++++++++++++++++++++++++++++++
-  //+++++++++++++++++++++++++++++++++++++++++++
-  // Limit the gain to valid values.
-  //+++++++++++++++++++++++++++++++++++++++++++
   if (filteredIfGainInDb > 46)
   {
-    filteredIfGainInDb= 46;
+    filteredIfGainInDb = 46;
   } // if
   else
   {
@@ -841,17 +829,8 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   // Update the attribute.
   ifGainInDb = (uint32_t)filteredIfGainInDb;
 
-  //+++++++++++++++++++++++++++++++++++++++++++
-
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  // Update the receiver gain parameters only if a
-  // nonzero gain error resulted.
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++
-  if (deltaGain != 0)
-  {
-    success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
-  } // if
-  //+++++++++++++++++++++++++++++++++++++++++++++++++++
+  // Update the receiver gain parameters.
+  success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   return;
