@@ -815,7 +815,7 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
   if (filteredIfGainInDb > 46)
   {
-    filteredIfGainInDb = 46;
+    filteredIfGainInDb = 24;
   } // if
   else
   {
