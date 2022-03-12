@@ -623,7 +623,6 @@ void AutomaticGainControl::run(uint32_t signalMagnitude)
 void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
 {
   bool success;
-  bool frontEndAmpEnabled;
   int32_t gainError;
   int32_t adjustedGain;
   int32_t signalInDbFs;
@@ -759,7 +758,6 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
 void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
 {
   bool success;
-  bool frontEndAmpEnabled;
   float gainError;
   int32_t deltaGain;
   int32_t signalInDbFs;
@@ -815,7 +813,7 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
   if (filteredIfGainInDb > 46)
   {
-    filteredIfGainInDb = 24;
+    filteredIfGainInDb= 46;
   } // if
   else
   {
