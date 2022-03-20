@@ -693,8 +693,13 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   // Update the attribute.
   ifGainInDb = (uint32_t)filteredIfGainInDb;
 
-  // Update the receiver gain parameters.
-  success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  // There is no need to update the gain if no change has occurred.
+  // This way, we're nicer to the hardware.
+  if (gainError != 0)
+  {
+    // Update the receiver gain parameters.
+    success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  } // if
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   return;
@@ -800,6 +805,7 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   if (abs(deltaGain) <= deadbandInDb)
   {
     gainError = 0;
+    deltaGain = 0;
   } // if
 
   //*******************************************************************
@@ -827,8 +833,13 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   // Update the attribute.
   ifGainInDb = (uint32_t)filteredIfGainInDb;
 
-  // Update the receiver gain parameters.
-  success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  // There is no need to update the gain if no change has occurred.
+  // This way, we're nicer to the hardware.
+  if (deltaGain != 0)
+  {
+    // Update the receiver gain parameters.
+    success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
+  } // if
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   return;
