@@ -115,11 +115,11 @@ AutomaticGainControl::AutomaticGainControl(void *radioPtr,
   // simplest thing to do in software is to perform a transient
   // avoidance strategy.  While it is true that the performance of the
   // AGC becomes less than optimal, it is still better than experiencing
-  // limit cycles.  The agcHoldoffCountLimit is configurable so that the
+  // limit cycles.  The holdoffLimit is configurable so that the
   // user can change the value to suit the needs of the application.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  agcHoldoffCounter = 0;
-  agcHoldoffLimit = 3;
+  holdoffCounter = 0;
+  holdoffLimit = 3;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -329,6 +329,48 @@ bool  AutomaticGainControl::setDeadband(uint32_t deadbandInDb)
   return (success);
 
 } // setDeadband
+
+/**************************************************************************
+
+  Name: setDeadband
+
+  Purpose: The purpose of this function is to set the holdoff limit of
+  the AGC.  This presents gain setting oscillations.
+
+  Calling Sequence: success = setHoldoffLimit(holdoff)
+
+  Inputs:
+
+    holdoff - The number of measurements to ignore before making the
+    next gain adjustment.
+
+  Outputs:
+
+    success - A flag that indicates whether or not the holdoff parameter
+    was updated.  A value of true indicates that the holdoff limit was
+    updated, and a value of false indicates that the parameter was not
+    updated due to an invalid specified holdoff value.
+
+**************************************************************************/
+bool  AutomaticGainControl::setHoldoffLimit(uint32_t holdoff)
+{
+  bool success;
+
+  // Default to failure.
+  success = false;
+
+  if ((holdoff > 0) && (holdoff <= 10))
+  {
+    // Update the attribute.
+    this->holdoffLimit = holdoff;
+
+    // Indicate success.
+    success = true;
+  } // if
+
+  return (success);
+
+} // setHoldoffLimit
 
 /**************************************************************************
 
@@ -590,15 +632,15 @@ int32_t AutomaticGainControl::convertMagnitudeToDbFs(
 void AutomaticGainControl::run(uint32_t signalMagnitude)
 {
 
-  if (agcHoldoffCounter < agcHoldoffLimit)
+  if (holdoffCounter < holdoffLimit)
   {
     // We're not ready to make an adjustment.
-    agcHoldoffCounter++;
+    holdoffCounter++;
   } // if
   else
   {
     // Reset the holdoff counter.
-    agcHoldoffCounter = 0;
+    holdoffCounter = 0;
 
     switch (agcType)
     {
@@ -930,10 +972,10 @@ void AutomaticGainControl::displayInternalInformation(void)
   } // switch
 
   nprintf(stderr,"Holdoff Counter:            %u\n",
-          agcHoldoffCounter);
+          holdoffCounter);
 
   nprintf(stderr,"Holdoff Limit:              %u\n",
-          agcHoldoffLimit);
+          holdoffLimit);
 
   nprintf(stderr,"Lowpass Filter Coefficient: %0.3f\n",
           alpha);
