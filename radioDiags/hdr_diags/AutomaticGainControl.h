@@ -28,7 +28,7 @@ class AutomaticGainControl
   bool setAgcFilterCoefficient(float coefficient);
   bool setType(uint32_t type);
   bool setDeadband(uint32_t deadbandInDb);
-  bool setHoldoffLimit(uint32_t holdoff);
+  bool setBlankingLimit(uint32_t blankingLimit);
   bool enable(void);
   bool disable(void);
   bool isEnabled(void);
@@ -51,8 +51,8 @@ class AutomaticGainControl
   uint32_t agcType;
 
   // These parameters are sometimes needed to avoid transients.
-  uint32_t holdoffCounter;
-  uint32_t holdoffLimit;
+  uint32_t blankingCounter;
+  uint32_t blankingLimit;
 
   // Yes, we need some deadband.
   int32_t deadbandInDb;

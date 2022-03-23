@@ -115,11 +115,11 @@ AutomaticGainControl::AutomaticGainControl(void *radioPtr,
   // simplest thing to do in software is to perform a transient
   // avoidance strategy.  While it is true that the performance of the
   // AGC becomes less than optimal, it is still better than experiencing
-  // limit cycles.  The holdoffLimit is configurable so that the
+  // limit cycles.  The blankingLimit is configurable so that the
   // user can change the value to suit the needs of the application.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  holdoffCounter = 0;
-  holdoffLimit = 3;
+  blankingCounter = 1;
+  blankingLimit = 0;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -332,37 +332,43 @@ bool  AutomaticGainControl::setDeadband(uint32_t deadbandInDb)
 
 /**************************************************************************
 
-  Name: setDeadband
+  Name: setBlankingLimit
 
-  Purpose: The purpose of this function is to set the holdoff limit of
-  the AGC.  This presents gain setting oscillations.
+  Purpose: The purpose of this function is to set the blanking limit of
+  the AGC.  This presents gain setting oscillations.  What happens if
+  transients exist after an adjustment is made is that the AGC becomes
+  blind to the actual signal that is being received since the transient
+  can swamp the system.
 
-  Calling Sequence: success = setHoldoffLimit(holdoff)
+  Calling Sequence: success = setBlankingLimit(blankingLimit)
 
   Inputs:
 
-    holdoff - The number of measurements to ignore before making the
-    next gain adjustment.
+    blankingLimit - The number of measurements to ignore before making
+    the next gain adjustment.
 
   Outputs:
 
-    success - A flag that indicates whether or not the holdoff parameter
-    was updated.  A value of true indicates that the holdoff limit was
-    updated, and a value of false indicates that the parameter was not
-    updated due to an invalid specified holdoff value.
+    success - A flag that indicates whether or not the blanking limit
+    parameter was updated.  A value of true indicates that the blanking
+    limit was updated, and a value of false indicates that the parameter
+    was not updated due to an invalid specified blanking limit value.
 
 **************************************************************************/
-bool  AutomaticGainControl::setHoldoffLimit(uint32_t holdoff)
+bool  AutomaticGainControl::setBlankingLimit(uint32_t blankingLimit)
 {
   bool success;
 
   // Default to failure.
   success = false;
 
-  if ((holdoff > 0) && (holdoff <= 10))
+  if ((blankingLimit >= 0) && (blankingLimit <= 10))
   {
-    // Update the attribute.
-    this->holdoffLimit = holdoff;
+    // Update the attributes.
+    this->blankingLimit = blankingLimit;
+
+    // Ensure that the next measurement can be made.    
+    blankingCounter = blankingLimit + 1;
 
     // Indicate success.
     success = true;
@@ -370,7 +376,7 @@ bool  AutomaticGainControl::setHoldoffLimit(uint32_t holdoff)
 
   return (success);
 
-} // setHoldoffLimit
+} // setBlankingLimit
 
 /**************************************************************************
 
@@ -632,15 +638,15 @@ int32_t AutomaticGainControl::convertMagnitudeToDbFs(
 void AutomaticGainControl::run(uint32_t signalMagnitude)
 {
 
-  if (holdoffCounter < holdoffLimit)
+  if (blankingCounter < blankingLimit)
   {
     // We're not ready to make an adjustment.
-    holdoffCounter++;
+    blankingCounter++;
   } // if
   else
   {
-    // Reset the holdoff counter.
-    holdoffCounter = 0;
+    // Reset the blanking counter.
+    blankingCounter = 1;
 
     switch (agcType)
     {
@@ -971,11 +977,11 @@ void AutomaticGainControl::displayInternalInformation(void)
     } // case
   } // switch
 
-  nprintf(stderr,"Holdoff Counter:            %u\n",
-          holdoffCounter);
+  nprintf(stderr,"Blanking Counter:           %u ticks\n",
+          blankingCounter);
 
-  nprintf(stderr,"Holdoff Limit:              %u\n",
-          holdoffLimit);
+  nprintf(stderr,"Blanking Limit:             %u ticks\n",
+          blankingLimit);
 
   nprintf(stderr,"Lowpass Filter Coefficient: %0.3f\n",
           alpha);
