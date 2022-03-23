@@ -104,7 +104,24 @@ AutomaticGainControl::AutomaticGainControl(void *radioPtr,
 
   // Default to disabled.
   enabled = false;
- 
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Sometimes, adjustments need to be avoided when a transient in the
+  // hardware occurs as a result of a gain adjustment.  In the rtlsdr,
+  // it was initially thought that the transient was occurring in the
+  // tuner chip.  This was not the case.  Instead, a transient in the
+  // demodulated data was occurring as a result of the IIC repeater
+  // being enabled (and/or disabled) in the Realtek 2832U chip.  The
+  // simplest thing to do in software is to perform a transient
+  // avoidance strategy.  While it is true that the performance of the
+  // AGC becomes less than optimal, it is still better than experiencing
+  // limit cycles.  The agcHoldoffCountLimit is configurable so that the
+  // user can change the value to suit the needs of the application.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  agcHoldoffCounter = 0;
+  agcHoldoffLimit = 3;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  // This is a good starting point for the receiver gain
   // values.
@@ -573,26 +590,37 @@ int32_t AutomaticGainControl::convertMagnitudeToDbFs(
 void AutomaticGainControl::run(uint32_t signalMagnitude)
 {
 
-  switch (agcType)
+  if (agcHoldoffCounter < agcHoldoffLimit)
   {
-    case AGC_TYPE_LOWPASS:
-    {
-      runLowpass(signalMagnitude);
-      break;
-    } // case
+    // We're not ready to make an adjustment.
+    agcHoldoffCounter++;
+  } // if
+  else
+  {
+    // Reset the holdoff counter.
+    agcHoldoffCounter = 0;
 
-    case AGC_TYPE_HARRIS:
+    switch (agcType)
     {
-      runHarris(signalMagnitude);
-      break;
-    } // case
+      case AGC_TYPE_LOWPASS:
+      {
+        runLowpass(signalMagnitude);
+        break;
+      } // case
 
-    default:
-    {
-      runLowpass(signalMagnitude);
-      break;
-    } // case
-  } // switch
+      case AGC_TYPE_HARRIS:
+      {
+        runHarris(signalMagnitude);
+        break;
+      } // case
+
+      default:
+      {
+        runLowpass(signalMagnitude);
+        break;
+      } // case
+    } // switch
+  } // else
 
   return;
 
@@ -900,6 +928,12 @@ void AutomaticGainControl::displayInternalInformation(void)
       break;
     } // case
   } // switch
+
+  nprintf(stderr,"Holdoff Counter:            %u\n",
+          agcHoldoffCounter);
+
+  nprintf(stderr,"Holdoff Limit:              %u\n",
+          agcHoldoffLimit);
 
   nprintf(stderr,"Lowpass Filter Coefficient: %0.3f\n",
           alpha);

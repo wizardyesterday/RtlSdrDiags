@@ -49,6 +49,10 @@ class AutomaticGainControl
   // The AGC algorithm to be used.
   uint32_t agcType;
 
+  // These parameters are sometimes needed to avoid transients.
+  uint32_t agcHoldoffCounter;
+  uint32_t agcHoldoffLimit;
+
   // Yes, we need some deadband.
   int32_t deadbandInDb;
 
