@@ -77,6 +77,7 @@ receiver" command.
 The output of the help command appears below.
 
 ******************** Begin Help Output ********************************
+
 set demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)
                       | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]
 set amdemodgain <gain>
@@ -89,6 +90,7 @@ enable agc
 disable agc
 set agctype <type: [0 (Lowpass) | 1 (Harris)]>
 set agcdeadband <deadband in dB: (0 < deadband < 10)>
+set agcblank <blankinglimit in ticks: (0 =< blankinglimit <= 10)>
 set agcalpha <alpha: (0.001 <= alpha < 0.999)>
 set agclevel <level in dBFs>
 set rxfrequency <frequency in Hertz>
@@ -110,7 +112,6 @@ get agcinfo
 exit system
 help
 Type <^B><enter> key sequence to repeat last command
-
 
 ******************** End Help Output ***********************************
 
@@ -212,16 +213,17 @@ AGC Internal Information
 --------------------------------------------
 AGC Emabled               : Yes
 AGC Type                  : Harris
+Blanking Counter:           1 ticks
+Blanking Limit:             0 ticks
 Lowpass Filter Coefficient: 0.800
 Deadband                  : 1 dB
-Operating Point           : -6 dBFs
-RF Gain                   : 0 dB
-IF Gain                   : 40 dB
-Baseband Gain             : 49 dB
+Operating Point           : -8 dBFs
+IF Gain                   : 37 dB
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-Signal Magnitude          : 51
-RSSI (After IF Amplifier) : -56 dBFs
+Signal Magnitude          : 55
+RSSI (After Mixer)        : -44 dBFs
 /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
 
 ******************** End Get Agcinfo Output  **** **********************
 

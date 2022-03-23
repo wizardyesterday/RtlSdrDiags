@@ -104,7 +104,24 @@ AutomaticGainControl::AutomaticGainControl(void *radioPtr,
 
   // Default to disabled.
   enabled = false;
- 
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Sometimes, adjustments need to be avoided when a transient in the
+  // hardware occurs as a result of a gain adjustment.  In the rtlsdr,
+  // it was initially thought that the transient was occurring in the
+  // tuner chip.  This was not the case.  Instead, a transient in the
+  // demodulated data was occurring as a result of the IIC repeater
+  // being enabled (and/or disabled) in the Realtek 2832U chip.  The
+  // simplest thing to do in software is to perform a transient
+  // avoidance strategy.  While it is true that the performance of the
+  // AGC becomes less than optimal, it is still better than experiencing
+  // limit cycles.  The blankingLimit is configurable so that the
+  // user can change the value to suit the needs of the application.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  blankingCounter = 1;
+  blankingLimit = 0;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  // This is a good starting point for the receiver gain
   // values.
@@ -312,6 +329,54 @@ bool  AutomaticGainControl::setDeadband(uint32_t deadbandInDb)
   return (success);
 
 } // setDeadband
+
+/**************************************************************************
+
+  Name: setBlankingLimit
+
+  Purpose: The purpose of this function is to set the blanking limit of
+  the AGC.  This presents gain setting oscillations.  What happens if
+  transients exist after an adjustment is made is that the AGC becomes
+  blind to the actual signal that is being received since the transient
+  can swamp the system.
+
+  Calling Sequence: success = setBlankingLimit(blankingLimit)
+
+  Inputs:
+
+    blankingLimit - The number of measurements to ignore before making
+    the next gain adjustment.
+
+  Outputs:
+
+    success - A flag that indicates whether or not the blanking limit
+    parameter was updated.  A value of true indicates that the blanking
+    limit was updated, and a value of false indicates that the parameter
+    was not updated due to an invalid specified blanking limit value.
+
+**************************************************************************/
+bool  AutomaticGainControl::setBlankingLimit(uint32_t blankingLimit)
+{
+  bool success;
+
+  // Default to failure.
+  success = false;
+
+  if ((blankingLimit >= 0) && (blankingLimit <= 10))
+  {
+    // Update the attributes.
+    this->blankingLimit = blankingLimit;
+
+    // Ensure that the next measurement can be made.    
+    blankingCounter = blankingLimit + 1;
+
+    // Indicate success.
+    success = true;
+  } // if
+
+  return (success);
+
+} // setBlankingLimit
 
 /**************************************************************************
 
@@ -573,26 +638,37 @@ int32_t AutomaticGainControl::convertMagnitudeToDbFs(
 void AutomaticGainControl::run(uint32_t signalMagnitude)
 {
 
-  switch (agcType)
+  if (blankingCounter < blankingLimit)
   {
-    case AGC_TYPE_LOWPASS:
-    {
-      runLowpass(signalMagnitude);
-      break;
-    } // case
+    // We're not ready to make an adjustment.
+    blankingCounter++;
+  } // if
+  else
+  {
+    // Reset the blanking counter.
+    blankingCounter = 1;
 
-    case AGC_TYPE_HARRIS:
+    switch (agcType)
     {
-      runHarris(signalMagnitude);
-      break;
-    } // case
+      case AGC_TYPE_LOWPASS:
+      {
+        runLowpass(signalMagnitude);
+        break;
+      } // case
 
-    default:
-    {
-      runLowpass(signalMagnitude);
-      break;
-    } // case
-  } // switch
+      case AGC_TYPE_HARRIS:
+      {
+        runHarris(signalMagnitude);
+        break;
+      } // case
+
+      default:
+      {
+        runLowpass(signalMagnitude);
+        break;
+      } // case
+    } // switch
+  } // else
 
   return;
 
@@ -900,6 +976,12 @@ void AutomaticGainControl::displayInternalInformation(void)
       break;
     } // case
   } // switch
+
+  nprintf(stderr,"Blanking Counter:           %u ticks\n",
+          blankingCounter);
+
+  nprintf(stderr,"Blanking Limit:             %u ticks\n",
+          blankingLimit);
 
   nprintf(stderr,"Lowpass Filter Coefficient: %0.3f\n",
           alpha);
