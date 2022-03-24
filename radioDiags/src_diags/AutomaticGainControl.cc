@@ -293,7 +293,7 @@ bool AutomaticGainControl::setType(uint32_t type)
   Purpose: The purpose of this function is to set the deadband of the
   AGC.  This presents gain setting oscillations
 
-  Calling Sequence: success = uint32_t deadband(deadbandInDb)
+  Calling Sequence: success = setDeadband(deadbandInDb)
 
   Inputs:
 
@@ -386,6 +386,7 @@ bool  AutomaticGainControl::setBlankingLimit(uint32_t blankingLimit)
   of the AGC.
 
   Calling Sequence: setOperatingPoint(operatingPointInDbFs)
+
   Inputs:
 
     operatingPointInDbFs - The operating point in decibels referenced to
@@ -419,7 +420,7 @@ void AutomaticGainControl::setOperatingPoint(int32_t operatingPointInDbFs)
   Inputs:
 
     coefficient - The filter coefficient for the lowpass filter that
-    // filters the baseband gain value.
+    filters the baseband gain value.
 
   Outputs:
 

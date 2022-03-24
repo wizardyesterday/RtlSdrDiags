@@ -918,13 +918,13 @@ static void cmdSetAgcDeadband(char *bufferPtr)
   Name: cmdSetAgcBlank
 
   Purpose: The purpose of this function is to set the automatic gain
-  control deadband.
+  control blanking interval.
 
   The syntax for the corresponding command is the following:
 
-    "set agcdeadband deadband"
+    "set agcblank blanklimit"
 
-  Calling Sequence: cmdSetAgcDeadband(bufferPtr)
+  Calling Sequence: cmdSetAgcBlank(bufferPtr)
 
   Inputs:
 
@@ -1917,8 +1917,10 @@ static void cmdHelp(void)
   nprintf(stderr,"disable agc\n");
   nprintf(stderr,"set agctype <type: [0 (Lowpass) | 1 (Harris)]>\n");
   nprintf(stderr,"set agcdeadband <deadband in dB: (0 < deadband < 10)>\n");
+
   nprintf(stderr,
     "set agcblank <blankinglimit in ticks: (0 =< blankinglimit <= 10)>\n");
+
   nprintf(stderr,"set agcalpha <alpha: (0.001 <= alpha < 0.999)>\n");
   nprintf(stderr,"set agclevel <level in dBFs>\n");
   nprintf(stderr,"set rxfrequency <frequency in Hertz>\n");
@@ -1928,6 +1930,7 @@ static void cmdHelp(void)
   nprintf(stderr,"set squelch <threshold in dBFs>\n");
   nprintf(stderr,"start receiver\n");
   nprintf(stderr,"stop receiver\n");
+
   nprintf(stderr,
       "set fscanvalues <startfrequency> <endfrequency> <stepsize>\n");
 
