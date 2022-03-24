@@ -737,6 +737,34 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   // Compute the gain adjustment.
   gainError = operatingPointInDbFs - signalInDbFs;
 
+  //**************************************************
+  // Make sure that we aren't at the gain rails.  If
+  // the system is already at maximum gain, and the
+  // gain error is positive, we don't want to make an
+  // adjustment.  Similarly, if the system is already
+  // at minimum gain, and the gain error is negative,
+  // we don't want to make an adjustment.  This is
+  // easily solved by setting the gain error to zero.
+  //************************************************** 
+  if (ifGainInDb == 46)
+  {
+    if (gainError > 0)
+    {
+      gainError = 0;
+    } // if
+  } // if
+  else
+  {
+    if (ifGainInDb == 0)
+    {
+      if (gainError < 0)
+      {
+        gainError = 0;
+      } // if
+    } // if
+  } // else
+  //**************************************************
+
   // Apply deadband to eliminate gain oscillations.
   if (abs(gainError) <= deadbandInDb)
   {
@@ -770,6 +798,9 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   // Update the attribute.
   ifGainInDb = (uint32_t)filteredIfGainInDb;
 
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++
+  // Update the receiver gain parameters.
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++
   // There is no need to update the gain if no change has occurred.
   // This way, we're nicer to the hardware.
   if (gainError != 0)
@@ -840,8 +871,7 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
 void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
 {
   bool success;
-  float gainError;
-  int32_t deltaGain;
+  int32_t gainError;
   int32_t signalInDbFs;
   Radio * RadioPtr;
 
@@ -851,7 +881,7 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   // Update for display purposes.
   this->signalMagnitude = signalMagnitude;
 
-  // Convert to decibels referenced to full scale.
+  // Convert to decibels refdeltaGainerenced to full scale.
   signalInDbFs = convertMagnitudeToDbFs(signalMagnitude);
 
   // Update for display purposes.
@@ -875,28 +905,54 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   // samples that drive the A/D convertor.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Compute the gain adjustment.
-  deltaGain = operatingPointInDbFs - signalInDbFs;
-  gainError = (float)deltaGain;
+  gainError = operatingPointInDbFs - signalInDbFs;
+
+  //**************************************************
+  // Make sure that we aren't at the gain rails.  If
+  // the system is already at maximum gain, and the
+  // gain error is positive, we don't want to make an
+  // adjustment.  Similarly, if the system is already
+  // at minimum gain, and the gain error is negative,
+  // we don't want to make an adjustment.  This is
+  // easily solved by setting the gain error to zero.
+  //************************************************** 
+  if (ifGainInDb == 46)
+  {
+    if (gainError > 0)
+    {
+      gainError = 0;
+    } // if
+  } // if
+  else
+  {
+    if (ifGainInDb == 0)
+    {
+      if (gainError < 0)
+      {
+        gainError = 0;
+      } // if
+    } // if
+  } // else
+  //**************************************************
 
   // Apply deadband to eliminate gain oscillations.
-  if (abs(deltaGain) <= deadbandInDb)
+  if (abs(gainError) <= deadbandInDb)
   {
     gainError = 0;
-    deltaGain = 0;
   } // if
 
   //*******************************************************************
   // Run the AGC algorithm.
   //*******************************************************************
   filteredIfGainInDb = filteredIfGainInDb +
-    (alpha * gainError);
+    (alpha * (float)gainError);
 
   //+++++++++++++++++++++++++++++++++++++++++++
   // Limit the gain to valid values.
   //+++++++++++++++++++++++++++++++++++++++++++
   if (filteredIfGainInDb > 46)
   {
-    filteredIfGainInDb= 46;
+    filteredIfGainInDb = 46;
   } // if
   else
   {
@@ -910,9 +966,12 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   // Update the attribute.
   ifGainInDb = (uint32_t)filteredIfGainInDb;
 
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++
+  // Update the receiver gain parameters.
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++
   // There is no need to update the gain if no change has occurred.
   // This way, we're nicer to the hardware.
-  if (deltaGain != 0)
+  if (gainError != 0)
   {
     // Update the receiver gain parameters.
     success = RadioPtr->setReceiveIfGainInDb(0,ifGainInDb);
