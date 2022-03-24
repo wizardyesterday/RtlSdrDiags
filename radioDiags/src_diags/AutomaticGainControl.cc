@@ -11,6 +11,12 @@
 
 #include "AutomaticGainControl.h"
 
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+// Hardware-dependent defines.
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+#define MAX_ADJUSTIBLE_GAIN (46)
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 
 /**************************************************************************
@@ -727,7 +733,9 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   //
   // Let's try this first:
   //
-  //   1. Adjust the IF gain as appropriate to achieve
+  //   1. Use the hardware AGC for the LNA and Mixer amps.
+  //
+  //   2. Adjust the IF gain as appropriate to achieve
   //   the operating point referenced at the antenna input.
   //
   // This provides a dynamic range of 46dB (since the IF
@@ -746,7 +754,7 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   // we don't want to make an adjustment.  This is
   // easily solved by setting the gain error to zero.
   //************************************************** 
-  if (ifGainInDb == 46)
+  if (ifGainInDb == MAX_ADJUSTIBLE_GAIN)
   {
     if (gainError > 0)
     {
@@ -782,9 +790,9 @@ void AutomaticGainControl::runLowpass(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
   // Limit the gain to valid values.
   //+++++++++++++++++++++++++++++++++++++++++++
-  if (filteredIfGainInDb > 46)
+  if (filteredIfGainInDb > MAX_ADJUSTIBLE_GAIN)
   {
-    filteredIfGainInDb= 46;
+    filteredIfGainInDb= MAX_ADJUSTIBLE_GAIN;
   } // if
   else
   {
@@ -897,7 +905,9 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   //
   // Let's try this first:
   //
-  //   1. Adjust the IF gain as appropriate to achieve
+  //   1. Use the hardware AGC for the LNA and Mixer amps.
+  //
+  //   2. Adjust the IF gain as appropriate to achieve
   //   the operating point referenced at the antenna input.
   //
   // This provides a dynamic range of 46dB (since the IF
@@ -916,7 +926,7 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   // we don't want to make an adjustment.  This is
   // easily solved by setting the gain error to zero.
   //************************************************** 
-  if (ifGainInDb == 46)
+  if (ifGainInDb == MAX_ADJUSTIBLE_GAIN)
   {
     if (gainError > 0)
     {
@@ -950,9 +960,9 @@ void AutomaticGainControl::runHarris(uint32_t signalMagnitude)
   //+++++++++++++++++++++++++++++++++++++++++++
   // Limit the gain to valid values.
   //+++++++++++++++++++++++++++++++++++++++++++
-  if (filteredIfGainInDb > 46)
+  if (filteredIfGainInDb > MAX_ADJUSTIBLE_GAIN)
   {
-    filteredIfGainInDb = 46;
+    filteredIfGainInDb = MAX_ADJUSTIBLE_GAIN;
   } // if
   else
   {
