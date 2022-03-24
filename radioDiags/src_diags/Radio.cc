@@ -172,8 +172,8 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
     // Set the demodulation mode.
     receiveDataProcessorPtr->setDemodulatorMode(IqDataProcessor::Fm);
 
-    // Instantiate an AGC with an operating point of -8dBFs.
-    agcPtr = new AutomaticGainControl(this,-8);
+    // Instantiate an AGC with an operating point of -12dBFs.
+    agcPtr = new AutomaticGainControl(this,-12);
 
     // Create the event consumer thread.
     pthread_create(&eventConsumerThread,0,
