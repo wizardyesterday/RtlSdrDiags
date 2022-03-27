@@ -3,8 +3,7 @@
 //**********************************************************************
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-// My thanks go to Erlend, also known as LB6MI on IRC.  We
-// hang out on irc.libera.chat in the ##rtlsdr channel.
+// My thanks go to Erlend, also known as LB6MI.
 // Without the insight that he has provided to me, I
 // probably would not have created this subsystem.
 // Chris G. 03/27/2022
