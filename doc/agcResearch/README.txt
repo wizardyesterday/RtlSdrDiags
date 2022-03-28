@@ -42,3 +42,19 @@ I believe that when the IIC repeater is enabled, voltage/current spikes may
 be getting picked up by the tuner chip and perhaps amplified.  Further
 investigation needs to be performed.
 
+03/27/2022
+Here's our average performance measurements:
+Time (IQ Data Block Arrival to AGC callback invocation): 3 to 4ms.
+Time (Adjust IF gain): 15 to 19ms.
+
+The total time always is 19ms. This means that 19ms of a 64ms IQ data
+block has already arrived.  The solution is to adjust the receiver gain
+and skip signal evaluation of the poluted IQ data block.  This is
+accomplished by setting the AGC blank value to 2.  This will mitigate the
+effect of the AGC "fishtailing" due to the inherent latency of data transfer
+through the radio appliction.
+The latency is due to:
+1. Latency through the thread-to-thread queueing system.
+2. The Linux thread scheduler.
+3. Sending of Vendor Request packets via libusb.
+
