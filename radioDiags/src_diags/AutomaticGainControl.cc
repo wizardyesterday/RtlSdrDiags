@@ -131,8 +131,8 @@ AutomaticGainControl::AutomaticGainControl(void *radioPtr,
   // limit cycles.  The blankingLimit is configurable so that the
   // user can change the value to suit the needs of the application.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  blankingCounter = 1;
-  blankingLimit = 0;
+  blankingCounter = 2;
+  blankingLimit = 2;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
