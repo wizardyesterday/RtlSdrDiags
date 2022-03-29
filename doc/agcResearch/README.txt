@@ -49,8 +49,8 @@ Time (Adjust IF gain): 15 to 19ms.
 
 The total time always is 19ms. This means that 19ms of a 64ms IQ data
 block has already arrived.  The solution is to adjust the receiver gain
-and skip signal evaluation of the poluted IQ data block.  This is
-accomplished by setting the AGC blank value to 2.  This will mitigate the
+and skip signal evaluation of the polluted IQ data block.  This is
+accomplished by setting the AGC blank value to 1.  This will mitigate the
 effect of the AGC "fishtailing" due to the inherent latency of data transfer
 through the radio appliction.
 The latency is due to:
