@@ -1881,7 +1881,7 @@ static void cmdWriteTunerRegister(char *bufferPtr)
   uint8_t value;
 
   // Retrieve parameters.
-  sscanf(bufferPtr,"%02x %02x %02x",&i2cAddress,&registerNumber,&value);
+  sscanf(bufferPtr,"%x %x %x",&i2cAddress,&registerNumber,&value);
 
   success = diagUi_radioPtr->writeTunerRegister(i2cAddress,
                                                 registerNumber,
