@@ -72,6 +72,11 @@ class Radio
   bool isAgcEnabled(void);
   void displayAgcInternalInformation(void);
 
+  // Tuner register write support.
+  bool writeTunerRegister(uint8_t i2cAddress,
+                          uint8_t registerNumber,
+                          uint8_t value);
+
   void displayInternalInformation(void);
 
   private:

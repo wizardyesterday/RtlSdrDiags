@@ -109,6 +109,7 @@ get radioinfo
 get fscaninfo
 get sweeperinfo
 get agcinfo
+write tunerregister <i2caddress> <register> <value>
 exit system
 help
 Type <^B><enter> key sequence to repeat last command
