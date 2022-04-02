@@ -1929,3 +1929,32 @@ int rtlsdr_i2c_read_fn(void *dev, uint8_t addr, uint8_t *buf, int len)
 
   return -1;
 }
+
+/***********************************************************************/
+/* New stuff. I needed the ability to write to a register of a         */
+/* device that is connected to the IIC bus.  These two functions       */
+/* provide that ability. The functions are similar to other functions  */
+/* with the exception that they enable the IIC repeater in the 2832U   */
+/* device.                                                             */
+/* Chris G. 04/01/2022                                                 */
+/***********************************************************************/
+int rtlsdr_writeTunerRegister(rtlsdr_dev_t *dev,
+                              uint8_t i2c_addr,
+                              uint8_t reg,
+                              uint8_t val)
+{
+  int rc;
+
+  /* Get on the external IIC bus. */
+  rtlsdr_set_i2c_repeater(dev,1);
+
+  /* Perform the register write. */
+  rc = rtlsdr_i2c_write_reg(dev,i2c_addr,reg,val);
+
+  /* Get off the external IIC bus. */
+  rtlsdr_set_i2c_repeater(dev,0);
+
+  return (rc);
+}
+/***********************************************************************/
+

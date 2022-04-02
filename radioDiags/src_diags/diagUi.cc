@@ -106,6 +106,7 @@ static void cmdStopFrequencySweep(char *bufferPtr);
 static void cmdGetRadioInfo(char *bufferPtr);
 static void cmdGetFscanInfo(char *bufferPtr);
 static void cmdGetSweeperInfo(char *bufferPtr);
+static void cmdWriteTunerRegister(char *bufferPtr);
 static void cmdExitSystem(char *bufferPtr);
 static void cmdHelp(void);
 
@@ -161,6 +162,8 @@ static const commandEntry commandTable[] =
   {"get","radioinfo",cmdGetRadioInfo},   // get radioinfo
   {"get","fscaninfo",cmdGetFscanInfo}, // get fscaninfo
   {"get","sweeperinfo",cmdGetSweeperInfo}, // get sweeperinfo
+  {"write","tunerregister",cmdWriteTunerRegister},
+    // write tunerregister i2caddress register value
   {"exit","system",cmdExitSystem},       // exit system
   {"\0","\0",0}                          // last entry in command table
 };
@@ -1850,6 +1853,56 @@ static void cmdGetSweeperInfo(char *bufferPtr)
 
 /*****************************************************************************
 
+  Name: cmdWriteTunerRegister
+
+  Purpose: The purpose of this function is to write a value to a tuner
+  register.
+
+  The syntax for the command is as follows:
+
+    "write tunerregister i2caddress register value"
+
+  Calling Sequence: cmdWriteTunerRegister()
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdWriteTunerRegister(char *bufferPtr)
+{
+  bool success;
+  uint8_t i2cAddress;
+  uint8_t registerNumber;
+  uint8_t value;
+
+  // Retrieve parameters.
+  sscanf(bufferPtr,"%x %x %x",&i2cAddress,&registerNumber,&value);
+
+  success = diagUi_radioPtr->writeTunerRegister(i2cAddress,
+                                                registerNumber,
+                                                value);
+
+  if (success)
+  {
+    nprintf(stderr,"Register %02x updated to %02x.\n",
+            registerNumber,value);
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Register write failed.\n");
+  } // else
+
+  return;
+
+} // cmdWriteTunerRegister
+
+/*****************************************************************************
+
   Name: cmdExitSystem
 
   Purpose: The purpose of this function is to exit the system.
@@ -1945,6 +1998,7 @@ static void cmdHelp(void)
   nprintf(stderr,"get fscaninfo\n");
   nprintf(stderr,"get sweeperinfo\n");
   nprintf(stderr,"get agcinfo\n");
+  nprintf(stderr,"write tunerregister <i2caddress> <register> <value>\n");
   nprintf(stderr,"exit system\n");
   nprintf(stderr,"help\n");
   nprintf(stderr,"Type <^B><enter> key sequence to repeat last command\n");
