@@ -389,21 +389,6 @@ RTLSDR_API int rtlsdr_read_async(rtlsdr_dev_t *dev,
  */
 RTLSDR_API int rtlsdr_cancel_async(rtlsdr_dev_t *dev);
 
-/***********************************************************************/
-/* New stuff. I needed the ability to write a register of a            */
-/* device that is connected to the IIC bus.  These two functions       */
-/* provide that ability. The functions are similar to other functions  */
-/* with the exception that they enable the IIC repeater in the 2832U   */
-/* device.                                                             */
-/* Chris G. 04/01/2022                                                 */
-/***********************************************************************/
-int rtlsdr_writeTunerRegister(rtlsdr_dev_t *dev,
-                              uint8_t i2c_addr,
-                              uint8_t reg,
-                              uint8_t val);
-/***********************************************************************/
-
-
 #ifdef __cplusplus
 }
 #endif
