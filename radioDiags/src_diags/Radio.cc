@@ -1639,68 +1639,6 @@ void Radio::displayAgcInternalInformation(void)
 
 /**************************************************************************
 
-  Name: writeTunerRegister
-
-  Purpose: The purpose of this function is to write a value to a
-  tuner register.
-
-  Calling Sequence: success = writeTunerRegister(i2cAddress,
-                                                 registerNumber,
-                                                 value)
-
-  Inputs:
-
-    i2cAddress - The IIC address of the device for which a register
-    is to be written to.
-
-    registerNumber - The register that is to be written to.
-
-    value - The value to write to the register.
-
-  Outputs:
-
-    success - A boolean that indicates the outcome of the operation.  A
-    value of true indicates success, and a value of false indicates
-    failure.
-
-**************************************************************************/
-bool Radio::writeTunerRegister(uint8_t i2cAddress,
-                               uint8_t registerNumber,
-                               uint8_t value)
-{
-  bool success;
-  int error;
-
-  // Acquire the I/O subsystem lock.
-  pthread_mutex_lock(&ioSubsystemLock);
-
-  // Default to success.
-  success = true;
-
-  if (devicePtr != 0)
-  {
-    // Write to the tuner register.
-    error = rtlsdr_writeTunerRegister((rtlsdr_dev_t *)devicePtr,
-                                      i2cAddress,
-                                      registerNumber,
-                                      value);
-
-    if (error == 0)
-    {
-      // indicate success.
-      success = true;
-    } // if
-  } // if
-
-  // Release the I/O subsystem lock.
-  pthread_mutex_unlock(&ioSubsystemLock);
-
-  return (success);
-  
-} // writeTunerRegister
-
-/**************************************************************************
-
   Name: displayInternalInformation
 
   Purpose: The purpose of this function is to display internal
