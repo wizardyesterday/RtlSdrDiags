@@ -109,7 +109,6 @@ get radioinfo
 get fscaninfo
 get sweeperinfo
 get agcinfo
-write tunerregister <i2caddress> <register> <value>
 exit system
 help
 Type <^B><enter> key sequence to repeat last command
@@ -214,8 +213,8 @@ AGC Internal Information
 --------------------------------------------
 AGC Emabled               : Yes
 AGC Type                  : Harris
-Blanking Counter:           1 ticks
-Blanking Limit:             0 ticks
+Blanking Counter          : 1 ticks
+Blanking Limit            : 0 ticks
 Lowpass Filter Coefficient: 0.800
 Deadband                  : 1 dB
 Operating Point           : -8 dBFs
