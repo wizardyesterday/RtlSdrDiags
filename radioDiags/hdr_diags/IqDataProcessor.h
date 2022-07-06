@@ -28,6 +28,9 @@ class IqDataProcessor
   void setSsbDemodulator(SsbDemodulator *demodulatorPtr);
   void setSignalDetectThreshold(int32_t threshold);
 
+  void downconvertByFsOver4(int8_t *bufferPtr,uint32_t byteCount);
+  void upconvertByFsOver4(int8_t *bufferPtr,uint32_t byteCount);
+
   void acceptIqData(unsigned long timeStamp,
                     unsigned char *bufferPtr,
                     unsigned long byteCount);

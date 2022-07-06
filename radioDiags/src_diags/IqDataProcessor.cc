@@ -387,6 +387,7 @@ void IqDataProcessor::enableSignalMagnitudeNotification(void)
 
 } // enableSignalMagnitudeNotification
 
+
 /**************************************************************************
 
   Name: disableSignalMagnitudeNotification
@@ -449,6 +450,124 @@ void IqDataProcessor::registerSignalMagnitudeCallback(
 
 /**************************************************************************
 
+  Name: downconvertByFsOver4
+
+  Purpose: The purpose of this function is to downconvert an IQ
+  data stream by Fs/4.  The equations for this function originated
+  from "Understanding Digital Signal Processing, Third Edition" by
+  Richard G. Lyons.  Section 13.1.2 Frequency Translation by -fs/4,
+  explains how this all works.  Equations (13-2) portray downconversion,
+  and Equations (13-3) portray upconversion.  This is incorrect.
+  In actuality, Equations (13-3) realize downconversion and Equations
+  (13-2) realize upconversion.
+
+  Calling Sequence: downconvertByFsOver4(bufferPtr,byteCount)
+
+  Inputs:
+
+    bufferPtr - A pointer to signed IQ data.
+
+    byteCount - The number of bytes contained in the buffer that is
+    in the buffer.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::downconvertByFsOver4(int8_t *bufferPtr,
+                                           uint32_t byteCount)
+{
+  uint32_t i;
+  int8_t x, y;
+
+  for (i = 0; i < byteCount; i += 8)
+  {
+    // znew(0) = x(0) + jy(0).
+    // No processing needs to be done.
+
+    // znew(1) = -y(1) + jx(1).
+    x = bufferPtr[i + 2];
+    y = bufferPtr[i + 3];
+    bufferPtr[i + 2] = -y;
+    bufferPtr[i + 3] = x;  
+
+    // znew(2) = -x(2) - jy(2).
+    x = bufferPtr[i + 4];
+    y = bufferPtr[i + 5];
+    bufferPtr[i + 4] = -x;
+    bufferPtr[i + 5] = -y;
+
+    // znew(3) = y(3) - jx(3).
+    x = bufferPtr[i + 6];
+    y = bufferPtr[i + 7];
+    bufferPtr[i + 6] = y;
+    bufferPtr[i + 7] = -x;
+  } // for
+
+} // downconvertByFsOver4
+
+/**************************************************************************
+
+  Name: upconvertByFsOver4
+
+  Purpose: The purpose of this function is to upconvert an IQ
+  data stream by Fs/4.  The equations for this function originated
+  from "Understanding Digital Signal Processing, Third Edition" by
+  Richard G. Lyons.  Section 13.1.2 Frequency Translation by -fs/4,
+  explains how this all works.  Equations (13-2) portray downconversion,
+  and Equations (13-3) portray upconversion.  This is incorrect.
+  In actuality, Equations (13-3) realize downconversion and Equations
+  (13-2) realize upconversion.
+
+  Calling Sequence: upconvertByFsOver4(bufferPtr,byteCount)
+
+  Inputs:
+
+    bufferPtr - A pointer to signed IQ data.
+
+    byteCount - The number of bytes contained in the buffer that is
+    in the buffer.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::upconvertByFsOver4(int8_t *bufferPtr,
+                                         uint32_t byteCount)
+{
+  uint32_t i;
+  int8_t x, y;
+
+  for (i = 0; i < byteCount; i += 8)
+  {
+    // znew(0) = x(0) + jy(0).
+    // No processing needs to be done.
+
+    // znew(1) = y(1) - jx(1).
+    x = bufferPtr[i + 2];
+    y = bufferPtr[i + 3];
+    bufferPtr[i + 2] = y;
+    bufferPtr[i + 3] = -x;  
+
+    // znew(2) = -x(2) - jy(2).
+    x = bufferPtr[i + 4];
+    y = bufferPtr[i + 5];
+    bufferPtr[i + 4] = -x;
+    bufferPtr[i + 5] = -y;
+
+    // znew(3) = -y(3) + jx(3).
+    x = bufferPtr[i + 6];
+    y = bufferPtr[i + 7];
+    bufferPtr[i + 6] = -y;
+    bufferPtr[i + 7] = x;
+  } // for
+
+} // upconvertByFsOver4
+
+/**************************************************************************
+
   Name: acceptIqData
 
   Purpose: The purpose of this function is to queue data to be transmitted
@@ -489,6 +608,9 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   {
     signedBufferPtr[i] -= 128;
   } // for
+
+  // Translate the spectrum to baseband.
+  downconvertByFsOver4(signedBufferPtr,byteCount);
 
   // Determine if a signal is available.
   signalPresenceIndicator = trackerPtr->run(signedBufferPtr,byteCount);

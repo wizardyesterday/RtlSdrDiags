@@ -607,7 +607,7 @@ bool Radio::setReceiveFrequency(uint64_t frequency)
   {
     // Notify the driver of the new frequency.
     error = rtlsdr_set_center_freq((rtlsdr_dev_t *)devicePtr,
-                                   (uint32_t)frequency);
+                                   (uint32_t)frequency + receiveSampleRate / 4);
 
     if (error == 0)
     {
