@@ -12,9 +12,9 @@ this sytem with different stimulii to see if I can cause failure.
 
 The files with a .raw extension are PCM data of the format: 16-bit signed,
 little endian integers. These files can be played by your favorite raw
-audio player such as mplayer.  To play a file, type:
+audio player such as aplay.  To play a file, type:
 
-  aplayer -f S16_LE -r 8000.
+  aplay -f S16_LE -r 8000.
 
 The files with a .pdf extension are plots of the transient response of the
 R820T2 chip.
