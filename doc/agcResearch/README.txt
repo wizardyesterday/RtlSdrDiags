@@ -82,6 +82,9 @@ In all cases, I let the LNA and mixer AGCs stay enabled since they work
 in an acceptable manner.  In my use cases, it was the VGA gain that needed to
 automatically adjust.
 
+Additionally, in all cases, the supplied whip antenna was used, so that
+this performance is with indoor reception.
+
 I hope that this gives all of you a flavor of what a software VGA AGC can
 do for the performance of these rtl-sdr radios.
 
