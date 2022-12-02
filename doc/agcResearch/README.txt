@@ -70,9 +70,9 @@ The first 10 seconds or so (maybe more than 10 seconds on the FM broadcast)
 have the VGA AGC disabled.  In this case the receive IF (VGA) gain is set
 to 24dB.  Afterwards, I enable the AGC.
 
-You'll notice that for the aircraft capture, the static increases
- significantly. You'll hear a couple of aircraft transmisitions in this
-capture.
+You'll notice that for the aircraft captures, the static increases
+ significantly. You'll hear some aircraft transmisitions in this capture.
+The aircraft3 file seems to have alot more transmissions in it.
 
 On the broadcast FM transmission, you'll notice that the audio initially
 sounds scratchy.  This is due to A/D convertor overload within the RT2832U
