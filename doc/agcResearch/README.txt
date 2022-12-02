@@ -58,3 +58,31 @@ The latency is due to:
 2. The Linux thread scheduler.
 3. Sending of Vendor Request packets via libusb.
 
+12/02/2022
+I have created two new subdirectories:
+1. aircraftBandCaptures.
+2. fmBroadcastCaptures.
+
+Now, you play the files in these directories using:
+aplay -f s16_le -r 8000 <filename>
+
+The first 10 seconds or so (maybe more than 10 seconds on the FM broadcast)
+have the VGA AGC disabled.  In this case the receive IF (VGA) gain is set
+to 24dB.  Afterwards, I enable the AGC.
+
+You'll notice that for the aircraft capture, the static increases
+ significantly. You'll hear a couple of aircraft transmisitions in this
+capture.
+
+On the broadcast FM transmission, you'll notice that the audio initially
+sounds scratchy.  This is due to A/D convertor overload within the RT2832U
+chip.  Afterwards, you'll hear that the audio sounds clean.
+
+In all cases, I let the LNA and mixer AGCs stay enabled since they work
+in an acceptable manner.  In my use cases, it was the VGA gain that needed to
+automatically adjust.
+
+I hope that this gives all of you a flavor of what a software VGA AGC can
+do for the performance of these rtl-sdr radios.
+
+
