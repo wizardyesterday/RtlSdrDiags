@@ -1108,6 +1108,32 @@ uint32_t Radio::getReceiveGainInDb(void)
 
 /**************************************************************************
 
+  Name: getReceiveIfGainInDb
+
+  Purpose: The purpose of this function is to get the IF gain of the
+  receiver.
+
+  Calling Sequence: gain = getReceiveIfGainInDb()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    gain - The gain in decibels.
+
+**************************************************************************/
+uint32_t Radio::getReceiveIfGainInDb(void)
+
+{
+
+  return (receiveGainInDb);
+  
+} // getReceiveIfGainInDb
+
+/**************************************************************************
+
   Name: getReceiveSampleRate
 
   Purpose: The purpose of this function is to get the sample rate
