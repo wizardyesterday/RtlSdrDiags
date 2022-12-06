@@ -639,7 +639,7 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   // This allows the 1/f noise to be translated away from the
   // desired frequency, once the signal is mixed back to
   // baseband in the digital domain.  Before frequency
-  // translation, the desired signal resides at Fs/4.  Once
+  // translation, the desired signal resides at -Fs/4.  Once
   // upconverted, the signal will reside at baseband.
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   upconvertByFsOver4(signedBufferPtr,byteCount);
