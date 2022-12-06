@@ -45,6 +45,7 @@ class Radio
   uint64_t getReceiveFrequency(void);
   uint32_t getReceiveBandwidth(void);
   uint32_t getReceiveGainInDb(void);
+  uint32_t getReceiveIfGainInDb(void);
   uint32_t getReceiveSampleRate(void);
   int getReceiveWarpInPartsPerMillion(void);
 
