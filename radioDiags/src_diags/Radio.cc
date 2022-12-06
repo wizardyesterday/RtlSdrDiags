@@ -1128,7 +1128,7 @@ uint32_t Radio::getReceiveIfGainInDb(void)
 
 {
 
-  return (receiveGainInDb);
+  return (receiveIfGainInDb);
   
 } // getReceiveIfGainInDb
 
