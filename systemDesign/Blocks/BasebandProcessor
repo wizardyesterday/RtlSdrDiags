@@ -1281,14 +1281,14 @@ Demod#</dia:string>
     </dia:object>
     <dia:object type="Standard - Line" version="0" id="O47">
       <dia:attribute name="obj_pos">
-        <dia:point val="38.1,22.235"/>
+        <dia:point val="34.75,21.235"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="37.8488,13.6338;38.1512,22.2862"/>
+        <dia:rectangle val="34.5801,13.589;34.8008,21.2858"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="38.1,22.235"/>
-        <dia:point val="37.9,13.685"/>
+        <dia:point val="34.75,21.235"/>
+        <dia:point val="34.6309,13.6398"/>
       </dia:attribute>
       <dia:attribute name="numcp">
         <dia:int val="1"/>
@@ -1296,14 +1296,14 @@ Demod#</dia:string>
     </dia:object>
     <dia:object type="Standard - Line" version="0" id="O48">
       <dia:attribute name="obj_pos">
-        <dia:point val="37.9,13.635"/>
+        <dia:point val="34.6809,13.6898"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="26.0466,12.7848;37.9502,14.3852"/>
+        <dia:rectangle val="26.3447,12.8347;34.7312,14.4353"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="37.9,13.635"/>
-        <dia:point val="26.1,13.585"/>
+        <dia:point val="34.6809,13.6898"/>
+        <dia:point val="26.4,13.635"/>
       </dia:attribute>
       <dia:attribute name="numcp">
         <dia:int val="1"/>
@@ -1459,7 +1459,7 @@ Scanner#</dia:string>
         <dia:point val="17.95,9.335"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="17.95,8.6887;30.954,12.0387"/>
+        <dia:rectangle val="17.95,8.73978;30.904,11.9398"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -1492,7 +1492,7 @@ presence of a signal.#</dia:string>
         <dia:point val="34.7809,42.9898"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="23.9859,41.4518;45.6259,43.6018"/>
+        <dia:rectangle val="23.9859,41.5018;45.5759,43.5018"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -1519,18 +1519,19 @@ presence of a signal.#</dia:string>
     </dia:object>
     <dia:object type="Standard - Text" version="0" id="O56">
       <dia:attribute name="obj_pos">
-        <dia:point val="28.9809,33.9023"/>
+        <dia:point val="29.4809,33.7023"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="28.9809,33.256;42.4647,36.606"/>
+        <dia:rectangle val="29.4309,33.0571;43.3945,37.2071"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
           <dia:attribute name="string">
-            <dia:string>#Note: IQ data flows to the
-demodulators when enabled,
-that is, when the Squelch is
-not muting the signal.#</dia:string>
+            <dia:string>#Note: IQ data flows from the
+Demod Mux to the demodulators
+when enabled, that is, when
+the Squelch is not muting the
+signal.#</dia:string>
           </dia:attribute>
           <dia:attribute name="font">
             <dia:font name="Courier"/>
@@ -1539,7 +1540,7 @@ not muting the signal.#</dia:string>
             <dia:real val="0.8"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="28.9809,33.9023"/>
+            <dia:point val="29.4809,33.7023"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
