@@ -1456,10 +1456,10 @@ Scanner#</dia:string>
     </dia:object>
     <dia:object type="Standard - Text" version="0" id="O54">
       <dia:attribute name="obj_pos">
-        <dia:point val="19.45,9.235"/>
+        <dia:point val="17.95,9.335"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="19.45,8.63978;32.404,11.8398"/>
+        <dia:rectangle val="17.95,8.6887;30.954,12.0387"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -1476,7 +1476,7 @@ presence of a signal.#</dia:string>
             <dia:real val="0.8"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="19.45,9.235"/>
+            <dia:point val="17.95,9.335"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -1489,10 +1489,10 @@ presence of a signal.#</dia:string>
     </dia:object>
     <dia:object type="Standard - Text" version="0" id="O55">
       <dia:attribute name="obj_pos">
-        <dia:point val="34.0809,40.6398"/>
+        <dia:point val="34.7809,42.9898"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="23.2859,39.099;44.9259,41.249"/>
+        <dia:rectangle val="23.9859,41.4518;45.6259,43.6018"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -1506,13 +1506,46 @@ presence of a signal.#</dia:string>
             <dia:real val="2"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="34.0809,40.6398"/>
+            <dia:point val="34.7809,42.9898"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
           </dia:attribute>
           <dia:attribute name="alignment">
             <dia:enum val="1"/>
+          </dia:attribute>
+        </dia:composite>
+      </dia:attribute>
+    </dia:object>
+    <dia:object type="Standard - Text" version="0" id="O56">
+      <dia:attribute name="obj_pos">
+        <dia:point val="28.9809,33.9023"/>
+      </dia:attribute>
+      <dia:attribute name="obj_bb">
+        <dia:rectangle val="28.9809,33.256;42.4647,36.606"/>
+      </dia:attribute>
+      <dia:attribute name="text">
+        <dia:composite type="text">
+          <dia:attribute name="string">
+            <dia:string>#Note: IQ data flows to the
+demodulators when enabled,
+that is, when the Squelch is
+not muting the signal.#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="font">
+            <dia:font name="Courier"/>
+          </dia:attribute>
+          <dia:attribute name="height">
+            <dia:real val="0.8"/>
+          </dia:attribute>
+          <dia:attribute name="pos">
+            <dia:point val="28.9809,33.9023"/>
+          </dia:attribute>
+          <dia:attribute name="color">
+            <dia:color val="#000000"/>
+          </dia:attribute>
+          <dia:attribute name="alignment">
+            <dia:enum val="0"/>
           </dia:attribute>
         </dia:composite>
       </dia:attribute>
