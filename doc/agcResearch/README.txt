@@ -60,11 +60,11 @@ The latency is due to:
 
 12/02/2022
 I have created two new subdirectories:
-1. aircraftBandCaptures.
-2. fmBroadcastCaptures.
+1. aircraftBandAudio.
+2. fmBroadcastAudio.
 
-Now, you play the files in these directories using:
-aplay -f s16_le -r 8000 <filename>
+Since the audio files are wav files, you should be able to play these files
+with your favorite audio player (or from your web browser).
 
 The first 10 seconds or so (maybe more than 10 seconds on the FM broadcast)
 have the VGA AGC disabled.  In this case the receive IF (VGA) gain is set
