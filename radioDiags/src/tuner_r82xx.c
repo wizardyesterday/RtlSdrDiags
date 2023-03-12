@@ -229,14 +229,6 @@ static int r82xx_xtal_capacitor[][2] = {
   { 0x10, XTAL_HIGH_CAP_0P },
 };
 
-/* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
-/* New IF gain adjustment support.  Note that units    */
-/* in 0.1dB.                                           */
-/* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
-/* Initialize to 24.2dB. */
-static int tuner_if_gain_index = 9;
-/* /_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/ */
-
  /* I2C read/write code and shadow registers logic
  */
 static void shadow_store(struct r82xx_priv *priv, uint8_t reg, const uint8_t *val,
@@ -1034,11 +1026,6 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
     if (rc < 0)
       return rc;
 
-    /* set VGA gain */
-    rc = r82xx_write_reg_mask(priv, 0x0c, tuner_if_gain_index, 0x9f);
-    if (rc < 0)
-      return rc;
-
     for (i = 0; i < 15; i++) {
       if (total_gain >= gain)
         break;
@@ -1071,11 +1058,6 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
     rc = r82xx_write_reg_mask(priv, 0x07, 0x10, 0x10);
     if (rc < 0)
       return rc;
-
-    /* set VGA gain */
-    rc = r82xx_write_reg_mask(priv, 0x0c, tuner_if_gain_index, 0x9f);
-    if (rc < 0)
-      return rc;
   }
 
   return 0;
@@ -1099,9 +1081,6 @@ int r82xx_set_if_gain(struct r82xx_priv *priv, uint8_t stage, int gain)
       break;
   }
 
-  // this format works out nicely for later use.
-  tuner_if_gain_index = vga_index;
-    
   /* set the new gain */
   rc = r82xx_write_reg_mask(priv, 0x0c, vga_index, 0x9f);
 
