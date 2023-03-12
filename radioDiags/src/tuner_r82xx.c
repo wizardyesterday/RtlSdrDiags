@@ -1049,12 +1049,12 @@ int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
       return rc;
   } 
   else {
-    /* LNA */
+    /* Enable LNA AGC */
     rc = r82xx_write_reg_mask(priv, 0x05, 0, 0x10);
     if (rc < 0)
       return rc;
 
-    /* Mixer */
+    /* Enable Mixer AGC */
     rc = r82xx_write_reg_mask(priv, 0x07, 0x10, 0x10);
     if (rc < 0)
       return rc;
@@ -1070,11 +1070,6 @@ int r82xx_set_if_gain(struct r82xx_priv *priv, uint8_t stage, int gain)
   uint8_t vga_index = 0;
 
   for (i = 0; i < 15; i++) {
-    if (total_gain >= gain) {
-
-      break;
-    }
-
     total_gain += r82xx_vga_gain_steps[++vga_index];
 
     if (total_gain >= gain)
