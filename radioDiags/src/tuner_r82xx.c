@@ -1006,7 +1006,7 @@ static const int r82xx_mixer_gain_steps[]  = {
 int r82xx_set_gain(struct r82xx_priv *priv, int set_manual_gain, int gain)
 {
   int rc;
-  int i, total_gain = 0, vga_gain = 0;
+  int i, total_gain = 0;
   uint8_t mix_index = 0, lna_index = 0;
   uint8_t data[4];
 
