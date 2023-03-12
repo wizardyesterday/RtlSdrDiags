@@ -317,7 +317,7 @@ bool Radio::setupReceiver(void)
   receiveIfGainInDb = 24;
 
   // Other subsystems need to know this.
-  receiveIfGainInDb = receiveIfGainInDb;
+  radio_adjustableReceiveGainInDb = receiveIfGainInDb;
 
   // Default to no frequency error.
   receiveWarpInPartsPerMillion = 0;
