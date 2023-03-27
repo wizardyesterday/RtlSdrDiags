@@ -221,7 +221,7 @@ uint32_t Squelch::getSignalMagnitude(void)
     signalPresenceIndicator - The event associated with a signal.
 
 *****************************************************************************/
-bool Squelch::run(int32_t gainInDb,int8_t *bufferPtr,uint32_t bufferLength)
+bool Squelch::run(uint32_t gainInDb,int8_t *bufferPtr,uint32_t bufferLength)
 {
   bool signalAllowed;
   uint16_t signalPresenceIndicator;

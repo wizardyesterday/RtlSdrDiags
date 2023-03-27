@@ -202,7 +202,7 @@ uint32_t SignalDetector::getSignalMagnitude(void)
     false indicates that a signal is absent.
 
 *****************************************************************************/
-bool SignalDetector::detectSignal(int32_t gainInDb,
+bool SignalDetector::detectSignal(uint32_t gainInDb,
                                   int8_t *bufferPtr,
                                   uint32_t bufferLength)
 {

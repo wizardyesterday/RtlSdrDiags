@@ -16,7 +16,7 @@ extern "C"
 #define RECEIVE_BUFFER_SIZE (32768)
 
 // The current variable gain setting.
-int32_t radio_adjustableReceiveGainInDb;
+uint32_t radio_adjustableReceiveGainInDb;
 
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 

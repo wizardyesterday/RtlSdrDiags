@@ -26,7 +26,7 @@ class Squelch
   void setThreshold(int32_t threshold);
   int32_t getThreshold(void);
   uint32_t getSignalMagnitude(void);
-  bool run(int32_t gainInDb,int8_t *bufferPtr,uint32_t bufferLength);
+  bool run(uint32_t gainInDb,int8_t *bufferPtr,uint32_t bufferLength);
 
   //***************************** attributes **************************
   private:
