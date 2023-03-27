@@ -218,7 +218,10 @@ uint32_t Squelch::getSignalMagnitude(void)
 
   Outputs:
 
-    signalPresenceIndicator - The event associated with a signal.
+    signalAllowed - A flag that indicates whether or not the signal
+    exceeded the squelch threshold.  A value of true indicates that the
+    signal exceeded the threshold, and a value of fals indicates that the
+    signal did not exceed the threshold.
 
 *****************************************************************************/
 bool Squelch::run(uint32_t gainInDb,int8_t *bufferPtr,uint32_t bufferLength)
