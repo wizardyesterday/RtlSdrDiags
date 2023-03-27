@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "IqDataProcessor.h"
 
+extern int32_t radio_adjustableReceiveGainInDb;
+
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 
 /**************************************************************************
@@ -35,7 +37,7 @@ IqDataProcessor::IqDataProcessor(void)
   signalDetectThreshold = -200;
 
   // Instantiate a signal tracker.
-  trackerPtr = new SignalTracker(signalDetectThreshold);
+  squelchPtr = new Squelch(signalDetectThreshold);
 
   // Default to no notification of signal state.p
   signalNotificationEnabled = false;
@@ -75,7 +77,10 @@ IqDataProcessor::~IqDataProcessor()
 {
 
   // Release resources.
-  delete trackerPtr;
+  if (squelchPtr != NULL)
+  {
+    delete squelchPtr;
+  } // if
 
   return; 
 
@@ -267,8 +272,8 @@ void IqDataProcessor::setSignalDetectThreshold(int32_t threshold)
   // Update for later use.
   this->signalDetectThreshold = threshold;
 
-  // Notify the signal tracker of the new threshold.
-  trackerPtr->setThreshold(threshold);
+  // Notify the squelch of the new threshold.
+  squelchPtr->setThreshold(threshold);
 
   return;
 
@@ -646,38 +651,8 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Determine if a signal is available.
-  signalPresenceIndicator = trackerPtr->run(signedBufferPtr,byteCount);
-
-  switch (signalPresenceIndicator)
-  {
-    case SIGNALTRACKER_NOISE:
-    {
-      // We have no signal.
-      signalAllowed = false;
-      break;
-    } // case
-
-    case SIGNALTRACKER_STARTOFSIGNAL:
-    case SIGNALTRACKER_SIGNALPRESENT:
-    {
-      // We have a signal.
-      signalAllowed = true;
-      break;
-    } // case
-
-    case SIGNALTRACKER_ENDOFSIGNAL:
-    {
-      // We like a squelch tail.
-      signalAllowed = true;
-     break;
-    } // case
-
-    default:
-    {
-      signalAllowed = false;
-      break;
-    } // case
-  } // switch
+  signalAllowed =
+    squelchPtr->run(radio_adjustableReceiveGainInDb,signedBufferPtr,byteCount);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // In this context, signalAllowed is used as a signal presence
@@ -697,7 +672,7 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
       (signalMagnitudeCallbackPtr != NULL))
   {
     // Retrieve the average magnitude of the last received IQ block.
-    signalMagnitude = trackerPtr->getSignalMagnitude();
+    signalMagnitude = squelchPtr->getSignalMagnitude();
 
     // Notify the client of new signal magnitude information.
     signalMagnitudeCallbackPtr(signalMagnitude,
