@@ -36,7 +36,7 @@ IqDataProcessor::IqDataProcessor(void)
   // Let all signal exceed threshold.
   signalDetectThreshold = -200;
 
-  // Instantiate a signal tracker.
+  // Instantiate a squelch.
   squelchPtr = new Squelch(signalDetectThreshold);
 
   // Default to no notification of signal state.p
@@ -624,7 +624,6 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
                                    unsigned long byteCount)
 {
   int i;
-  uint16_t signalPresenceIndicator;
   int8_t *signedBufferPtr;
   bool signalAllowed;
   uint32_t signalMagnitude;
