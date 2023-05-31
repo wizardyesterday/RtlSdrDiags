@@ -223,7 +223,7 @@ FmDemodulator::FmDemodulator(
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // Allocate the filter.
   differentiatorPtr = new FirFilter(numberOfDifferentiatorTaps,
-                                          differentiatorCoefficients);
+                                    differentiatorCoefficients);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // This is needed for outputting of PCM data.
