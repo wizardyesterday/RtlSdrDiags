@@ -125,6 +125,17 @@ static float audioDecimatorCoefficients[] =
    0.0015969
 };
 
+// These coefficients are used for the demodulator differentiator.
+static float differentiatorCoefficients[] =
+{
+  -1/16,
+  0,
+  1,
+  0,
+  -1,
+  1/16
+};
+
 extern void nprintf(FILE *s,const char *formatPtr, ...);
 
 /*****************************************************************************
@@ -152,6 +163,7 @@ FmDemodulator::FmDemodulator(
   int numberOfTunerDecimatorTaps;
   int numberOfPostDemodDecimatorTaps;
   int numberOfAudioDecimatorTaps;
+  int numberOfDifferentiatorTaps;
 
   // Set to a nominal gain.
   demodulatorGain = 64000/(2 * M_PI);
@@ -164,6 +176,9 @@ FmDemodulator::FmDemodulator(
 
   numberOfAudioDecimatorTaps =
     sizeof(audioDecimatorCoefficients) / sizeof(float);
+
+  numberOfDifferentiatorTaps = 
+      sizeof(differentiatorCoefficients) / sizeof(float);
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // This pair of decimators reduce the sample rate from 256000S/s to
@@ -201,8 +216,15 @@ FmDemodulator::FmDemodulator(
                                           2);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-  // Initial phase angle for d(theta)/dt computation.
-  previousTheta = 0;
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // This filter performs differentiation of the phase value of the
+  // signal.  It replaces the first-order differentiator in the FM
+  // demodulator.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Allocate the filter.
+  differentiatorPtr = new FirFilter(numberOfDifferentiatorTaps,
+                                          differentiatorCoefficients);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // This is needed for outputting of PCM data.
   this->pcmCallbackPtr = pcmCallbackPtr;
@@ -237,6 +259,7 @@ FmDemodulator::~FmDemodulator(void)
   delete qTunerDecimatorPtr;
   delete postDemodDecimatorPtr;
   delete audioDecimatorPtr;
+  delete differentiatorPtr;
 
   return;
 
@@ -268,9 +291,7 @@ void FmDemodulator::resetDemodulator(void)
   qTunerDecimatorPtr->resetFilterState();
   postDemodDecimatorPtr->resetFilterState();
   audioDecimatorPtr->resetFilterState();
-
-  // Initial phase angle for d(theta)/dt computation.
-  previousTheta = 0;
+  differentiatorPtr->resetFilterState();
 
   return;
 
@@ -427,7 +448,12 @@ uint32_t FmDemodulator::reduceSampleRate(
   phase angle of the previous IQ sample is subtracted from theta(n).  This
   approximates the derivative of the phase angle with respect to time.
   Note that omega(n) = dtheta(n)/dn represents the instantaneous frequency
-  of the signal.  Due to the branch cut of the atan() function at PI
+  of the signal.
+
+  Note: The first-order differentiator has been replaced with a 6-tap FIR
+  differentiator.  This improves weak-signal performance.
+
+  Due to the branch cut of the atan() function at PI
   radians, processing is performed to ensure that the phase difference
   satisfies the equation, -PI < dtheta < PI.  Finally, the demodulated
   signal is multiplied by the demodulator gain, and the result is a
@@ -462,7 +488,7 @@ uint32_t FmDemodulator::demodulateSignal(uint32_t bufferLength)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     // Compute d(theta)/dt.
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    deltaTheta = theta - previousTheta;
+    deltaTheta = differentiatorPtr->filterData(theta);
 
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     // We want -M_PI <= deltaTheta <= M_PI.
@@ -480,9 +506,6 @@ uint32_t FmDemodulator::demodulateSignal(uint32_t bufferLength)
 
     // Store the demodulated data.
     demodulatedData[i] = demodulatorGain * deltaTheta;
-
-    // Update our last phase angle for the next iteration.
-    previousTheta = theta;
 
   } // for
 

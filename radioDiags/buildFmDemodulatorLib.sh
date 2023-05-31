@@ -7,10 +7,12 @@
 
 CcFiles="\
     Filters/Int16/Decimator_int16.cc \
+    Filters/FirFilter.cc \
     FmDemodulator/FmDemodulator.cc"
 
 Includes="\
     -I Filters/Int16 \
+    -I Filters \
     -I FmDemodulator"
  
 # Compile string.
