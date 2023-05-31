@@ -133,6 +133,7 @@ static float differentiatorCoefficients[] =
   1,
   0,
   -1,
+  0,
   1/16
 };
 
