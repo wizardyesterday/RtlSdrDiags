@@ -480,9 +480,6 @@ uint32_t FmDemodulator::demodulateSignal(uint32_t bufferLength)
 
   for (i = 0; i < bufferLength; i++)
   {
-    // Kludge to prevent 0/0 condition for the atan2() function.
-    qData[i] = qData[i] + 1e-10;
-  
     // Compute phase angle.
     theta = atan2((double)qData[i],(double)iData[i]);
 
