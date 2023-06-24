@@ -205,7 +205,7 @@ int16_t FirFilter_int16::filterData(int16_t x)
     ringBufferIndex = 0;
   } // if
 
-  // Transform from Q31 format to Q15 format. 
+  // Transform from Q30 format to Q15 format. 
   y = (int16_t)(accumulator >> 15);
  
   return (y);

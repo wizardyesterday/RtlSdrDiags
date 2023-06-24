@@ -183,7 +183,7 @@ int16_t Interpolator_int16::filterData(int16_t *coefficientsPtr)
     } // else
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
  
-    // Decrement the in    // Decrement the index in a modulo fashion.
+    // Decrement the index in a modulo fashion.
     xIndex--;
     if (xIndex < 0)
     {
@@ -192,7 +192,7 @@ int16_t Interpolator_int16::filterData(int16_t *coefficientsPtr)
     } // if
   } // for
  
-  // Transform from Q31 format to Q15 format. 
+  // Transform from Q30 format to Q15 format. 
   y = (int16_t)(accumulator >> 15);
  
   return (y);
