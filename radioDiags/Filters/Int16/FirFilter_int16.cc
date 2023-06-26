@@ -175,9 +175,9 @@ int16_t FirFilter_int16::filterData(int16_t x)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
     // Saturate the result.
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    if (accumulator > 0x3ffffff)
+    if (accumulator > 0x3fffffff)
     {
-      accumulator = 0x3ffffff;
+      accumulator = 0x3fffffff;
     } // if
     else
     {
