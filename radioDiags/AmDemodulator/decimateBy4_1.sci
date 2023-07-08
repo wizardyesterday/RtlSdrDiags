@@ -1,21 +1,25 @@
 //******************************************************************
+//******************************************************************
 // This program generates the required filter coefficients so that
 // an input signal, that is sampled at 256000 S/s can be decimated
-// to 64000 S/s.  We want to limit the bandwidth of the aliasing
-// filter to 27200 Hz.  The filter coefficients are computed by
-// the minimax function, and the result is an equiripple linear
-// phase FIR filter.
+// to 64000 S/s.  This set of coefficients is used for the first 
+// stage of a 3-stage decimator.  Due to the nature of a multi-stage
+// decimator, the transition width can be relaxed since the final
+// stage of decimation will filter out any aliased components.
+// filter to Hz.  The filter coefficients are computed by the
+// minimax function, and the result is an equiripple linear phase
+// FIR filter.
 // The filter specifications are listed below.
 //
-// Pass Band: 0 <= F <= 27200 Hz.
-// Transition Band: 27200 < F <= 31920 Hz.
-// Stop Band: 31920< F < 32000 Hz.
-// Passband Ripple: 0.3
-// Stopband Ripple: 0.015
+// Pass Band: 0 <= F <= 2400 Hz.
+// Transition Band: 2400 < F <= 60000 Hz.
+// Stop Band: 60000 < F < 64000 Hz.
+// Passband Ripple: 0.1
+// Stopband Ripple: 0.005
 //
 // Note that the filter length will be automatically  calculated
 // from the filter parameters.
-// Chris G. 06/24/2017
+// Chris G. 08/17/2017
 //******************************************************************
 
 // Include the common code.
@@ -28,10 +32,10 @@ exec('../Common/utils.sci',-1);
 Fsample = 256000;
 
 // Passband edge.
-Fp = 27200;
+Fp = 2400;
 
 // Stopband edge.
-Fs = 31920;
+Fs = 60000;
 
 // The desired demodulator bandwidth.
 F = [0 Fp; Fs Fsample/2];
@@ -40,10 +44,10 @@ F = [0 Fp; Fs Fsample/2];
 deltaF = (Fs - Fp) / Fsample;
 
 // Passband ripple
-deltaP = 0.3;
+deltaP = 0.1;
 
 // Stopband ripple.
-deltaS = 0.015;
+deltaS = 0.005;
 
 // Number of taps for our filter.
 n = computeFilterOrder(deltaP,deltaS,deltaF,Fs)

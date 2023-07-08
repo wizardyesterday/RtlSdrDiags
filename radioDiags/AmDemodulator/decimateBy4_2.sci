@@ -1,7 +1,7 @@
 //******************************************************************
 // This program generates the required filter coefficients so that
-// an input signal, that is sampled at 256000 S/s can be decimated
-// to 64000 S/s.  This set of coefficients is used for the second 
+// an input signal, that is sampled at 64000 S/s can be decimated
+// to 16000 S/s.  This set of coefficients is used for the second 
 // stage of a 3-stage decimator.  Due to the nature of a multi-stage
 // decimator, the transition width can be relaxed since the final
 // stage of decimation will filter out any aliased components.
@@ -10,15 +10,15 @@
 // FIR filter.
 // The filter specifications are listed below.
 //
-// Pass Band: 0 <= F <= 3400 Hz.
-// Transition Band: 3400 < F <= 12000 Hz.
+// Pass Band: 0 <= F <= 2400 Hz.
+// Transition Band: 2400 < F <= 12000 Hz.
 // Stop Band: 12000 < F < 16000 Hz.
 // Passband Ripple: 0.1
 // Stopband Ripple: 0.005
 //
 // Note that the filter length will be automatically  calculated
 // from the filter parameters.
-// Chris G. 07/22/2017
+// Chris G. 08/17/2017
 //******************************************************************
 
 // Include the common code.
@@ -31,7 +31,7 @@ exec('../Common/utils.sci',-1);
 Fsample = 64000;
 
 // Passband edge.
-Fp = 3400;
+Fp = 2400;
 
 // Stopband edge.
 Fs = 12000;
