@@ -1,22 +1,25 @@
 //******************************************************************
 // This program generates the required filter coefficients so that
 // an input signal, that is sampled at 16000 S/s can be decimated
-// to 8000 S/s.  We want to limit the bandwidth of the aliasing
-// filter to 3400 Hz.  The filter coefficients are computed by
-// the minimax function, and the result is an equiripple linear
-// phase FIR filter.
+// to 80000 S/s.  This set of coefficients is used for the third 
+// stage of a 3-stage decimator.  Due to the nature of a multi-stage
+// decimator, the transition width can be relaxed since the final
+// stage of decimation will filter out any aliased components.
+// filter to Hz.  The filter coefficients are computed by the
+// minimax function, and the result is an equiripple linear phase
+// FIR filter.
 // The filter specifications are listed below.
 //
-// Pass Band: 0 <= F <= 3400 Hz.
-// Transition Band: 3400 < F <= 3990 Hz.
+// Pass Band: 0 <= F <= 2400 Hz.
+// Transition Band: 2400 < F <= 3990 Hz.
 // Stop Band: 3990 < F < 4000 Hz.
 // Passband Ripple: 0.1
 // Stopband Ripple: 0.005
 //
 // Note that the filter length will be automatically  calculated
 // from the filter parameters.
-// Chris G. 06/24/2017
-//******************************************************************
+// Chris G. 08/17/2017
+///******************************************************************
 
 // Include the common code.
 exec('../Common/utils.sci',-1);
@@ -28,7 +31,7 @@ exec('../Common/utils.sci',-1);
 Fsample = 16000
 
 // Passband edge.
-Fp = 3400;
+Fp = 2400;
 
 // Stopband edge.
 Fs = 3990;
