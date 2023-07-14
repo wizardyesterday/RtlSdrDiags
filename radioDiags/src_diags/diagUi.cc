@@ -447,7 +447,7 @@ static int newstrcmp(const char *s1,const char *s2)
 static void cmdSetDemodMode(char *bufferPtr)
 {
   int mode;
-  char *displayValue[6] = {"None","AM","FM","WBFM","LSB","USB"};
+  char *displayValue[6] = {"IQ Dump","AM","FM","WBFM","LSB","USB"};
 
   // Retrieve value
   sscanf(bufferPtr,"%d",&mode);
@@ -1904,7 +1904,7 @@ static void cmdExitSystem(char *bufferPtr)
 static void cmdHelp(void)
 {
 
-  nprintf(stderr,"\nset demodmode <mode: [0 (None) | 1 (AM) | 2 (FM)\n"
+  nprintf(stderr,"\nset demodmode <mode: [0 (IQ Dump) | 1 (AM) | 2 (FM)\n"
                    "                      | 3 (WBFM)] | 4 (LSB) | 5 (USB)>]\n");
 
   nprintf(stderr,"set amdemodgain <gain>\n");

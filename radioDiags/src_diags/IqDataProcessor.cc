@@ -685,6 +685,7 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
     {
       case None:
       {
+        fwrite(signedBufferPtr,sizeof(int8_t),byteCount,stdout);
         break;
       } // case
 
