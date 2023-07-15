@@ -68,8 +68,7 @@ static float dcRemovalNumeratorCoefficients[] = {1, -1};
 static float dcRemovalDenominatorCoefficients[] = {-0.95};
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-#define nprintf fprintf
-//extern void nprintf(FILE *s,const char *formatPtr, ...);
+extern void nprintf(FILE *s,const char *formatPtr, ...);
 
 /*****************************************************************************
 
