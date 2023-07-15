@@ -8,11 +8,12 @@
 // expected sample rate is 256000S/s, and the data format is 8-bit two's
 // complement samples that arrive in the order: I,Q,I,Q,...
 // Note that the data format is also compatible with the raw IQ samples
-// provided by the HackRF.
+// provided by the HackRF.  This program uses the same demodulators that
+// I use on my rtl-sdr code and my HackRF code.
 //
 // To run this program type,
 // 
-//     ./demodulator> -d [1 | 2 | 3 | 4 | 5]
+//     ./demodulator> -d [1 | 2 | 3 | 4 | 5] < inputfile > outputfile
 ///
 // where,
 //
@@ -22,6 +23,16 @@
 //    3 - wideband FM demodulation.
 //    4 - LSB demodulation.
 //    5 - USB demodulation.
+//
+// For example, I type something, for default AM demodulation:
+//  ./demod < someFile.iq | aplay -f s16_le -r 8000
+//
+// For FM demodulation, you would type:
+//  ./demod -d 2 < somefile.iq | aplay -f s16_le -r 8000
+//
+// Keep in mind that if you had an SDR sending raw IQ data over a network
+// connection, you could pipe the output of netcat to thedemod program
+// and demodulate live data.
 //*************************************************************************
 
 #include <stdio.h>
