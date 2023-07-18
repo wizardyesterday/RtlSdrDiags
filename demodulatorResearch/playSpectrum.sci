@@ -7,7 +7,8 @@
 //  Name: playSpectrum
 //
 //  Purpose: The purpose of this function is to to read a file of
-//  IQ data samples and display the spectrum in an animated fashion.
+//  IQ data samples and display the signal and the spectrum in an
+//  animated fashion.
 //  The data stream arrives as I,Q,I,Q.... The data format is
 //  8-bit 2's complement.
 //
@@ -66,6 +67,8 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
       i = x(1:2:$);
       q = x(2:2:$);
 
+      m = sqrt(i.*i + q.*q);
+
       // Window the data.
       i = i .* win;
       q = q .* win;
@@ -79,10 +82,14 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
       // Place zero frequency at the center.
       Z = fftshift(Z);
 
-     // Display the signal magnitude.
-      plot(10*log10(abs(Z(1:length(z)))));
-
       // Display the signal magnitude.
+      subplot(211);
+      title('Signal Magnitude sqrt(i^2 + q^2)');
+      plot(m);
+
+      // Display spectrum magnitude.
+      subplot(212);
+      title('Power Spectrum, dB');
       plot(10*log10(abs(Z)));
 
       // Pause for a little bit.
@@ -108,6 +115,9 @@ endfunction
 // Mainline code.
 //*******************************************************************
 
-//playSpectrum('yoyo.iq',4096,3000000,500);
+playSpectrum('yoyo.iq',4096,3000000,500);
 //playSpectrum('f135_4.iq',4096,3000000,500);
-playSpectrum('f120_35.iq',4096,3000000,500);
+//playSpectrum('f120_35.iq',4096,40000000,500);
+//playSpectrum('f162_425.iq',4096,40000000,500);
+//playSpectrum('f154_845.iq',4096,40000000,500);
+//playSpectrum('f90_1.iq',4096,40000000,500);

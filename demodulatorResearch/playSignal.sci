@@ -67,6 +67,7 @@ function playSignal(fileName,segmentSize,totalSamples,dwellTime)
       m = sqrt(i.*i + q.*q);
 
      // Display the signal magnitude.
+      title('Signal Magnitude, ||i q||');
       plot(m);
 
       // Pause for a little bit.
@@ -92,5 +93,6 @@ endfunction
 // Mainline code.
 //*******************************************************************
 
-playSignal('yoyo.iq',4000,3000000,500);
-//playSignal('f135_4.iq',20000,3000000,500);
+//playSignal('yoyo.iq',4096,3000000,500);
+//playSignal('f135_4.iq',4096,3000000,500);
+playSignal('f120_35.iq',4096,40000000,500);
