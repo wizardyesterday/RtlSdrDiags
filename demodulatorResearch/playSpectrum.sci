@@ -11,11 +11,6 @@
 //  The data stream arrives as I,Q,I,Q.... The data format is
 //  8-bit 2's complement.
 //
-//  NOTE: This is a work in progress. I will probably update this
-//  function to use something like the overlap add method (or the
-//  overlap save method).  Additionally, I will window the data.
-//
-//
 //  Calling Sequence: state = playSpectrum(fileName,
 //                                         segmentSize,
 //                                         totalSamples,
@@ -38,6 +33,9 @@
 //
 //**********************************************************************
 function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
+
+  // Construct Hanning window.
+  win = window('hn',segmentSize/2);
 
   // Convert to microseconds.
   delay = dwellTime * 1000;
@@ -67,6 +65,10 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
       // Separate the in-phase and quadrature components.
       i = x(1:2:$);
       q = x(2:2:$);
+
+      // Window the data.
+      i = i .* win;
+      q = q .* win;
 
       // Form complex vector.
       z = i + %i*q;
@@ -100,5 +102,5 @@ endfunction
 // Mainline code.
 //*******************************************************************
 
-playSpectrum('yoyo.iq',4096,3000000,500);
-//playSpectrum('f135_4.iq',20000,3000000,500);
+//playSpectrum('yoyo.iq',4096,3000000,500);
+playSpectrum('f135_4.iq',4096,3000000,500);
