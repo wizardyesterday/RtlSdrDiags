@@ -76,8 +76,14 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
       // Form frequency domain vector.
       Z = fft(z,-1);
 
+      // Place zero frequency at the center.
+      Z = fftshift(Z);
+
      // Display the signal magnitude.
-      plot(abs(Z(1:length(z)/2)));
+      plot(10*log10(abs(Z(1:length(z)))));
+
+      // Display the signal magnitude.
+      plot(10*log10(abs(Z)));
 
       // Pause for a little bit.
       xpause(delay);
@@ -103,4 +109,5 @@ endfunction
 //*******************************************************************
 
 //playSpectrum('yoyo.iq',4096,3000000,500);
-playSpectrum('f135_4.iq',4096,3000000,500);
+//playSpectrum('f135_4.iq',4096,3000000,500);
+playSpectrum('f120_35.iq',4096,3000000,500);
