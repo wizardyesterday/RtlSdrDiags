@@ -144,5 +144,5 @@ playSpectrum('yoyo.iq',4096,3000000,500,1);
 //playSpectrum('f135_4.iq',4096,3000000,500,1);
 //playSpectrum('f120_35.iq',4096,40000000,500,1);
 //playSpectrum('f162_425.iq',4096,40000000,500,1);
-p..laySpectrum('f154_845.iq',4096,40000000,500,1);
+//playSpectrum('f154_845.iq',4096,40000000,500,1);
 //playSpectrum('f90_1.iq',4096,40000000,500,1);
