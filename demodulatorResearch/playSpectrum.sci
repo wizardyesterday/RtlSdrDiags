@@ -15,7 +15,8 @@
 //  Calling Sequence: state = playSpectrum(fileName,
 //                                         segmentSize,
 //                                         totalSamples,
-//                                         dwellTime)
+//                                         dwellTime,
+//                                         sig)
 //
 //  Inputs:
 //
@@ -28,12 +29,14 @@
 //    dwellTime - The time, in milliseconds, to pause after each
 //    plot of the magnitude data.
 //
+//    sig - Include signal magnitude display.
+//
 //  Outputs:
 //
 //    None.
 //
 //**********************************************************************
-function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
+function playSpectrum(fileName,segmentSize,totalSamples,dwellTime,sig)
 
   // Construct Hanning window.
   win = window('hn',segmentSize/2);
@@ -44,8 +47,15 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
   // Open the file.
   fd = mopen(fileName);
 
-  // Set up the display.
-  scf(1);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Set up the displays.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if sig == 1
+    scf(1);
+  end
+ 
+  scf(2);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Initialize or loop entry.
   done = 0;
@@ -82,22 +92,37 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime)
       // Place zero frequency at the center.
       Z = fftshift(Z);
 
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
       // Display the signal magnitude.
-      subplot(211);
-      title('Signal Magnitude sqrt(i^2 + q^2)');
-      plot(m);
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      if sig == 1
+        scf(1);
+        title('Signal Magnitude sqrt(i^2 + q^2)');
+        plot(m);
+      end
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
       // Display spectrum magnitude.
-      subplot(212);
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      scf(2);
       title('Power Spectrum, dB');
       plot(10*log10(abs(Z)));
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
       // Pause for a little bit.
       xpause(delay);
+    end
 
-      // Clear the plot.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Clear the displays.
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    if sig == 1
       clf(1);
     end
+
+    clf(2);
+    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     if filePosition > totalSamples
       // We're done.
@@ -115,9 +140,9 @@ endfunction
 // Mainline code.
 //*******************************************************************
 
-playSpectrum('yoyo.iq',4096,3000000,500);
-//playSpectrum('f135_4.iq',4096,3000000,500);
-//playSpectrum('f120_35.iq',4096,40000000,500);
-//playSpectrum('f162_425.iq',4096,40000000,500);
-//playSpectrum('f154_845.iq',4096,40000000,500);
-//playSpectrum('f90_1.iq',4096,40000000,500);
+playSpectrum('yoyo.iq',4096,3000000,500,1);
+//playSpectrum('f135_4.iq',4096,3000000,500,1);
+//playSpectrum('f120_35.iq',4096,40000000,500,1);
+//playSpectrum('f162_425.iq',4096,40000000,500,1);
+p..laySpectrum('f154_845.iq',4096,40000000,500,1);
+//playSpectrum('f90_1.iq',4096,40000000,500,1);
