@@ -109,7 +109,7 @@ function playSignal(fileName,segmentSize,totalSamples,dwellTime,sig)
         case 2
           // Display spectrum magnitude.
           title('Power Spectrum, dB');
-          plot(10*log10(abs(Z)));
+          plot(20*log10(abs(Z)));
 
         case 3
           // Display the signal magnitude.
@@ -119,7 +119,7 @@ function playSignal(fileName,segmentSize,totalSamples,dwellTime,sig)
           // Display spectrum magnitude.
           subplot(212);
           title('Power Spectrum, dB');
-          plot(10*log10(abs(Z)));
+          plot(20*log10(abs(Z)));
 
       end // select
 
