@@ -1,10 +1,14 @@
 //******************************************************************
 // File name: playSignal.sci
 //******************************************************************
+// This program assumes that an IQ data file contains data that is
+// sampled at 256000S/s.  Data segments should be powers of 2 so
+// that no zero padding is needed for the case that an FFT is run.
+//******************************************************************
 
 //**********************************************************************
 //
-//  Name: playSpectrum
+//  Name: playSignal
 //
 //  Purpose: The purpose of this function is to to read a file of
 //  IQ data samples and display the signal and the spectrum in an
@@ -12,7 +16,7 @@
 //  The data stream arrives as I,Q,I,Q.... The data format is
 //  8-bit 2's complement.
 //
-//  Calling Sequence: state = playSpectrum(fileName,
+//  Calling Sequence: state = playSignal(fileName,
 //                                         segmentSize,
 //                                         totalSamples,
 //                                         dwellTime,
@@ -22,21 +26,32 @@
 //
 //    fileName - The name of the rile that contains the IQ samples.
 //
-//    segmentSize - The number of samples to read each time.
+//    segmentSize - The number of samples to read each time.  The
+//    number of complex samples that are read is segmentSize / 2.
+//    The duration of each segment of complex samples is,
+//    (segmentSize / 2) / sampleRate,
+//    where sampleRate is the system sample rate in samples (complex)
+//    per second.  For example, with a sample rate of 256000S/s, and
+//    a segment size of 4096 bytes (8-bit samples), the segment duration
+//    is 2048 / 256000 = 8ms.
 //
 //    totalSamples - The total number of samples in the file.
 //
 //    dwellTime - The time, in milliseconds, to pause after each
 //    plot of the magnitude data.
 //
-//    sig - Include signal magnitude display.
+//    sig - An indicator of the type of data to display.  Valid values
+//    are:
+//      1 - Display signal magnitude.
+//      2 - Display magnitude spectrum.
+//      3 -- Display signal magnitude and magnitude spectrum.
 //
 //  Outputs:
 //
 //    None.
 //
 //**********************************************************************
-function playSpectrum(fileName,segmentSize,totalSamples,dwellTime,sig)
+function playSignal(fileName,segmentSize,totalSamples,dwellTime,sig)
 
   // Construct Hanning window.
   win = window('hn',segmentSize/2);
@@ -47,15 +62,8 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime,sig)
   // Open the file.
   fd = mopen(fileName);
 
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  // Set up the displays.
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-  if sig == 1
-    scf(1);
-  end
- 
-  scf(2);
-  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Set up the display.
+  scf(1);
 
   // Initialize or loop entry.
   done = 0;
@@ -92,37 +100,35 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime,sig)
       // Place zero frequency at the center.
       Z = fftshift(Z);
 
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      // Display the signal magnitude.
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      if sig == 1
-        scf(1);
-        title('Signal Magnitude sqrt(i^2 + q^2)');
-        plot(m);
-      end
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      select sig
+        case 1
+          // Display the signal magnitude.
+          title('Signal Magnitude sqrt(i^2 + q^2)');
+          plot(m);
 
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      // Display spectrum magnitude.
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-      scf(2);
-      title('Power Spectrum, dB');
-      plot(10*log10(abs(Z)));
-      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+        case 2
+          // Display spectrum magnitude.
+          title('Power Spectrum, dB');
+          plot(10*log10(abs(Z)));
+
+        case 3
+          // Display the signal magnitude.
+          subplot(211);
+          title('Signal Magnitude sqrt(i^2 + q^2)');
+          plot(m);
+          // Display spectrum magnitude.
+          subplot(212);
+          title('Power Spectrum, dB');
+          plot(10*log10(abs(Z)));
+
+      end // select
 
       // Pause for a little bit.
       xpause(delay);
     end
 
-    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    // Clear the displays.
-    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-    if sig == 1
-      clf(1);
-    end
-
-    clf(2);
-    //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+    // Clear the display.
+    clf(1);
 
     if filePosition > totalSamples
       // We're done.
@@ -137,12 +143,11 @@ function playSpectrum(fileName,segmentSize,totalSamples,dwellTime,sig)
 endfunction
 
 //*******************************************************************
-// Mainline code.
+// Mainline code. 
 //*******************************************************************
-
-playSpectrum('yoyo.iq',4096,3000000,500,1);
-//playSpectrum('f135_4.iq',4096,3000000,500,1);
-//playSpectrum('f120_35.iq',4096,40000000,500,1);
-//playSpectrum('f162_425.iq',4096,40000000,500,1);
-//playSpectrum('f154_845.iq',4096,40000000,500,1);
-//playSpectrum('f90_1.iq',4096,40000000,500,1);
+//playSignal('yoyo.iq',4096,3000000,500,3);
+//playSignal('f135_4.iq',4096,3000000,500,1);
+playSignal('f120_35.iq',4096,40000000,500,2);
+//playSignal('f162_425.iq',4096,40000000,500,1);
+//playSignal('f154_845.iq',4096,40000000,500,1);
+//playSignal('f90_1.iq',4096,40000000,500,1);
