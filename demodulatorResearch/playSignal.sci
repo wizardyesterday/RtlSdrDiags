@@ -85,6 +85,7 @@ function playSignal(fileName,segmentSize,totalSamples,dwellTime,sig)
       i = x(1:2:$);
       q = x(2:2:$);
 
+      // Compute the magnitude of the signal.
       m = sqrt(i.*i + q.*q);
 
       // Window the data.
@@ -107,19 +108,19 @@ function playSignal(fileName,segmentSize,totalSamples,dwellTime,sig)
           plot(m);
 
         case 2
-          // Display spectrum magnitude.
+          // Display spectrum magnitude in decibels.
           title('Power Spectrum, dB');
-          plot(20*log10(abs(Z)));
+          plot(20 * log10(abs(Z)));
 
         case 3
           // Display the signal magnitude.
           subplot(211);
           title('Signal Magnitude sqrt(i^2 + q^2)');
           plot(m);
-          // Display spectrum magnitude.
+          // Display spectrum magnitude in decibels.
           subplot(212);
           title('Power Spectrum, dB');
-          plot(20*log10(abs(Z)));
+          plot(20 * log10(abs(Z)));
 
       end // select
 
@@ -140,14 +141,17 @@ function playSignal(fileName,segmentSize,totalSamples,dwellTime,sig)
   // We're done with the file.
   mclose(fd);
 
+  // We're done with this figure.
+  delete(gcf());
+
 endfunction
 
 //*******************************************************************
 // Mainline code. 
 //*******************************************************************
-//playSignal('yoyo.iq',4096,3000000,500,3);
+playSignal('yoyo.iq',4096,3000000,500,2);
 //playSignal('f135_4.iq',4096,3000000,500,1);
-playSignal('f120_35.iq',4096,40000000,500,2);
+//playSignal('f120_35.iq',4096,40000000,500,2);
 //playSignal('f162_425.iq',4096,40000000,500,1);
 //playSignal('f154_845.iq',4096,40000000,500,1);
 //playSignal('f90_1.iq',4096,40000000,500,1);
