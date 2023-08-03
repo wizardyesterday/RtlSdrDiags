@@ -991,6 +991,63 @@ bool Radio::setReceiveWarpInPartsPerMillion(int warp)
 
 /**************************************************************************
 
+  Name: enableIqDump
+
+  Purpose: The purpose of this function is to enable the streaming of
+  IQ data over a UDP connection.  This allows a link parter to
+  process this data in any required way: for example, demodulation,
+  spectrum analysis, etc.
+
+  Calling Sequence: enableIqDump()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void Radio::enableIqDump(void)
+{
+
+  // Enable the streaming of IQ data over a UDP connection.
+  receiveDataProcessorPtr->enableIqDump();
+
+  return;
+
+} // enableIqDump
+
+/**************************************************************************
+
+  Name: disableIqDump
+
+  Purpose: The purpose of this function is to disable the streaming of
+  IQ data over a UDP connection.
+  Calling Sequence: disableIqDump()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void Radio::disableIqDump(void)
+{
+
+  // Disable the streaming of IQ data over a UDP connection.
+  receiveDataProcessorPtr->disableIqDump();
+
+  return;
+
+} // disableIqDump
+
+/**************************************************************************
+
   Name: setSignalDetectThreshold
 
   Purpose: The purpose of this function is to set the signal detect

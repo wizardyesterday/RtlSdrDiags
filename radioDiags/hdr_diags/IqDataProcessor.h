@@ -52,6 +52,9 @@ class IqDataProcessor
       void (*callbackPtr)(uint32_t signalMagnitude,void *contextPtr),
       void *contextPtr);
 
+  void enableIqDump(void);
+  void disableIqDump(void);
+
   void displayInternalInformation(void);
 
 private:
@@ -75,6 +78,7 @@ private:
 
   // IQ dump network support.
   UdpClient *networkInterfacePtr;
+  bool iqDumpEnabled;
 
   // Signal notification support.
   bool signalNotificationEnabled;

@@ -54,6 +54,9 @@ IqDataProcessor::IqDataProcessor(void)
   // Instantiate network connection.
   networkInterfacePtr = new UdpClient("192.93.16.87",8001);
 
+  // Initially, dumping IQ data over a network connection is disabled.
+  iqDumpEnabled = false;
+
   return; 
 
 } // IqDataProcessor
@@ -605,13 +608,70 @@ void IqDataProcessor::upconvertByFsOver4(
 
 /**************************************************************************
 
+  Name: enableIqDump
+
+  Purpose: The purpose of this function is to enable the streaming of
+  IQ data over a UDP connection.  This allows a link parter to
+  process this data in any required way: for example, demodulation,
+  spectrum analysis, etc.
+
+  Calling Sequence: enableIqDump()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::enableIqDump(void)
+{
+
+  // Enable the streaming of IQ data over a UDP connection.
+  iqDumpEnabled = true;
+
+  return;
+
+} // enableIqDump
+
+/**************************************************************************
+
+  Name: disableIqDump
+
+  Purpose: The purpose of this function is to disable the streaming of
+  IQ data over a UDP connection.
+  Calling Sequence: disableIqDump()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void IqDataProcessor::disableIqDump(void)
+{
+
+  // Disable the streaming of IQ data over a UDP connection.
+  iqDumpEnabled = false;
+
+  return;
+
+} // disableIqDump
+
+/**************************************************************************
+
   Name: acceptIqData
 
   Purpose: The purpose of this function is to queue data to be transmitted
   over the network.  The data consumer thread will dequeue the message
   and perform the forwarding of the data.
 
-  Calling Sequence: acceptIqData(timeStamp,bufferPtr,byteCount);
+  Calling Sequence: acceptIqData(timeStamp,bufferPtr,byteCount)
 
   Inputs:
 
@@ -689,15 +749,16 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
 
   if (signalAllowed)
   {
-    // We're choosing a block size of 2048 to be nice to netcat.
-    networkInterfacePtr->sendData(signedBufferPtr,byteCount,2048);
+    if (iqDumpEnabled == true)
+    {
+      // We're choosing a block size of 2048 to be nice to netcat.
+      networkInterfacePtr->sendData(signedBufferPtr,byteCount,2048);
+    } // if
 
     switch (demodulatorMode)
     {
       case None:
       {
-        // We're choosing a block size of 2048 to be nice to netcat.
-//        networkInterfacePtr->sendData(signedBufferPtr,byteCount,2048);
         break;
       } // case
 

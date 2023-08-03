@@ -61,6 +61,8 @@ class Radio
   void setSsbDemodulatorGain(float gain);
 
   IqDataProcessor *getIqProcessor(void);
+  void enableIqDump(void);
+  void disableIqDump(void);
 
   // AGC support.
   bool setAgcType(uint32_t type);
