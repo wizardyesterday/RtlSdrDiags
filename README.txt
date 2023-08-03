@@ -98,6 +98,8 @@ set rxbandwidth <bandwidth in Hertz>
 set rxsamplerate <samplerate in S/s>
 set rxwarp <warp in ppm>
 set squelch <threshold in dBFs>
+enable iqdump
+disable iqdump
 start receiver
 stop receiver
 set fscanvalues <startfrequency> <endfrequency> <stepsize>

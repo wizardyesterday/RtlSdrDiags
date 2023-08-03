@@ -28,6 +28,7 @@ class Radio
   public:
 
   Radio(int deviceNumber,uint32_t rxSampleRate,
+        char *hostIpAddress,int hostPort,
         void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength));
 
   ~Radio(void);

@@ -16,18 +16,22 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
   Purpose: The purpose of this function is to serve as the constructor
   of an IqDataProcessor object.
 
-  Calling Sequence: IqDataProcessor()
+  Calling Sequence: IqDataProcessor(hostIpAddress,hostPort)
 
   Inputs:
 
-    None.
+    hostIpAddress - A dotted decimal representation of the IP address
+    of the host to support streaming of IQ data.
+
+    hostPort - The UDP port for which the above mentioned host is
+    listening.
 
   Outputs:
 
     None.
 
 **************************************************************************/
-IqDataProcessor::IqDataProcessor(void)
+IqDataProcessor::IqDataProcessor(char *hostIpAddress,int hostPort)
 {
 
   // Default to no demodulation of the signal
@@ -45,14 +49,14 @@ IqDataProcessor::IqDataProcessor(void)
   // Default to no callback registered.
   signalCallbackPtr = NULL;
 
-  // Default to no notification of signal state.p
+  // Default to no notification of signal state.
   signalMagnitudeNotificationEnabled = false;
 
   // Default to no callback registered.
   signalMagnitudeCallbackPtr = NULL;
 
   // Instantiate network connection.
-  networkInterfacePtr = new UdpClient("192.93.16.87",8001);
+  networkInterfacePtr = new UdpClient(hostIpAddress,hostPort);
 
   // Initially, dumping IQ data over a network connection is disabled.
   iqDumpEnabled = false;
@@ -642,6 +646,7 @@ void IqDataProcessor::enableIqDump(void)
 
   Purpose: The purpose of this function is to disable the streaming of
   IQ data over a UDP connection.
+
   Calling Sequence: disableIqDump()
 
   Inputs:

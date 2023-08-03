@@ -16,6 +16,10 @@
 #include "diagUi.h"
 
 #define ENGINEERING_CONSOLE_PORT (20280)
+
+#define DEFAULT_HOST_IP_ADDRESS "192.93.16.87"
+#define DEFAULT_HOST_PORT (8001)
+
 extern bool diagUi_timeToExit;
 
 //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
@@ -63,7 +67,7 @@ FrequencySweeper *diagUi_frequencySweeperPtr;
 //
 // To run this program, type,
 //
-// ./radioApp,
+// ./radioApp hostIpAddress hostPort
 //
 //
 // Anyway, enjoy! Chris G.06/06/2017
@@ -108,12 +112,28 @@ int main(int argc,char **argv)
   uint64_t receiveFrequency;
   uint32_t sampleRate;
   struct timeval timeout;
+  char *hostIpAddress;
+  int hostPort;
+
+  hostIpAddress = DEFAULT_HOST_IP_ADDRESS;
+  hostPort = DEFAULT_HOST_PORT;
+
+  if (argc == 3)
+  {
+    // Retrieve IQ dump network parameters.  Yes, you can break this.
+    hostIpAddress = argv[1];
+    hostPort = atoi(argv[2]);
+  } // if
 
   receiveFrequency = 162550000;
   sampleRate = 256000;
 
   // Instantiate a radio.
-  diagUi_radioPtr = new Radio(0,sampleRate,processPcmData);
+  diagUi_radioPtr = new Radio(0,
+                              sampleRate,
+                              hostIpAddress,
+                              hostPort,
+                              processPcmData);
 
   // Set the desired frequency.
   diagUi_radioPtr->setReceiveFrequency(receiveFrequency);
