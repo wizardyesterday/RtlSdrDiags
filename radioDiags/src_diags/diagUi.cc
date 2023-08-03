@@ -1445,7 +1445,7 @@ static void cmdDisableIqDump(char *bufferPtr)
   // Disable IQ data streaming over a UDP connection.
   diagUi_radioPtr->disableIqDump();
 
-  nprintf(stderr,"IQ data streaming enabled.\n");
+  nprintf(stderr,"IQ data streaming disabled.\n");
 
   return;
 
