@@ -60,7 +60,8 @@ static void nullPcmDataHandler(int16_t *bufferPtr,uint32_t bufferLength)
   Purpose: The purpose of this function is to serve as the constructor
   of a Radio object.
 
-  Calling Sequence: Radio(deviceNumber,rxSampleRate,pcmCallbackPtr)
+  Calling Sequence: Radio(deviceNumber,rxSampleRate,
+                          hostIpAddress,hostPort,pcmCallbackPtr)
 
   Inputs:
 
@@ -68,6 +69,12 @@ static void nullPcmDataHandler(int16_t *bufferPtr,uint32_t bufferLength)
 
     rxSampleRate - The sample rate of the baseband portion of the
     receiver in samples per second.
+
+    hostIpAddress - A dotted decimal representation of the IP address
+    of the host to support streaming of IQ data.
+
+    hostPort - The UDP port for which the above mentioned host is
+    listening.
 
     pcmCallbackPtr - A pointer to a callback function that is to
     process demodulated data.
@@ -78,6 +85,7 @@ static void nullPcmDataHandler(int16_t *bufferPtr,uint32_t bufferLength)
 
 **************************************************************************/
 Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
+             char *hostIpAddress,int hostPort,
              void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength))
 { 
   int i;
@@ -139,7 +147,7 @@ Radio::Radio(int deviceNumber,uint32_t rxSampleRate,
 
     // Instantiate the IQ data processor object.  The data consumer object
     // will need this.
-    receiveDataProcessorPtr = new IqDataProcessor();
+    receiveDataProcessorPtr = new IqDataProcessor(hostIpAddress,hostPort);
 
     // Instantiate the data consumer object.  eventConsumerProcedure method
     // will need this.
@@ -988,6 +996,63 @@ bool Radio::setReceiveWarpInPartsPerMillion(int warp)
   return (success);
   
 } // setReceiveWarpInPartsPerMillion
+
+/**************************************************************************
+
+  Name: enableIqDump
+
+  Purpose: The purpose of this function is to enable the streaming of
+  IQ data over a UDP connection.  This allows a link parter to
+  process this data in any required way: for example, demodulation,
+  spectrum analysis, etc.
+
+  Calling Sequence: enableIqDump()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void Radio::enableIqDump(void)
+{
+
+  // Enable the streaming of IQ data over a UDP connection.
+  receiveDataProcessorPtr->enableIqDump();
+
+  return;
+
+} // enableIqDump
+
+/**************************************************************************
+
+  Name: disableIqDump
+
+  Purpose: The purpose of this function is to disable the streaming of
+  IQ data over a UDP connection.
+  Calling Sequence: disableIqDump()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    None.
+
+**************************************************************************/
+void Radio::disableIqDump(void)
+{
+
+  // Disable the streaming of IQ data over a UDP connection.
+  receiveDataProcessorPtr->disableIqDump();
+
+  return;
+
+} // disableIqDump
 
 /**************************************************************************
 

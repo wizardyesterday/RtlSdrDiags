@@ -11,6 +11,7 @@
 #include "WbFmDemodulator.h"
 #include "SsbDemodulator.h"
 #include "Squelch.h"
+#include "UdpClient.h"
 
 class IqDataProcessor
 {
@@ -18,7 +19,7 @@ class IqDataProcessor
 
   enum demodulatorType {None=0, Am=1, Fm=2, WbFm = 3, Lsb = 4, Usb = 5};
 
-  IqDataProcessor(void);
+  IqDataProcessor(char *hostIpAddress,int hostPort);
   ~IqDataProcessor(void);
 
   void setDemodulatorMode(demodulatorType mode);
@@ -51,6 +52,9 @@ class IqDataProcessor
       void (*callbackPtr)(uint32_t signalMagnitude,void *contextPtr),
       void *contextPtr);
 
+  void enableIqDump(void);
+  void disableIqDump(void);
+
   void displayInternalInformation(void);
 
 private:
@@ -71,6 +75,10 @@ private:
 
   // Squelch support.
   Squelch *squelchPtr;
+
+  // IQ dump network support.
+  UdpClient *networkInterfacePtr;
+  bool iqDumpEnabled;
 
   // Signal notification support.
   bool signalNotificationEnabled;
