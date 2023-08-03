@@ -51,6 +51,9 @@ IqDataProcessor::IqDataProcessor(void)
   // Default to no callback registered.
   signalMagnitudeCallbackPtr = NULL;
 
+  // Instantiate network connection.
+  networkInterfacePtr = new UdpClient("192.93.16.87",8001);
+
   return; 
 
 } // IqDataProcessor
@@ -80,6 +83,11 @@ IqDataProcessor::~IqDataProcessor()
   if (squelchPtr != NULL)
   {
     delete squelchPtr;
+  } // if
+
+  if (networkInterfacePtr != NULL)
+  {
+    delete networkInterfacePtr;
   } // if
 
   return; 
@@ -681,11 +689,15 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
 
   if (signalAllowed)
   {
+    // We're choosing a block size of 2048 to be nice to netcat.
+    networkInterfacePtr->sendData(signedBufferPtr,byteCount,2048);
+
     switch (demodulatorMode)
     {
       case None:
       {
-        fwrite(signedBufferPtr,sizeof(int8_t),byteCount,stdout);
+        // We're choosing a block size of 2048 to be nice to netcat.
+//        networkInterfacePtr->sendData(signedBufferPtr,byteCount,2048);
         break;
       } // case
 

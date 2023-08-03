@@ -11,6 +11,7 @@
 #include "WbFmDemodulator.h"
 #include "SsbDemodulator.h"
 #include "Squelch.h"
+#include "UdpClient.h"
 
 class IqDataProcessor
 {
@@ -71,6 +72,9 @@ private:
 
   // Squelch support.
   Squelch *squelchPtr;
+
+  // IQ dump network support.
+  UdpClient *networkInterfacePtr;
 
   // Signal notification support.
   bool signalNotificationEnabled;
