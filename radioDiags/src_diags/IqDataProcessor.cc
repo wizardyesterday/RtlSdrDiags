@@ -756,8 +756,8 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   {
     if (iqDumpEnabled == true)
     {
-      // We're choosing a block size of 2048 to be nice to netcat.
-      networkInterfacePtr->sendData(signedBufferPtr,byteCount,2048);
+      // Send the IQ data to the peer over the network.
+      networkInterfacePtr->sendData(signedBufferPtr,byteCount);
     } // if
 
     switch (demodulatorMode)

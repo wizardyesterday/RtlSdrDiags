@@ -20,11 +20,12 @@ class UdpClient
   ~UdpClient(void);
 
   bool connectionIsEstablished(void);
-  bool sendData(void *bufferPtr,int bufferLength,int blockSize);
+  bool sendData(void *bufferPtr,int bufferLength);
 
   private:
 
   // Attributes
+  size_t maxPayloadLength;
   int socketDescriptor;
   struct sockaddr_in peerAddress;
 };

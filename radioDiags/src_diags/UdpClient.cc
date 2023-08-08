@@ -34,6 +34,9 @@ UdpClient::UdpClient(char *ipAddressPtr,int port)
   int bufferLength;
   int status;
 
+  // This size interoperates with netcat.
+  maxPayloadLength = 2048;
+
   // Let's make a large enough buffer.
   bufferLength = 32768;
 
@@ -56,6 +59,15 @@ UdpClient::UdpClient(char *ipAddressPtr,int port)
                         SO_SNDBUF,
                         &bufferLength,
                         sizeof(int));
+
+    if (status == -1)
+    {
+      // Don't leave an open socket.
+      close(socketDescriptor);
+
+      // Indicate that the socket has not been opened.
+      socketDescriptor = 0;
+    } // if
   } // if
   else
   {
@@ -151,13 +163,6 @@ bool UdpClient::connectionIsEstablished(void)
 
     bufferLength - The number of octets to send.
 
-    blockSize - The size of the payload of a UDP datagram.  Sometimes,
-    the link partner might be an app, such as netcat, that reads its
-    input from stdin, and sends 2048-octet payloads.  The receiver
-    also expects this 2048-octet payload, and it will read 2048 bytes
-    from stdin.  Any other length payload, that is sent, just won't
-    work. 
-
   Outputs:
 
     success - An indicator of the outcome of the operation.  A value of
@@ -165,7 +170,7 @@ bool UdpClient::connectionIsEstablished(void)
     indicates that the operation was not successful.
 
 **************************************************************************/
-bool UdpClient::sendData(void *bufferPtr,int bufferLength,int blockSize)
+bool UdpClient::sendData(void *bufferPtr,int bufferLength)
 {
   bool success;
   bool failureOccurred;
@@ -175,17 +180,11 @@ bool UdpClient::sendData(void *bufferPtr,int bufferLength,int blockSize)
   int remainder;
   unsigned char *octetPtr;
 
-  if (blockSize > 2048)
-  {
-    // Restrict the length to be nice to netcat.
-    blockSize = 2048;
-  } // if
-
   // Reference the buffer in the octet context.
   octetPtr = (unsigned char *)bufferPtr;
 
-  numberOfBlocks = bufferLength / blockSize;
-  remainder = bufferLength % blockSize;
+  numberOfBlocks = bufferLength / maxPayloadLength;
+  remainder = bufferLength % maxPayloadLength;
 
   // Default to failure.
   success = false;
@@ -203,15 +202,15 @@ bool UdpClient::sendData(void *bufferPtr,int bufferLength,int blockSize)
       // 0, and uncomment MSG_DONTWAIT.
       count = sendto(socketDescriptor,
                      octetPtr,
-                     blockSize,
+                     maxPayloadLength,
                      0,//MSG_DONTWAIT,
                      (struct sockaddr *)&peerAddress,
                      sizeof(sockaddr));
 
       // Reference next block in buffer.
-      octetPtr += blockSize;
+      octetPtr += maxPayloadLength;
   
-      if (count != blockSize)
+      if (count != maxPayloadLength)
       {
         failureOccurred = true;
       } // if
