@@ -722,6 +722,17 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
   upconvertByFsOver4(signedBufferPtr,byteCount);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // Send IQ data independent of squelch threshold.  This way,
+  // we maintain a live display.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  if (iqDumpEnabled == true)
+  {
+    // Send the IQ data to the peer over the network.
+    networkInterfacePtr->sendData(signedBufferPtr,byteCount);
+  } // if
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
   // Determine if a signal is available.
   signalAllowed =
     squelchPtr->run(radio_adjustableReceiveGainInDb,signedBufferPtr,byteCount);
@@ -754,12 +765,6 @@ void IqDataProcessor::acceptIqData(unsigned long timeStamp,
 
   if (signalAllowed)
   {
-    if (iqDumpEnabled == true)
-    {
-      // Send the IQ data to the peer over the network.
-      networkInterfacePtr->sendData(signedBufferPtr,byteCount);
-    } // if
-
     switch (demodulatorMode)
     {
       case None:
