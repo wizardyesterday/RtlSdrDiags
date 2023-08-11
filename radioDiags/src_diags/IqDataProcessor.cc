@@ -670,6 +670,33 @@ void IqDataProcessor::disableIqDump(void)
 
 /**************************************************************************
 
+  Name: isIqDumpEnabled
+
+  Purpose: The purpose of this function is to determine whether or not
+  the dumping of IQ data, over a UDP connection is enabled or not.
+
+  Calling Sequence: enabled = isIqDumpEnabled()
+
+  Inputs:
+
+    None.
+
+  Outputs:
+
+    enabled - A flag that indicates whether or not the dumping of IQ
+    data is enabled.  A value of true indicates that IQ dumping is
+    enabled, and a value of false indicates that IQ dumping is disabled.
+
+**************************************************************************/
+bool IqDataProcessor::isIqDumpEnabled(void)
+{
+
+  return (iqDumpEnabled);
+
+} // isIqDumpEnabled
+
+/**************************************************************************
+
   Name: acceptIqData
 
   Purpose: The purpose of this function is to queue data to be transmitted

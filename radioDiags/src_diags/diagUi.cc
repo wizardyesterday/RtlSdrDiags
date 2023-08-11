@@ -1407,11 +1407,21 @@ static void cmdSetSquelch(char *bufferPtr)
 *****************************************************************************/
 static void cmdEnableIqDump(char *bufferPtr)
 {
+  bool enabled;
 
-  // Enable IQ data streaming over a UDP connection.
-  diagUi_radioPtr->enableIqDump();
+  enabled = diagUi_radioPtr->isIqDumpEnabled();
 
-  nprintf(stderr,"IQ data streaming enabled.\n");
+  if (!enabled)
+  {
+    // Enable IQ data streaming over a UDP connection.
+    diagUi_radioPtr->enableIqDump();
+
+    nprintf(stderr,"IQ data streaming enabled.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: IQ data streaming is already enabled.\n");
+  } // else
 
   return;
 
@@ -1441,11 +1451,21 @@ static void cmdEnableIqDump(char *bufferPtr)
 *****************************************************************************/
 static void cmdDisableIqDump(char *bufferPtr)
 {
+  bool enabled;
 
+  enabled = diagUi_radioPtr->isIqDumpEnabled();
+
+  if (enabled)
+  {
   // Disable IQ data streaming over a UDP connection.
   diagUi_radioPtr->disableIqDump();
 
   nprintf(stderr,"IQ data streaming disabled.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: IQ data streaming is already disabled.\n");
+  } // else
 
   return;
 

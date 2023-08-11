@@ -40,8 +40,7 @@ class IqDataProcessor
   void disableSignalNotification(void);
 
   void registerSignalStateCallback(
-      void (*signalCallbackPtr)(bool signalPresent,
-                                void *contextPtr),
+      void (*signalCallbackPtr)(bool signalPresent,void *contextPtr),
       void *contextPtr);
 
 
@@ -54,6 +53,7 @@ class IqDataProcessor
 
   void enableIqDump(void);
   void disableIqDump(void);
+  bool isIqDumpEnabled(void);
 
   void displayInternalInformation(void);
 

@@ -64,6 +64,7 @@ class Radio
   IqDataProcessor *getIqProcessor(void);
   void enableIqDump(void);
   void disableIqDump(void);
+  bool isIqDumpEnabled(void);
 
   // AGC support.
   bool setAgcType(uint32_t type);
