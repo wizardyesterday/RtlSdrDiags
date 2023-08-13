@@ -127,24 +127,27 @@ Radio Internal Information
 ------------------------------------------------------
 Receive Enabled                     : Yes
 Receive Gain:                       : Auto
-Receive IF Gain                     : 19 dB
-Receive Frequency                   : 120550000 Hz
+Receive IF Gain                     : Auto
+Receive Frequency                   : 90100000 Hz
 Receive Bandwidth                   : 0 Hz
 Receive Sample Rate:                : 256000 S/s
 Receive Frequency Warp:             : 0 ppm
-Receive Timestamp                   : 582516736
-Receive Block Count                 : 35554
+Receive Timestamp                   : 39763968
+Receive Block Count                 : 2427
 
 --------------------------------------------
 Data Consumer Internal Information
 --------------------------------------------
-Last Timestamp           : 582516736
+Last Timestamp           : 39763968
 Short Block Count        : 0
+
 --------------------------------------------
 IQ Data Processor Internal Information
 --------------------------------------------
-Demodulator Mode         : WBFM
+Demodulator Mode         : FM
 Signal Detect Threhold   : -200 dBFs
+IQ Dump Enabled          : Yes
+
 --------------------------------------------
 AM Demodulator Internal Information
 --------------------------------------------
@@ -165,6 +168,7 @@ SSB Demodulator Internal Information
 --------------------------------------------
 Demodulation Mode        : LSB
 Demodulator Gain         : 300.000000
+
 
 ******************** End Get Radio Info Output *************************
 

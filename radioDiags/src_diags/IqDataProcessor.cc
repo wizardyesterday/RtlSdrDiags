@@ -912,6 +912,15 @@ void IqDataProcessor::displayInternalInformation(void)
 
   nprintf(stderr,"Signal Detect Threhold   : %d dBFs\n",signalDetectThreshold);
 
+  if (iqDumpEnabled)
+  {
+    nprintf(stderr,"IQ Dump Enabled          : Yes\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"IQ Dump Enabled          : No\n");
+  } // else
+
   return;
 
 } // displayInternalInformation
