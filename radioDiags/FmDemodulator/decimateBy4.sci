@@ -8,7 +8,7 @@
 // The filter specifications are listed below.
 //
 // Pass Band: 0 <= F <= 4000 Hz.
-// Transition Band: 4000 < F <= 16 Hz.
+// Transition Band: 4000 < F <= 16000 Hz.
 // Stop Band: 16000 < F < 32000 Hz.
 // Passband Ripple: 0.3
 // Stopband Ripple: 0.015
