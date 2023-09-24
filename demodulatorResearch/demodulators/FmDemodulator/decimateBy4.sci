@@ -7,9 +7,9 @@
 // phase FIR filter.
 // The filter specifications are listed below.
 //
-// Pass Band: 0 <= F <= 27200 Hz.
-// Transition Band: 27200 < F <= 31920 Hz.
-// Stop Band: 31920< F < 32000 Hz.
+// Pass Band: 0 <= F <= 4000 Hz.
+// Transition Band: 4000 < F <= 16000 Hz.
+// Stop Band: 16000 < F < 32000 Hz.
 // Passband Ripple: 0.3
 // Stopband Ripple: 0.015
 //
@@ -28,10 +28,10 @@ exec('../Common/utils.sci',-1);
 Fsample = 256000;
 
 // Passband edge.
-Fp = 27200;
+Fp = 4000;
 
 // Stopband edge.
-Fs = 31920;
+Fs = 16000;
 
 // The desired demodulator bandwidth.
 F = [0 Fp; Fs Fsample/2];
