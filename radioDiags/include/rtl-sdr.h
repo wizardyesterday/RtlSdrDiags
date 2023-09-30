@@ -29,6 +29,13 @@ extern "C" {
 
 typedef struct rtlsdr_dev rtlsdr_dev_t;
 
+enum rtlsdr_ds_mode {
+	RTLSDR_DS_IQ = 0,	/* I/Q quadrature sampling of tuner output */
+	RTLSDR_DS_I,		/* 1: direct sampling on I branch: usually not connected */
+	RTLSDR_DS_Q,		/* 2: direct sampling on Q branch: HF on rtl-sdr v3 dongle */
+};
+
+
 RTLSDR_API uint32_t rtlsdr_get_device_count(void);
 
 RTLSDR_API const char* rtlsdr_get_device_name(uint32_t index);
@@ -216,15 +223,6 @@ RTLSDR_API int rtlsdr_get_tuner_gains(rtlsdr_dev_t *dev, int *gains);
 RTLSDR_API int rtlsdr_set_tuner_gain(rtlsdr_dev_t *dev, int gain);
 
 /*!
- * Set the IF gain for the device.
- *
- * \param dev the device handle given by rtlsdr_open()
- * \param gain in tenths of a dB, 115 means 11.5 dB.
- * \return 0 on success
- */
-RTLSDR_API int rtlsdr_set_tuner_if_gain(rtlsdr_dev_t *dev, int stage, int gain);
-
-/*!
  * Set the bandwidth for the device.
  *
  * \param dev the device handle given by rtlsdr_open()
@@ -311,6 +309,7 @@ RTLSDR_API int rtlsdr_set_agc_mode(rtlsdr_dev_t *dev, int on);
  * \param on 0 means disabled, 1 I-ADC input enabled, 2 Q-ADC input enabled
  * \return 0 on success
  */
+int _rtlsdr_set_direct_sampling(rtlsdr_dev_t *dev, int on);
 RTLSDR_API int rtlsdr_set_direct_sampling(rtlsdr_dev_t *dev, int on);
 
 /*!
@@ -388,6 +387,26 @@ RTLSDR_API int rtlsdr_read_async(rtlsdr_dev_t *dev,
  * \return 0 on success
  */
 RTLSDR_API int rtlsdr_cancel_async(rtlsdr_dev_t *dev);
+
+/*!
+ * Enable or disable the bias tee on GPIO PIN 0.
+ *
+ * \param dev the device handle given by rtlsdr_open()
+ * \param on  1 for Bias T on. 0 for Bias T off.
+ * \return -1 if device is not initialized. 0 otherwise.
+ */
+RTLSDR_API int rtlsdr_set_bias_tee(rtlsdr_dev_t *dev, int on);
+
+/*!
+ * Enable or disable the bias tee on the given GPIO pin.
+ *
+ * \param dev the device handle given by rtlsdr_open()
+ * \param gpio the gpio pin to configure as a Bias T control.
+ * \param on  1 for Bias T on. 0 for Bias T off.
+ * \return -1 if device is not initialized. 0 otherwise.
+ */
+RTLSDR_API int rtlsdr_set_bias_tee_gpio(rtlsdr_dev_t *dev, int gpio, int on);
+
 
 #ifdef __cplusplus
 }
