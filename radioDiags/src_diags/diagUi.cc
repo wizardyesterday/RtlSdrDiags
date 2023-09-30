@@ -63,6 +63,9 @@ static bool consoleConnected;
 static int connectFileDescriptor;
 static int diagUiNetworkPort;
 
+// Default to normal dongle.
+static bool v4BlogRadio = false;
+
 /**************************************************************************/
 /* function prototypes                                                    */
 /**************************************************************************/
@@ -109,6 +112,8 @@ static void cmdStopFrequencySweep(char *bufferPtr);
 static void cmdGetRadioInfo(char *bufferPtr);
 static void cmdGetFscanInfo(char *bufferPtr);
 static void cmdGetSweeperInfo(char *bufferPtr);
+static void cmdSelectV4BlogRadio(char *bufferPtr);
+static void cmdSelectNormalRadio(char *bufferPtr);
 static void cmdExitSystem(char *bufferPtr);
 static void cmdHelp(void);
 
@@ -166,6 +171,8 @@ static const commandEntry commandTable[] =
   {"get","radioinfo",cmdGetRadioInfo},   // get radioinfo
   {"get","fscaninfo",cmdGetFscanInfo}, // get fscaninfo
   {"get","sweeperinfo",cmdGetSweeperInfo}, // get sweeperinfo
+  {"select","vfourblogradio",cmdSelectV4BlogRadio}, // select vfourblogradio
+  {"select","normalradio",cmdSelectNormalRadio}, // select normalradio
   {"exit","system",cmdExitSystem},       // exit system
   {"\0","\0",0}                          // last entry in command table
 };
@@ -1153,13 +1160,26 @@ static void cmdSetRxFrequency(char *bufferPtr)
 {
   bool success;
   uint64_t frequency;
+  uint64_t lowerFrequency;
+  uint64_t upperFrequency;
 
   success = true;
 
   // Retrieve value
   sscanf(bufferPtr,"%llu",&frequency);
 
-  if ((frequency >= 24000000) && (frequency <= 1700000000))
+  if (v4BlogRadio)
+  {
+    lowerFrequency = 100000;
+    upperFrequency = 1700000000;
+  } // if
+  else
+  {
+    lowerFrequency = 24000000;
+    upperFrequency = 1700000000;
+  } // else
+
+  if ((frequency >= lowerFrequency) && (frequency <= upperFrequency))
   {
     // Set the receiver frequency.
     success = diagUi_radioPtr->setReceiveFrequency(frequency);
@@ -1175,7 +1195,8 @@ static void cmdSetRxFrequency(char *bufferPtr)
   } // if
   else
   {
-    nprintf(stderr,"Error: 24000000 <= frequency 1700000000 Hz.\n");
+    nprintf(stderr,"Error: %llu <= frequency %llu Hz.\n",
+            lowerFrequency,upperFrequency);
   } // else
 
   return;
@@ -1945,6 +1966,74 @@ static void cmdGetSweeperInfo(char *bufferPtr)
 
 /*****************************************************************************
 
+  Name: cmdSelectV4BlogRadio
+
+  Purpose: The purpose of this function is to select the v4 rtl-sdr.
+  This ensures that the appropriate frequency ranges are performed.
+
+  The syntax for the corresponding command is the following:
+
+    "select vfourblogradio"
+
+  Calling Sequence: cmdSelectV4BlogRadio(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSelectV4BlogRadio(char *bufferPtr)
+{
+
+  // Indicate that the rtl-sdr v4 blog radio is being used.
+  v4BlogRadio = true;
+
+  nprintf(stderr,"V4 Blog rtl-sdr is selected\n");
+
+  return;
+
+} // cmdSelectV4BlogRadio
+
+/*****************************************************************************
+
+  Name: cmdSelectNormalRadio
+
+  Purpose: The purpose of this function is to select the normal rtl-sdr.
+  This ensures that the appropriate frequency ranges are performed.
+
+  The syntax for the corresponding command is the following:
+
+    "select normalradio"
+
+  Calling Sequence: cmdSelectNormalRadio(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSelectNormalRadio(char *bufferPtr)
+{
+
+  // Indicate that the rtl-sdr normal radio is being used.
+  v4BlogRadio = false;
+
+  nprintf(stderr,"Normal rtl-sdr is selected\n");
+
+  return;
+
+} // cmdSelectNormalRadio
+
+/*****************************************************************************
+
   Name: cmdExitSystem
 
   Purpose: The purpose of this function is to exit the system.
@@ -2042,6 +2131,8 @@ static void cmdHelp(void)
   nprintf(stderr,"get fscaninfo\n");
   nprintf(stderr,"get sweeperinfo\n");
   nprintf(stderr,"get agcinfo\n");
+  nprintf(stderr,"select vfourblogradio\n");
+  nprintf(stderr,"select normalradio\n");
   nprintf(stderr,"exit system\n");
   nprintf(stderr,"help\n");
   nprintf(stderr,"Type <^B><enter> key sequence to repeat last command\n");

@@ -110,6 +110,8 @@ stop frequencysweep
 get radioinfo
 get fscaninfo
 get sweeperinfo
+select vfourblogradio
+select normalradio
 get agcinfo
 exit system
 help
