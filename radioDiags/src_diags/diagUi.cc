@@ -1779,7 +1779,7 @@ static void cmdStartFrequencySweep(char *bufferPtr)
            &frequency,
            &stepSize,
            &count,
-           (uint32_t *)&dwellTime);
+           &dwellTime);
 
     // Enforce nonnegative values.
     stepSize = abs(stepSize);
@@ -1796,7 +1796,7 @@ static void cmdStartFrequencySweep(char *bufferPtr)
                                                           frequency,
                                                           (uint64_t)stepSize,
                                                           count,
-                                                          dwellTime);
+                                                          (uint32_t)dwellTime);
 
         nprintf(stderr,"Frequency sweeping started.\n");
       } // if
