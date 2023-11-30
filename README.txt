@@ -42,7 +42,7 @@ with a help menu.  Okay, let's say that you want to listen to a local
 station on the FM broadcast band.  At my location, I would type the following:
 
 1. "start receiver"
-2. "set frequency 91500000"
+2. "set rxfrequency 91500000"
 3. "set demodmode 3"
 
 This starts the receiver up, sets the frequency to 91.5MHz, and the
