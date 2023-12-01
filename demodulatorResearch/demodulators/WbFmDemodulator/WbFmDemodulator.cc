@@ -13,6 +13,27 @@ using namespace std;
 // This provides a quick method for computing the atan2() function.
 static float atan2LookupTable[256][256];
 
+// These coefficients are used for the filter before the demodulator.
+static float preDemodFilterCoefficients[] =
+{
+  -0.0157211,
+  -0.0325959,
+   0.0092996,
+   0.0621217,
+  -0.0148595,
+  -0.0989456,
+   0.1182989,
+   0.4862333,
+   0.4862333,
+   0.1182989,
+  -0.0989456,
+  -0.0148595,
+   0.0621217,
+   0.0092996,
+  -0.0325959,
+  -0.0157211
+};
+
 // These coefficients are used for the first stage decimation by 4.
 static float postDemodDecimator1Coefficients[] =
 {
@@ -125,6 +146,7 @@ extern void nprintf(FILE *s,const char *formatPtr, ...);
 WbFmDemodulator::WbFmDemodulator(
     void (*pcmCallbackPtr)(int16_t *bufferPtr,uint32_t bufferLength))
 {
+  int numberOfpreDemodFilterTaps;
   int numberOfStage1DecimatorTaps;
   int numberOfStage2DecimatorTaps;
   int numberOfAudioDecimatorTaps;
@@ -149,6 +171,9 @@ WbFmDemodulator::WbFmDemodulator(
 
   // Set to a nominal gain.
   demodulatorGain = 64000/(2 * M_PI);
+
+  numberOfpreDemodFilterTaps = 
+    sizeof(preDemodFilterCoefficients) / sizeof(float);
 
   numberOfDeemphasisFilterNumeratorTaps =
     sizeof(deemphasisFilterNumeratorCoefficients) / sizeof(float);
@@ -176,6 +201,18 @@ WbFmDemodulator::WbFmDemodulator(
                   deemphasisFilterDenominatorCoefficients);
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // These filters are used the bandwidth of the IQ data before
+  // demodulation.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  iPreDemodFilterPtr =
+    new FirFilter_int16(numberOfpreDemodFilterTaps,
+                        preDemodFilterCoefficients);
+
+  qPreDemodFilterPtr =
+    new FirFilter_int16(numberOfpreDemodFilterTaps,
+                        preDemodFilterCoefficients);
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // The decimator reduces the sample rate of the demodulated data to
@@ -236,6 +273,8 @@ WbFmDemodulator::~WbFmDemodulator(void)
 
   // Release resources.
   delete fmDeemphasisFilterPtr;
+  delete iPreDemodFilterPtr;
+  delete qPreDemodFilterPtr;
   delete postDemodDecimator1Ptr;
   delete postDemodDecimator2Ptr;
   delete audioDecimatorPtr;
@@ -266,6 +305,9 @@ void WbFmDemodulator::resetDemodulator(void)
 {
 
   // Reset all filter structures to their initial conditions.
+  iPreDemodFilterPtr->resetFilterState();;
+  qPreDemodFilterPtr->resetFilterState();;
+
   postDemodDecimator1Ptr->resetFilterState();
   postDemodDecimator2Ptr->resetFilterState();
   audioDecimatorPtr->resetFilterState();
@@ -340,7 +382,20 @@ void WbFmDemodulator::setDemodulatorGain(float gain)
 *****************************************************************************/
 void WbFmDemodulator::acceptIqData(int8_t *bufferPtr,uint32_t bufferLength)
 {
+  uint32_t i;
   uint32_t sampleCount;
+  int16_t sample;
+
+  for (i = 0; i < bufferLength; i += 2)
+  {
+    // Filter in-phase component.
+    sample = iPreDemodFilterPtr->filterData((int16_t)bufferPtr[i]);
+    bufferPtr[i] = (int8_t)sample;
+
+    // Filter quadrature component.
+    sample = qPreDemodFilterPtr->filterData((int16_t)bufferPtr[i+1]);
+    bufferPtr[i+1] = (int8_t)sample;
+  } // for
 
   // Demodulate the signal.
   sampleCount = demodulateSignal(bufferPtr,bufferLength);

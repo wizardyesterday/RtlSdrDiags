@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "IirFilter.h"
+#include "FirFilter_int16.h"
 #include "Decimator_int16.h"
 
 class WbFmDemodulator
@@ -53,6 +54,14 @@ class WbFmDemodulator
 
   // Demodulated data is converted into PCM data for listening.
   int16_t pcmData[512];
+
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  // These filters (I and Q arm) precede the demodulator so that improved
+  // selectivity is achieved.  This occurs before any decimation so that
+  // the sample rate is 256000S/s.
+  //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+  FirFilter_int16 *iPreDemodFilterPtr;
+  FirFilter_int16 *qPreDemodFilterPtr;
 
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
   // These three decimators represent a three-stage decimator that
