@@ -8,7 +8,6 @@ sh buildAmDemodulatorLib.sh
 sh buildFmDemodulatorLib.sh
 sh buildWbFmDemodulatorLib.sh
 sh buildSsbDemodulatorLib.sh
-sh buildMsgqLib.sh
 sh buildRtlSdrLib.sh
 
 exit 0
