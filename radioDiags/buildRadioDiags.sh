@@ -23,12 +23,12 @@ CcFiles="\
     src_diags/SignalTracker.cc \
     src_diags/console.cc \
     src_diags/diagUi.cc \
-    src_diags/UdpClient.cc"
+    src_diags/UdpClient.cc \
+    src_diags/MessageQueue.cc"
 
 Includes="\
     -I include \
     -I src/convenience \
-    -I pfkUtils \
     -I hdr_diags \
     -I Filters \
     -I Filters/Int16 \
@@ -44,7 +44,6 @@ Compile="g++ -O3 -o $Executable $Includes $CcFiles"
 LinkOptions="\
     -O3 \
     -L lib -lrtlsdr \
-    -L lib -lmsgq \
     -L lib -lAmDemodulator \
     -L lib -lFmDemodulator \
     -L lib -lWbFmDemodulator \
