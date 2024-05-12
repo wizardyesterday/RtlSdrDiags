@@ -434,6 +434,7 @@ uint32_t FmDemodulator::reduceSampleRate(
   approximates the derivative of the phase angle with respect to time.
   Note that omega(n) = dtheta(n)/dn represents the instantaneous frequency
   of the signal.
+  The expected maximum frequency deviation is 15kHz.
 
   Note: The first-order differentiator has been replaced with a 6-tap FIR
   differentiator.  This improves weak-signal performance.
@@ -461,6 +462,13 @@ uint32_t FmDemodulator::demodulateSignal(uint32_t bufferLength)
   uint32_t i;
   float theta;
   float deltaTheta;
+  float frequencyDeviationToPcm;
+
+  // NOrmalize to maximum frequency deviation.
+  frequencyDeviationToPcm = demodulatorGain / 15000;
+
+  // Scale to maximum PCM magnitude.
+  frequencyDeviationToPcm *= 32767;
 
   for (i = 0; i < bufferLength; i++)
   {
@@ -487,7 +495,7 @@ uint32_t FmDemodulator::demodulateSignal(uint32_t bufferLength)
     //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
     // Store the demodulated data.
-    demodulatedData[i] = demodulatorGain * deltaTheta;
+    demodulatedData[i] = frequencyDeviationToPcm * deltaTheta;
 
   } // for
 
