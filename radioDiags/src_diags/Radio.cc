@@ -1745,9 +1745,8 @@ bool Radio::isAgcEnabled(void)
 
   Inputs:
 
-   n_ring - The divider value for the ring oscillator phase locked
-    loop. Valid values are 0 through 15, although, it is reecommended
-    to use values between 9 and 14, inclusive.
+   n_ring - A parameter that defines the divider for the VCO PLL.
+   The actual divider is N = (n_ring + 16 * 8.
 
     outputDivider - A parameter that is used to divide the ring
     oscillator VCO frequency down to a lower value.  Valid values
