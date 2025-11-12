@@ -1401,9 +1401,12 @@ static int r82xx_gpio(struct r82xx_priv *priv, int enable)
 
     priv - A pointer to a structure that represents device state.
 
-    n_ring - The divider value for the ring oscillator phase locked
-    loop. Valid values are 0 through 15, although, it is reecommended
-    to use values between 9 and 14, inclusive.
+    n_ring - The selector value that is used to determine the
+    actual N value for the ring oscillator VCO. The  divider is
+    computed by the following formula: N = (16 + n_ring) * 8
+    The VCO frequency is then N * n_ref.
+    The ring oscillator  output frequency is 
+    frequency = (VCO frequency) / outputDivider.
 
     outputDivider - A parameter that is used to divide the ring
     oscillator VCO frequency down to a lower value.  Valid values
@@ -1436,8 +1439,6 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
   uint8_t ring_div_index;
   uint32_t ring_ref;
   uint8_t gainBits;
-  static const uint8_t divBit21[] = {0,0,1,1,2,2,3,3};
-  static const uint8_t divBit0[] = {0,0x20,0,0x20,0,0x20,0,0x20};
 
   if (n_ring > 15)
   {
@@ -1547,7 +1548,7 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
   ring_ref = 14400000;
 
   // Apply max power to VCO PLL.
-  // Already powered up by default.
+  rc = r82xx_write_reg_mask(priv, 0x19, 0x0c, 0x0c);
 
   // Apply power to ring PLL.
   rc = r82xx_write_reg_mask(priv, 0x18, 0x10, 0x10);
@@ -1555,12 +1556,12 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
   // Turn on PLL reference clock.
   rc = r82xx_write_reg_mask(priv, 0x0f, 0x00, 0x08);
 
-  // Set N for PLL.
+  i/ Set n_ring for PLL.
   rc = r82xx_write_reg_mask(priv, 0x18, n_ring, 0x0f);
 
   // Set divisor.
-  rc = r82xx_write_reg_mask(priv, 0x18, divBit0[ring_div_index], 0x20);
-  rc = r82xx_write_reg_mask(priv, 0x19, divBit21[ring_div_index], 0x03);
+  rc = r82xx_write_reg_mask(priv, 0x18,(ring_div_index & 1) << 5, 0x20);
+  rc = r82xx_write_reg_mask(priv, 0x19, ring_div_index >> 1, 0x03);
 
   // Set Output gain in dB.
   rc = r82xx_write_reg_mask(priv, 0x1f, gainBits, 0x03);
@@ -1568,6 +1569,7 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
   // Select mixer input sources to  ring oscillator.
   rc = r82xx_write_reg_mask(priv, 0x1c, 0x02 , 0x02);
 
+// ring oscillator frequency = N * ring_ref / outputDivider.
   *ringFrequencyPtr = ((16 + n_ring) * 8) * ring_ref / outputDivider;
  
   return (rc);
@@ -1598,8 +1600,7 @@ int r82xx_stopRingOscillator(struct r82xx_priv *priv)
   int rc;
 
   // Remove power from VCO PLL.
-  // Leave at default value of powered up.
-  // rc = r82xx_write_reg_mask(priv, 0x19, 0x00, 0x0c);
+  rc = r82xx_write_reg_mask(priv, 0x19, 0x00, 0x0c);
 
   // Remove remove power from ring PLL.
   rc = r82xx_write_reg_mask(priv, 0x18, 0x00, 0x10);
