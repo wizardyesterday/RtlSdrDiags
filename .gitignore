@@ -1,0 +1,5 @@
+# Ignore compiled files.
+*.o
+
+# Ignore IQ capture files.
+*.iq
