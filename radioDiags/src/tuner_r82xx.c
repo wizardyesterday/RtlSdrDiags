@@ -1556,7 +1556,7 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
   // Turn on PLL reference clock.
   rc = r82xx_write_reg_mask(priv, 0x0f, 0x00, 0x08);
 
-  i/ Set n_ring for PLL.
+  // Set n_ring for PLL.
   rc = r82xx_write_reg_mask(priv, 0x18, n_ring, 0x0f);
 
   // Set divisor.
