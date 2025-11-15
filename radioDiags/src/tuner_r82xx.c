@@ -1416,7 +1416,7 @@ static int r82xx_gpio(struct r82xx_priv *priv, int enable)
     ring oscillator output is amplified.  Valid values are
     {-8,-5,-3,0} decibels. This maps to two-bit register fields values
     of {2, 0, 1, 3} for bits[1:0] of R31 in the tuner, respectively.
-    I was able to determin thie mapping by presenting the output IQ data
+    I was able to determine thie mapping by presenting the output IQ data
     to my spectrum analyzer (n my signal analyzer app) while the tuner
     ring oscillator was active at a frequency of 57.6MHz.
 
