@@ -1415,7 +1415,7 @@ static int r82xx_gpio(struct r82xx_priv *priv, int enable)
     outputGain - A parameter that specifies the gain for which the
     ring oscillator output is amplified.  Valid values are
     {-8,-5,-3,0} decibels. This maps to two-bit register fields values
-    of {2, 0, 1, 3} for bits[1:0] of R31 in the tuner, respectively.
+    of {2, 0, 3, 1} for bits[1:0] of R31 in the tuner, respectively.
     I was able to determine thie mapping by presenting the output IQ data
     to my spectrum analyzer (n my signal analyzer app) while the tuner
     ring oscillator was active at a frequency of 57.6MHz.
@@ -1525,13 +1525,13 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
 
     case -3:
     {
-      gainBits = 1;
+      gainBits = 3;
       break;
     } // case
 
     case 0:
     {
-      gainBits = 3;
+      gainBits = 1;
       break;
     } // case
 
