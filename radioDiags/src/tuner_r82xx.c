@@ -1645,20 +1645,20 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
   {
     case 1:
     {
-      // Apply power to LNA power detector.
-      rc = r82xx_write_reg_mask(priv, 0x06, 0x80, 0x80);
+      // Apply power to power detector 1
+      rc = r82xx_write_reg_mask(priv, 0x06, 0x00, 0x80);
       break;
     } // case
 
     case 2:
     {
-      // No evidence that pdet2 has any power control. Research is needed.
+      // Powet detector 2 has no power control.
       break;
     } // case
 
     case 3:
     {
-      // Apply power to mixer power detector.
+      // Apply power to power detector 3.
       rc = r82xx_write_reg_mask(priv, 0x06, 0x40, 0x40);
       break;
     } // case
@@ -1681,7 +1681,7 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
   Purpose: The purpose of this function is to disable a power detector.
   in an R82xx tuner device.
 
-  Calling Sequence: status = r82xx_DisablePowerDetector(priv,detectorNumber)
+  Calling Sequence: status = r82xx_disablePowerDetector(priv,detectorNumber)
 
   Inputs:
 
@@ -1696,7 +1696,7 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
     and a value of -1 implies failure.
 
 **************************************************************************/
-int r82xx_DisablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
+int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 {
   int rc;
 
@@ -1704,21 +1704,98 @@ int r82xx_DisablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
   {
     case 1:
     {
-      // Remove power from LNA power detector.
-      rc = r82xx_write_reg_mask(priv, 0x06, 0x00, 0x80);
+      // Remove power from power detector 1.
+      rc = r82xx_write_reg_mask(priv, 0x06, 0x80, 0x80);
       break;
     } // case
 
     case 2:
     {
-      // No evidence that pdet2 has any power control. Research is needed.
+      // Powet detector 2 has no power control.
       break;
     } // case
 
     case 3:
     {
-      // Remove power from mixer power detector.
+      // Remove power from power detector 3.
       rc = r82xx_write_reg_mask(priv, 0x06, 0x00, 0x40);
+      break;
+    } // case
+
+    default: break;
+    {
+      break;
+    } // case
+
+  } // switch
+
+  return (rc);
+
+} // r82xx_DisablePowerDetector
+
+/**************************************************************************
+
+  Name: r82xx_configurePowerDetector
+
+  Purpose: The purpose of this function is to disable a power detector.
+  in an R82xx tuner device.
+
+  Calling Sequence: status = r82xx_configurePowerDetector(priv,
+                                                          detectorNumber,
+                                                          gain,
+                                                          lowerThreshold,
+                                                          upperThreshold)
+  Inputs:
+
+    priv - A pointer to a structure that represents device state.
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3,
+    although, I have seen no evidence that pdet2 has no Disable interface.
+
+    gain - The detector gain. 
+
+    lowerThreshold - The lower threshold of the window comparator.
+
+    upperThreshold - The upper thrwshold of the wwindow comparator.
+
+  Outputs:
+
+    status - The status of the operation. A value of 0 implies success,
+    and a value of -1 implies failure.
+
+**************************************************************************/
+int r82xx_configurePowerDetector(struct r82xx_priv *priv,
+                        int detectorNumber,
+                        int gain,
+                        int lowerThreshold,
+                        int upperThreshold)
+{
+  int rc;
+
+  switch (detectorNumber)
+  {
+    case 1:
+    {
+      // Configure power detector 1.
+      rc = r82xx_write_reg_mask(priv,0x0d,upperThreshold << 4,0xf0);
+      rc = r82xx_write_reg_mask(priv,0x0d,lowerThreshold,0x0f);
+      rc = r82xx_write_reg_mask(priv,0x1d,gain << 3,0x38);
+      break;
+    } // case
+
+    case 2:
+    {
+      // Configure power detector 2.
+      rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
+      rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
+      rc = r82xx_write_reg_mask(priv,0x1d,gain,0x07);
+      break;
+    } // case
+
+    case 3:
+    {
+      // Configure power detector 3.
+      rc = r82xx_write_reg_mask(priv,0x1c,gain << 4,0xf0);
       break;
     } // case
 
