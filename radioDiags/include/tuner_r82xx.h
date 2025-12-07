@@ -127,4 +127,14 @@ int r82xx_startRingOscillator(struct r82xx_priv *priv,
 
 int r82xx_stopRingOscillator(struct r82xx_priv *priv);
 
+int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detrctorNumber);
+
+int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detrctorNumber);
+
+int r82xx_configurePowerDetector(struct r82xx_priv *priv,
+                        int detectorNumber,
+                        int gain,
+                        int lowerThreshold,
+                        int upperThreshold);
+
 #endif

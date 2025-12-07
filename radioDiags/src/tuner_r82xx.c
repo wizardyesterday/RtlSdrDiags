@@ -1615,3 +1615,121 @@ int r82xx_stopRingOscillator(struct r82xx_priv *priv)
 
 } // r82xx_stopRingOscillator
 
+/**************************************************************************
+
+  Name: r82xx_enablePowerDetector
+
+  Purpose: The purpose of this function is to enable a power detector.
+  in an R82xx tuner device.
+
+  Calling Sequence: status = r82xx_enablePowerDetector(priv,detectorNumber)
+
+  Inputs:
+
+    priv - A pointer to a structure that represents device state.
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3,
+    although, I have seen no evidence that pdet2 has no enable interface.
+
+  Outputs:
+
+    status - The status of the operation. A value of 0 implies success,
+    and a value of -1 implies failure.
+
+**************************************************************************/
+int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
+{
+  int rc;
+
+  switch (detectorNumber)
+  {
+    case 1:
+    {
+      // Apply power to LNA power detector.
+      rc = r82xx_write_reg_mask(priv, 0x06, 0x80, 0x80);
+      break;
+    } // case
+
+    case 2:
+    {
+      // No evidence that pdet2 has any power control. Research is needed.
+      break;
+    } // case
+
+    case 3:
+    {
+      // Apply power to mixer power detector.
+      rc = r82xx_write_reg_mask(priv, 0x06, 0x40, 0x40);
+      break;
+    } // case
+
+    default: break;
+    {
+      break;
+    } // case
+
+  } // switch
+
+  return (rc);
+
+} // r82xx_enablePowerDetector
+
+/**************************************************************************
+
+  Name: r82xx_DisablePowerDetector
+
+  Purpose: The purpose of this function is to disable a power detector.
+  in an R82xx tuner device.
+
+  Calling Sequence: status = r82xx_DisablePowerDetector(priv,detectorNumber)
+
+  Inputs:
+
+    priv - A pointer to a structure that represents device state.
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3,
+    although, I have seen no evidence that pdet2 has no Disable interface.
+
+  Outputs:
+
+    status - The status of the operation. A value of 0 implies success,
+    and a value of -1 implies failure.
+
+**************************************************************************/
+int r82xx_DisablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
+{
+  int rc;
+
+  switch (detectorNumber)
+  {
+    case 1:
+    {
+      // Remove power from LNA power detector.
+      rc = r82xx_write_reg_mask(priv, 0x06, 0x00, 0x80);
+      break;
+    } // case
+
+    case 2:
+    {
+      // No evidence that pdet2 has any power control. Research is needed.
+      break;
+    } // case
+
+    case 3:
+    {
+      // Remove power from mixer power detector.
+      rc = r82xx_write_reg_mask(priv, 0x06, 0x00, 0x40);
+      break;
+    } // case
+
+    default: break;
+    {
+      break;
+    } // case
+
+  } // switch
+
+  return (rc);
+
+} // r82xx_DisablePowerDetector
+
