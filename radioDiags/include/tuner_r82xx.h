@@ -131,15 +131,6 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detrctorNumber);
 
 int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detrctorNumber);
 
-int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
-                               int detrctorNumber,
-                               int gain);
-
-int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
-                                     int detrctorNumber,
-                                     int lowerThreshold,
-                                     int upperThreshold);
-
 int r82xx_configurePowerDetector(struct r82xx_priv *priv,
                         int detectorNumber,
                         int gain,

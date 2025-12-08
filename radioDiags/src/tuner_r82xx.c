@@ -1731,13 +1731,13 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 
   return (rc);
 
-} // r82xx_DisablePowerDetector
+} // r82xx_disablePowerDetector
 
 /**************************************************************************
 
   Name: r82xx_configurePowerDetector
 
-  Purpose: The purpose of this function is to disable a power detector.
+  Purpose: The purpose of this function is to configure a power detector.
   in an R82xx tuner device.
 
   Calling Sequence: status = r82xx_configurePowerDetector(priv,
@@ -1765,10 +1765,10 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 
 **************************************************************************/
 int r82xx_configurePowerDetector(struct r82xx_priv *priv,
-                        int detectorNumber,
-                        int gain,
-                        int lowerThreshold,
-                        int upperThreshold)
+                                 int detectorNumber,
+                                 int gain,
+                                 int lowerThreshold,
+                                 int upperThreshold)
 {
   int rc;
 
@@ -1808,5 +1808,5 @@ int r82xx_configurePowerDetector(struct r82xx_priv *priv,
 
   return (rc);
 
-} // r82xx_DisablePowerDetector
+} // r82xx_configurePowerDetector
 
