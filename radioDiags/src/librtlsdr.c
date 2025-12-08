@@ -2144,7 +2144,7 @@ int rtlsdr_startRingOscillator(rtlsdr_dev_t *dev,
     case RTLSDR_TUNER_R828D:
     {
       // Enable the I2C repeater.
-      rtlsdr_set_i2c_repeater(dev, 1);
+      rtlsdr_set_i2c_repeater(dev,1);
 
       // Setup and start the ring oscillator.
       rc = r82xx_startRingOscillator(&dev->r82xx_p,
@@ -2152,7 +2152,7 @@ int rtlsdr_startRingOscillator(rtlsdr_dev_t *dev,
                                      outputGain,
                                      ringFrequencyPtr);
       // Disable the I2C repeater.
-      rtlsdr_set_i2c_repeater(dev, 0);
+      rtlsdr_set_i2c_repeater(dev,0);
       break;
 
     } // case
@@ -2180,13 +2180,13 @@ int rtlsdr_stopRingOscillator(rtlsdr_dev_t *dev)
     case RTLSDR_TUNER_R828D:
     {
       // Enable the I2C repeater.
-      rtlsdr_set_i2c_repeater(dev, 1);
+      rtlsdr_set_i2c_repeater(dev,1);
 
       // We're done with the ring oscillator.
-      rc =r82xx_stopRingOscillator(&dev->r82xx_p);
+      rc = r82xx_stopRingOscillator(&dev->r82xx_p);
 
       // Disable the I2C repeater.
-      rtlsdr_set_i2c_repeater(dev, 0);
+      rtlsdr_set_i2c_repeater(dev,0);
       break;
     } // case
 
@@ -2198,7 +2198,116 @@ int rtlsdr_stopRingOscillator(rtlsdr_dev_t *dev)
     
   } // switch
 
+  return (rc);
+
+}
+
+int  rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
+                                int detectorNumber)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Enable the selected power detector.
+      rc = r82xx_enablePowerDetector(&dev->r82xx_p,
+                                     detectorNumber);
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: tuner does not have a power detector.\n");
+      break;
+    } // case
+    
+  } // switch
 
   return (rc);
 
 }
+
+int  rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
+                                int detectorNumber)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Disable the selected power detector.
+      rc = r82xx_disablePowerDetector(&dev->r82xx_p,
+                                     detectorNumber);
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: tuner does not have a power detector.\n");
+      break;
+    } // case
+    
+  } // switch
+
+  return (rc);
+
+}
+
+int rtlsdr_configurePowerDetector(rtlsdr_dev_t *dev,
+                                  int detectorNumber,
+                                  int gain,
+                                  int lowerThreshold,
+                                  int upperThreshold)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Configure the selected  power  detector.
+      rc = r82xx__configurePowerDetector(&dev->r82xx_p,
+                                         detectorNumber,
+                                         gain,
+                                         lowerThreshold,
+                                         upperThreshold);
+
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: tuner does not have a power detector.\n");
+      break;
+    } // case
+    
+  } // switch
+
+  return (rc);
+
+}
+
