@@ -1766,6 +1766,12 @@ int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
 {
   int rc;
 
+  if (gain > 7)
+  {
+    // Clip it.
+    gain = 7;
+  } // if
+
   switch (detectorNumber)
   {
     case 1:
@@ -1833,6 +1839,18 @@ int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
                                      uint32_t upperThreshold)
 {
   int rc;
+
+  if (lowerThreshold > 15)
+  {
+    // Clip it.
+    lowerThreshold = 0;
+  } // if
+
+  if (upperThreshold > 15)
+  {
+    // Clip it.
+    upperThreshold = 15;
+  } // if
 
   switch (detectorNumber)
   {
