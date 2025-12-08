@@ -2270,9 +2270,9 @@ int  rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
 
 }
 
-int rtlsdr_setPowerDetectorGain(rtlsdr_dev_t *dev,
+int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
                                 uint32_t detectorNumber,
-                                uint32_t gain)
+                                uint32_t takeoffPoint)
 {
   int rc;
 
@@ -2285,9 +2285,9 @@ int rtlsdr_setPowerDetectorGain(rtlsdr_dev_t *dev,
       rtlsdr_set_i2c_repeater(dev,1);
 
       // Configure the selected  power  detector.
-      rc = r82xx_setPowerDetectorGain(&dev->r82xx_p,
+      rc = r82xx_setPowerDetectorTop(&dev->r82xx_p,
                                       detectorNumber,
-                                      gain);
+                                      takeoffPoint);
 
 
       // Disable the I2C repeater.

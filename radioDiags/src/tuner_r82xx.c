@@ -1737,14 +1737,17 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 
 /**************************************************************************
 
-  Name: r82xx_setPowerDetectorGain
+  Name: r82xx_setPowerDetectorTop
 
-  Purpose: The purpose of this function is to set the gain a power
-  detector in an R82xx tuner device.
+  Purpose: The purpose of this function is to set the takeoff point of
+  a power detector in an R82xx tuner device. The takeoff point of a
+  detector is the point at which a signal can be differentiated from
+  noise. It is basically a threshold. A lower value of the takeoff point
+  implies higher detector sensivity.
 
-  Calling Sequence: status = r82xx_setPowerDetectorGain(priv,
+  Calling Sequence: status = r82xx_setPowerDetectorTop(priv,
                                                           detectorNumber,
-                                                          gain)
+                                                          takeoffPoint)
 
   Inputs:
 
@@ -1752,7 +1755,7 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 
     detectorNumber - The detector number. Valid values are 1, 2, and 3.
 
-    gain - The detector gain. 
+    takeoffPoint - The detector takeoff point.
 
   Outputs:
 
@@ -1760,16 +1763,16 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
     and a value of -1 implies failure.
 
 **************************************************************************/
-int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
+int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
                                uint32_t  detectorNumber,
-                               uint32_t gain)
+                               uint32_t takeoffPoint)
 {
   int rc;
 
-  if (gain > 7)
+  if (takeoffPoint > 7)
   {
-    // Clip it.
-    gain = 7;
+    // Set to least sensitive.
+    takeoffPoint = 7;
   } // if
 
   switch (detectorNumber)
@@ -1777,21 +1780,21 @@ int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
     case 1:
     {
       // Configure power detector 1.
-      rc = r82xx_write_reg_mask(priv,0x1d,gain << 3,0x38);
+      rc = r82xx_write_reg_mask(priv,0x1d,takeoffPoint << 3,0x38);
       break;
     } // case
 
     case 2:
     {
       // Configure power detector 2.
-      rc = r82xx_write_reg_mask(priv,0x1d,gain,0x07);
+      rc = r82xx_write_reg_mask(priv,0x1d,takeoffPoint,0x07);
       break;
     } // case
 
     case 3:
     {
       // Configure power detector 3.
-      rc = r82xx_write_reg_mask(priv,0x1c,gain << 4,0xf0);
+      rc = r82xx_write_reg_mask(priv,0x1c,takeoffPoint << 4,0xf0);
       break;
     } // case
 
@@ -1804,14 +1807,15 @@ int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
 
   return (rc);
 
-} // r82xx_setPowerDetectorGain
+} // r82xx_setPowerDetectorTop
 
 /**************************************************************************
 
   Name: r82xx_setPowerDetectorThresholds
 
-  Purpose: The purpose of this function is to configure a power detector.
-  in an R82xx tuner device.
+  Purpose: The purpose of this function is to set the thresholds of
+  the window comparator, associated with a power detector, in an R82xx
+  tuner device.
 
   Calling Sequence: status = r82xx_setPowerDetectorThresholds(priv,
                                                               detectorNumber,

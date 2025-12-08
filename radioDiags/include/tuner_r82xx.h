@@ -136,8 +136,8 @@ int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
                                      uint32_t  lowerThreshold,
                                      uint32_t upperThreshold);
 
-int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
+int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
                                uint32_t  detectorNumber,
-                               uint32_t gain);
+                               uint32_t takeoffPoint);
 
 #endif

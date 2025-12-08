@@ -431,9 +431,9 @@ RTLSDR_API int rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
 RTLSDR_API int rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
                                           uint32_t detectorNumber);
 
-RTLSDR_API int rtlsdr_setPowerDetectorGain(rtlsdr_dev_t *dev,
-                                            uint32_t detectorNumber,
-                                            uint32_t gain);
+RTLSDR_API int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
+                                          uint32_t detectorNumber,
+                                          uint32_t takeoffPoint);
 
 RTLSDR_API int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
                                                  uint32_t detectorNumber,
