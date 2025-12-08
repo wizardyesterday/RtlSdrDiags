@@ -1748,8 +1748,8 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,
   implies higher detector sensivity.
 
   Calling Sequence: status = r82xx_setPowerDetectorTop(priv,
-                                                          detectorNumber,
-                                                          takeoffPoint)
+                                                       detectorNumber,
+                                                       takeoffPoint)
 
   Inputs:
 
