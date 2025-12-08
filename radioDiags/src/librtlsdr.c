@@ -2203,7 +2203,7 @@ int rtlsdr_stopRingOscillator(rtlsdr_dev_t *dev)
 }
 
 int  rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
-                                int detectorNumber)
+                                uint32_t detectorNumber)
 {
   int rc;
 
@@ -2237,7 +2237,7 @@ int  rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
 }
 
 int  rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
-                                int detectorNumber)
+                                uint32_t detectorNumber)
 {
   int rc;
 
@@ -2270,11 +2270,9 @@ int  rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
 
 }
 
-int rtlsdr_configurePowerDetector(rtlsdr_dev_t *dev,
-                                  int detectorNumber,
-                                  int gain,
-                                  int lowerThreshold,
-                                  int upperThreshold)
+int rtlsdr_setPowerDetectorGain(rtlsdr_dev_t *dev,
+                                uint32_t detectorNumber,
+                                uint32_t gain)
 {
   int rc;
 
@@ -2287,12 +2285,48 @@ int rtlsdr_configurePowerDetector(rtlsdr_dev_t *dev,
       rtlsdr_set_i2c_repeater(dev,1);
 
       // Configure the selected  power  detector.
-      rc = r82xx_configurePowerDetector(&dev->r82xx_p,
-                                        detectorNumber,
-                                        gain,
-                                        lowerThreshold,
-                                        upperThreshold);
+      rc = r82xx_setPowerDetectorGain(&dev->r82xx_p,
+                                      detectorNumber,
+                                      gain);
 
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: tuner does not have a power detector.\n");
+      break;
+    } // case
+    
+  } // switch
+
+  return (rc);
+
+}
+
+int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
+                                      uint32_t detectorNumber,
+                                      uint32_t lowerThreshold,
+                                      uint32_t upperThreshold)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Configure the selected  power  detector.
+      rc = r82xx_setPowerDetectorThresholds(&dev->r82xx_p,
+                                            detectorNumber,
+                                            lowerThreshold,
+                                            upperThreshold);
 
       // Disable the I2C repeater.
       rtlsdr_set_i2c_repeater(dev,0);

@@ -1628,8 +1628,7 @@ int r82xx_stopRingOscillator(struct r82xx_priv *priv)
 
     priv - A pointer to a structure that represents device state.
 
-    detectorNumber - The detector number. Valid values are 1, 2, and 3,
-    although, I have seen no evidence that pdet2 has no enable interface.
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
 
   Outputs:
 
@@ -1653,6 +1652,8 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
     case 2:
     {
       // Powet detector 2 has no power control.
+      // Indicate failure.
+      rc = -1;
       break;
     } // case
 
@@ -1687,8 +1688,7 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 
     priv - A pointer to a structure that represents device state.
 
-    detectorNumber - The detector number. Valid values are 1, 2, and 3,
-    although, I have seen no evidence that pdet2 has no Disable interface.
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
 
   Outputs:
 
@@ -1712,6 +1712,8 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
     case 2:
     {
       // Powet detector 2 has no power control.
+      // Indicate failure.
+      rc = -1;
       break;
     } // case
 
@@ -1735,28 +1737,22 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
 
 /**************************************************************************
 
-  Name: r82xx_configurePowerDetector
+  Name: r82xx_setPowerDetectorGain
 
-  Purpose: The purpose of this function is to configure a power detector.
-  in an R82xx tuner device.
+  Purpose: The purpose of this function is to set the gain a power
+  detector in an R82xx tuner device.
 
-  Calling Sequence: status = r82xx_configurePowerDetector(priv,
+  Calling Sequence: status = r82xx_setPowerDetectorGain(priv,
                                                           detectorNumber,
-                                                          gain,
-                                                          lowerThreshold,
-                                                          upperThreshold)
+                                                          gain)
+
   Inputs:
 
     priv - A pointer to a structure that represents device state.
 
-    detectorNumber - The detector number. Valid values are 1, 2, and 3,
-    although, I have seen no evidence that pdet2 has no Disable interface.
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
 
     gain - The detector gain. 
-
-    lowerThreshold - The lower threshold of the window comparator.
-
-    upperThreshold - The upper thrwshold of the wwindow comparator.
 
   Outputs:
 
@@ -1764,11 +1760,9 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,int detectorNumber)
     and a value of -1 implies failure.
 
 **************************************************************************/
-int r82xx_configurePowerDetector(struct r82xx_priv *priv,
-                                 int detectorNumber,
-                                 int gain,
-                                 int lowerThreshold,
-                                 int upperThreshold)
+int r82xx_setPowerDetectorGain(struct r82xx_priv *priv,
+                               uint32_t  detectorNumber,
+                               uint32_t gain)
 {
   int rc;
 
@@ -1777,8 +1771,6 @@ int r82xx_configurePowerDetector(struct r82xx_priv *priv,
     case 1:
     {
       // Configure power detector 1.
-      rc = r82xx_write_reg_mask(priv,0x0d,upperThreshold << 4,0xf0);
-      rc = r82xx_write_reg_mask(priv,0x0d,lowerThreshold,0x0f);
       rc = r82xx_write_reg_mask(priv,0x1d,gain << 3,0x38);
       break;
     } // case
@@ -1786,8 +1778,6 @@ int r82xx_configurePowerDetector(struct r82xx_priv *priv,
     case 2:
     {
       // Configure power detector 2.
-      rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
-      rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
       rc = r82xx_write_reg_mask(priv,0x1d,gain,0x07);
       break;
     } // case
@@ -1808,5 +1798,76 @@ int r82xx_configurePowerDetector(struct r82xx_priv *priv,
 
   return (rc);
 
-} // r82xx_configurePowerDetector
+} // r82xx_setPowerDetectorGain
+
+/**************************************************************************
+
+  Name: r82xx_setPowerDetectorThresholds
+
+  Purpose: The purpose of this function is to configure a power detector.
+  in an R82xx tuner device.
+
+  Calling Sequence: status = r82xx_setPowerDetectorThresholds(priv,
+                                                              detectorNumber,
+                                                              lowerThreshold,
+                                                              upperThreshold)
+  Inputs:
+
+    priv - A pointer to a structure that represents device state.
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
+
+    lowerThreshold - The lower threshold of the window comparator.
+
+    upperThreshold - The upper thrwshold of the wwindow comparator.
+
+  Outputs:
+
+    status - The status of the operation. A value of 0 implies success,
+    and a value of -1 implies failure.
+
+**************************************************************************/
+int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
+                                     uint32_t detectorNumber,
+                                     uint32_t  lowerThreshold,
+                                     uint32_t upperThreshold)
+{
+  int rc;
+
+  switch (detectorNumber)
+  {
+    case 1:
+    {
+      // Configure power detector 1.
+      rc = r82xx_write_reg_mask(priv,0x0d,upperThreshold << 4,0xf0);
+      rc = r82xx_write_reg_mask(priv,0x0d,lowerThreshold,0x0f);
+      break;
+    } // case
+
+    case 2:
+    {
+      // Configure power detector 2.
+      rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
+      rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
+      break;
+    } // case
+
+    case 3:
+    {
+      // Power detector 3 has no threshold settings.
+      // Indicate failure.
+      rc = -1;
+      break;
+    } // case
+
+    default: break;
+    {
+      break;
+    } // case
+
+  } // switch
+
+  return (rc);
+
+} // r82xx_setPowerDetectorThresholds
 
