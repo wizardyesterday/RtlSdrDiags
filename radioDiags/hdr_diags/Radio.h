@@ -85,6 +85,19 @@ class Radio
 
   bool stopRingOscillator(void);
 
+  // Power detector support.
+  bool enablePowerDetector(uint8_t detectorNumber);
+
+  bool disablePowerDetector(uint8_t detectorNumber);
+
+  bool setPowerDetectorTop(uint8_t detectorNumber,
+                           uint8_t takeoffPoint);
+
+  bool setPowerDetectorThresholds(uint8_t detectorNumber,
+                                  uint8_t lowerThreshold,
+                                  uint8_t upperThreshold);
+
+
   void displayInternalInformation(void);
 
   private:
