@@ -1852,6 +1852,223 @@ bool Radio::stopRingOscillator(void)
 
 /**************************************************************************
 
+  Name: enablePowerDetector
+
+  Purpose: The purpose of this function is to enable a power detector.
+  in an R82xx tuner device.
+
+  Calling Sequence: status = enablePowerDetector(detectorNumber)
+
+  Inputs:
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
+
+  Outputs:
+
+    status - The status of the operation. A value of ytir implies success,
+    and a value of false implies failure.
+
+**************************************************************************/
+bool Radio::enablePowerDetector(uint8_t detectorNumber)
+{
+  bool success;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  if (devicePtr != 0)
+  {
+    // Enable.
+    error = rtlsdr_enablePowerDetector((rtlsdr_dev_t *)devicePtr,
+                                       detectorNumber);
+
+    if (error == 0)
+    {
+     success = true;
+    } // if
+  } // if
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+
+} // enablePowerDetector
+
+/**************************************************************************
+
+  Name: disablePowerDetector
+
+  Purpose: The purpose of this function is to disable a power detector.
+  in an R82xx tuner device.
+
+  Calling Sequence: status = disablePowerDetector(detectorNumber)
+
+  Inputs:
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
+
+  Outputs:
+
+    status - The status of the operation. A value of ytir implies success,
+    and a value of false implies failure.
+
+**************************************************************************/
+bool Radio::disablePowerDetector(uint8_t detectorNumber)
+{
+  bool success;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  if (devicePtr != 0)
+  {
+    // Disable.
+    error = rtlsdr_disablePowerDetector((rtlsdr_dev_t *)devicePtr,
+                                        detectorNumber);
+
+    if (error == 0)
+    {
+     success = true;
+    } // if
+  } // if
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+
+} // disablePowerDetector
+
+/**************************************************************************
+
+  Name: setPowerDetectorTop
+
+  Purpose: The purpose of this function is to set the takeoff point of
+  a power detector in an R82xx tuner device. The takeoff point of a
+  detector is the point at which a signal can be differentiated from
+  noise. It is basically a threshold. A lower value of the takeoff point
+  implies higher detector sensivity.
+
+  Calling Sequence: status = setPowerDetectorTop(detectorNumber,
+                                                 takeoffPoint)
+
+  Inputs:
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
+
+    takeoffPoint - The detector takeoff point.
+
+  Outputs:
+
+    status - The status of the operation. A value of true implies success,
+    and a value of false implies failure.
+
+**************************************************************************/
+bool Radio::setPowerDetectorTop(uint8_t detectorNumber,
+                                uint8_t takeoffPoint)
+{
+  bool success;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  if (devicePtr != 0)
+  {
+    // Configure.
+    error = rtlsdr_setPowerDetectorTop((rtlsdr_dev_t *)devicePtr,
+                                       detectorNumber,
+                                       takeoffPoint);
+
+    if (error == 0)
+    {
+     success = true;
+    } // if
+  } // if
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+
+} // setPowerDetectorTop
+
+/**************************************************************************
+
+  Name: r82xx_setPowerDetectorThresholds
+
+  Purpose: The purpose of this function is to set the thresholds of
+  the window comparator, associated with a power detector, in an R82xx
+  tuner device.
+
+  Calling Sequence: status = r82xx_setPowerDetectorThresholds(priv,
+                                                              detectorNumber,
+                                                              lowerThreshold,
+                                                              upperThreshold)
+  Inputs:
+
+    priv - A pointer to a structure that represents device state.
+
+    detectorNumber - The detector number. Valid values are 1, 2, and 3.
+
+    lowerThreshold - The lower threshold of the window comparator.
+
+    upperThreshold - The upper thrwshold of the wwindow comparator.
+
+  Outputs:
+
+    status - The status of the operation. A value of 0 implies success,
+    and a value of -1 implies failure.
+
+**************************************************************************/
+bool Radio::setPowerDetectorThresholds(uint8_t detectorNumber,
+                                       uint8_t lowerThreshold,
+                                       uint8_t upperThreshold)
+{
+  bool success;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  if (devicePtr != 0)
+  {
+    // Configure.
+    error = rtlsdr_setPowerDetectorThresholds((rtlsdr_dev_t *)devicePtr,
+                                              detectorNumber,
+                                              lowerThreshold,
+                                              upperThreshold);
+
+    if (error == 0)
+    {
+     success = true;
+    } // if
+  } // if
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+
+} // setPowerDetectorThresholds
+
+/**************************************************************************
+
   Name: displayAgcInternalInformation
 
   Purpose: The purpose of this function is to display information in the
