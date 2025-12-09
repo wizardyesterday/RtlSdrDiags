@@ -2203,7 +2203,7 @@ int rtlsdr_stopRingOscillator(rtlsdr_dev_t *dev)
 }
 
 int  rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
-                                uint32_t detectorNumber)
+                                uint8_t detectorNumber)
 {
   int rc;
 
@@ -2237,7 +2237,7 @@ int  rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
 }
 
 int  rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
-                                uint32_t detectorNumber)
+                                uint8_t detectorNumber)
 {
   int rc;
 
@@ -2271,8 +2271,8 @@ int  rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
 }
 
 int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
-                                uint32_t detectorNumber,
-                                uint32_t takeoffPoint)
+                                uint8_t detectorNumber,
+                                uint8_t takeoffPoint)
 {
   int rc;
 
@@ -2308,9 +2308,9 @@ int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
 }
 
 int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
-                                      uint32_t detectorNumber,
-                                      uint32_t lowerThreshold,
-                                      uint32_t upperThreshold)
+                                      uint8_t detectorNumber,
+                                      uint8_t lowerThreshold,
+                                      uint8_t upperThreshold)
 {
   int rc;
 

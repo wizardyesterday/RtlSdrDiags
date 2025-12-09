@@ -1637,7 +1637,7 @@ int r82xx_stopRingOscillator(struct r82xx_priv *priv)
 
 **************************************************************************/
 int r82xx_enablePowerDetector(struct r82xx_priv *priv,
-                              uint32_t detectorNumber)
+                              uint8_t detectorNumber)
 {
   int rc;
 
@@ -1698,7 +1698,7 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,
 
 **************************************************************************/
 int r82xx_disablePowerDetector(struct r82xx_priv *priv,
-                               uint32_t detectorNumber)
+                               uint8_t detectorNumber)
 {
   int rc;
 
@@ -1766,8 +1766,8 @@ int r82xx_disablePowerDetector(struct r82xx_priv *priv,
 
 **************************************************************************/
 int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
-                               uint32_t  detectorNumber,
-                               uint32_t takeoffPoint)
+                               uint8_t  detectorNumber,
+                               uint8_t takeoffPoint)
 {
   int rc;
 
@@ -1840,9 +1840,9 @@ int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
 
 **************************************************************************/
 int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
-                                     uint32_t detectorNumber,
-                                     uint32_t  lowerThreshold,
-                                     uint32_t upperThreshold)
+                                     uint8_t detectorNumber,
+                                     uint8_t  lowerThreshold,
+                                     uint8_t upperThreshold)
 {
   int rc;
 

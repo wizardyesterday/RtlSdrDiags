@@ -426,19 +426,19 @@ RTLSDR_API int rtlsdr_startRingOscillator(rtlsdr_dev_t *dev,
 RTLSDR_API int rtlsdr_stopRingOscillator(rtlsdr_dev_t *dev);
 
 RTLSDR_API int rtlsdr_enablePowerDetector(rtlsdr_dev_t *dev,
-                                          uint32_t detectorNumber);
+                                          uint8_t detectorNumber);
 
 RTLSDR_API int rtlsdr_disablePowerDetector(rtlsdr_dev_t *dev,
-                                          uint32_t detectorNumber);
+                                          uint8_t detectorNumber);
 
 RTLSDR_API int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
-                                          uint32_t detectorNumber,
-                                          uint32_t takeoffPoint);
+                                          uint8_t detectorNumber,
+                                          uint8_t takeoffPoint);
 
 RTLSDR_API int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
-                                                 uint32_t detectorNumber,
-                                                 uint32_t lowerThreshold,
-                                                 uint32_t upperThreshold);
+                                                 uint8_t detectorNumber,
+                                                 uint8_t lowerThreshold,
+                                                 uint8_t upperThreshold);
 
 #ifdef __cplusplus
 }
