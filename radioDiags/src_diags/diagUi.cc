@@ -116,6 +116,10 @@ static void cmdSelectV4BlogRadio(char *bufferPtr);
 static void cmdSelectNormalRadio(char *bufferPtr);
 static void cmdStartRingOscillator(char *bufferPtr);
 static void cmdStopRingOscillator(char *bufferPtr);
+static void cmdEnablePowerDetector(char *bufferPtr);
+static void cmdDisablePowerDetector(char *bufferPtr);
+static void cmdSetPowerDetectorTop(char *bufferPtr);
+static void cmdSetPowerDetectorThresholds(char *bufferPtr);
 static void cmdExitSystem(char *bufferPtr);
 static void cmdHelp(void);
 
@@ -178,6 +182,14 @@ static const commandEntry commandTable[] =
   {"start","ringoscillator",cmdStartRingOscillator}, 
     // start ringoscillator n_ring outputdivider outputgain
   {"stop","ringoscillator",cmdStopRingOscillator}, // stop ringoscillator
+  {"enable","powerdetector",cmdEnablePowerDetector},
+    // enable powerdetector detectornumber
+  {"disable","powerdetector",cmdDisablePowerDetector},
+    // disable powerdetector detectornumber
+  {"set","powerdetectortop",cmdSetPowerDetectorTop},
+    // set powerdetectortop detectornumber takeoffpoint
+  {"set","powerdetectorthresholds",cmdSetPowerDetectorThresholds},
+   // set powerdetectorthresholds detectornumber lowerthreshold upperthreshold
   {"exit","system",cmdExitSystem},       // exit system
   {"\0","\0",0}                          // last entry in command table
 };
@@ -1962,6 +1974,197 @@ static void cmdStopRingOscillator(char *bufferPtr)
   return;
 
 } // cmdStopRingOscillator
+
+/*****************************************************************************
+
+  Name: cmdEnablePowerDetector
+
+  Purpose: The purpose of this function is to enable a power detector
+  in the tuner.
+
+  The syntax for the corresponding command is the following:
+
+    "enable powerdetector detectornumber"
+
+  Calling Sequence: cmdEnablePowerDetector(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdEnablePowerDetector(char *bufferPtr)
+{
+  bool success;
+  uint32_t detectorNumber;
+
+  success = true;
+
+  sscanf(bufferPtr,"%u",&detectorNumber);
+
+  success = diagUi_radioPtr->enablePowerDetector((uint8_t)detectorNumber);
+ 
+  if (success)
+  {
+    nprintf(stderr,"Power detectoe enabled.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Could not enable the power detector.\n");
+  } // else
+
+  return;
+
+} // cmdEnablePowerDetector
+
+/*****************************************************************************
+
+  Name: cmdDisablePowerDetector
+
+  Purpose: The purpose of this function is to disable a power detector
+  in the tuner.
+
+  The syntax for the corresponding command is the following:
+
+    "disable powerdetector detectornumber"
+
+  Calling Sequence: cmdDisablePowerDetector(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdDisablePowerDetector(char *bufferPtr)
+{
+  bool success;
+  uint32_t detectorNumber;
+
+  success = true;
+
+  sscanf(bufferPtr,"%u",&detectorNumber);
+
+  success = diagUi_radioPtr->disablePowerDetector((uint8_t)detectorNumber);
+ 
+  if (success)
+  {
+    nprintf(stderr,"Power detectoe disabled.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Could not disable the power detector.\n");
+  } // else
+
+  return;
+
+} // cmdDisablePowerDetector
+
+/*****************************************************************************
+
+  Name: cmdPowerDetectorTop
+
+  Purpose: The purpose of this function is to set a power detector takeoff
+  point in the tuner.
+
+  The syntax for the corresponding command is the following:
+
+    "set powerdetectortop detectornumber takeoffpoint"
+
+  Calling Sequence: cmdSetPowerDetectorTop(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetPowerDetectorTop(char *bufferPtr)
+{
+  bool success;
+  uint32_t detectorNumber;
+  uint32_t takeoffPoint;
+
+  success = true;
+
+  sscanf(bufferPtr,"%u %u",&detectorNumber,&takeoffPoint);
+
+  success = diagUi_radioPtr->setPowerDetectorTop((uint8_t)detectorNumber,
+                                                 (uint8_t)takeoffPoint);
+ 
+  if (success)
+  {
+    nprintf(stderr,"Power detectoe takeoff point set.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Could not the power detector takeoff point.\n");
+  } // else
+
+  return;
+
+} // cmdAetPowerDetectorTop
+
+/*****************************************************************************
+
+  Name: cmdPowerDetectorThresholds
+
+  Purpose: The purpose of this function is to set a power detector
+  thresholds in the tuner.
+
+  The syntax for the corresponding command is the following:
+
+    "set powerdetectorthresholds detectornumber lowerthreshold upperthreshold"
+
+  Calling Sequence: cmdSetPowerDetectorTresholds(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetPowerDetectorThresholds(char *bufferPtr)
+{
+  bool success;
+  uint32_t detectorNumber;
+  uint32_t lowerThreshold;
+  uint32_t upperThreshold;
+
+  success = true;
+
+  sscanf(bufferPtr,"%u %u %u",&detectorNumber,&lowerThreshold,&upperThreshold);
+
+  success =
+     diagUi_radioPtr->setPowerDetectorThresholds((uint8_t)detectorNumber,
+                                                 (uint8_t)lowerThreshold,
+                                                 (uint8_t)upperThreshold);
+ 
+  if (success)
+  {
+    nprintf(stderr,"Power detectoe thresholds set.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Could not the power detector thresholds.\n");
+  } // else
+
+  return;
+
+} // cmdAetPowerDetectorThresholds
 
 /*****************************************************************************
 
