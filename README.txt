@@ -84,6 +84,8 @@ set fmdemodgain <gain>
 set wbfmdemodgain <gain>
 set ssbdemodgain <gain>
 set rxgain [<gain in dB> | a | A]
+set rxlnagain <gain in dB>
+set rxmixergain <gain in dB>
 set rxifgain <gain in dB>
 enable agc
 disable agc
@@ -114,6 +116,10 @@ select normalradio
 get agcinfo
 start ringoscillator <vcoDivider> <outputDivider> <outputGain>
 stop ringoscillator
+enable powerdetector <detectornumber>
+disable powerdetector <detectornumber>
+set powerdetectortop <detectornumber> <takeoffpoint>
+set powerdetectorthresholds <detectornumber> <lowerthreshold> <upperthreshold>
 exit system
 help
 Type <^B><enter> key sequence to repeat last command
