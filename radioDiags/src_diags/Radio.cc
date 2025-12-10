@@ -835,16 +835,15 @@ bool Radio::setReceiveLnaGainInDb(uint32_t gain)
       // Set to automatic gain mode.
       autoGain = 1;
     } // if
-    else
-    {
-      // Set the nearest gain value in 0.1 decibel.
-      nearestGain = (int)(gain * 10);
 
-      // Set the gain.
-      error = rtlsdr_setLnaGain((rtlsdr_dev_t *)devicePtr,
-                                autoGain,
-                                nearestGain);
-    } // else
+    // Set the nearest gain value in 0.1 decibel.
+    // Note that if autoGain is set, nearestGain is not used.
+    nearestGain = (int)(gain * 10);
+
+    // Set the gain.
+    error = rtlsdr_setLnaGain((rtlsdr_dev_t *)devicePtr,
+                              autoGain,
+                              nearestGain);
 
     if (error == 0)
     {
@@ -913,22 +912,22 @@ bool Radio::setReceiveMixerGainInDb(uint32_t gain)
       // Set to automatic gain mode.
       autoGain = 1;
     } // if
-    else
-    {
-      // Set the nearest gain value in 0.1 decibel.
-      nearestGain = (int)(gain * 10);
 
-      // Set the gain.
-      error = rtlsdr_setMixerGain((rtlsdr_dev_t *)devicePtr,
-                                  autoGain,
-                                  nearestGain);
-    } // else
+    // Set the nearest gain value in 0.1 decibel.
+    // Note that if autoGain is set, nearestGain is ignored.
+    nearestGain = (int)(gain * 10);
+
+    // Set the gain.
+    error = rtlsdr_setMixerGain((rtlsdr_dev_t *)devicePtr,
+                                autoGain,
+                                nearestGain);
 
     if (error == 0)
     {
       // indicate success.
       success = true;
     } // if
+
   } // if
   else
   {
