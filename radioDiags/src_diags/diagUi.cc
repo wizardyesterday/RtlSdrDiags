@@ -85,6 +85,10 @@ static void cmdSetFmDemodGain(char *bufferPtr);
 static void cmdSetWbFmDemodGain(char *bufferPtr);
 static void cmdSetSsbDemodGain(char *bufferPtr);
 static void cmdSetRxGain(char *bufferPtr);
+static void cmdSetMixerGain(char *bufferPtr);
+static void cmdSetRxGain(char *bufferPtr);
+static void cmdSetRxLnaGain(char *bufferPtr);
+static void cmdSetRxMixerGain(char *bufferPtr);
 static void cmdSetRxIfGain(char *bufferPtr);
 static void cmdEnableAgc(char *bufferPtr);
 static void cmdDisableAgc(char *bufferPtr);
@@ -149,6 +153,8 @@ static const commandEntry commandTable[] =
   {"set","wbfmdemodgain",cmdSetWbFmDemodGain},  // set wbfmdemodgain gain
   {"set","ssbdemodgain",cmdSetSsbDemodGain},  // set ssbdemodgain gain
   {"set","rxgain",cmdSetRxGain},             // set rxgain gain
+  {"set","rxlnagain",cmdSetRxLnaGain},         // set rxlnagain gain
+  {"set","rxmixergain",cmdSetRxMixerGain},   // set rxmixergain gain
   {"set","rxifgain",cmdSetRxIfGain},         // setrxifgain gain
   {"enable","agc",cmdEnableAgc},             // enable agc
   {"disable","agc",cmdDisableAgc},           // disable agc
@@ -758,6 +764,170 @@ static void cmdSetRxGain(char *bufferPtr)
   return;
 
 } // cmdSetRxGain
+
+/*****************************************************************************
+
+  Name: cmdSetRxLnaGain
+
+  Purpose: The purpose of this function is to set the LNA gain of
+  the system.
+
+  The syntax for the corresponding command is the following:
+
+    "set rxlnagain gain"
+
+  // Note that if 'a' or 'A' was chosen, the AGC will be enabled.
+
+  Calling Sequence: cmdSetRxLnaGain(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetRxLnaGain(char *bufferPtr)
+{
+  bool success;
+  uint32_t gain;
+  char alphaBuffer[80];
+
+  // Retrieve numeric context.
+  sscanf(bufferPtr,"%u",&gain);
+
+  // Retrieve alpha context.
+  sscanf(bufferPtr,"%s",alphaBuffer);
+
+  switch (alphaBuffer[0])
+  { 
+    case 'a':
+    case 'A':
+    {
+      // Enable AGC.
+      gain = RADIO_RECEIVE_AUTO_GAIN;
+      break;
+    } // case
+
+    default:
+    {
+      break;
+    } // case
+  } // switch
+
+  if (((gain >= 0) && (gain <= 34)) || (gain == RADIO_RECEIVE_AUTO_GAIN))
+  {
+    // Set the tuner LNA gain.
+    success = diagUi_radioPtr->setReceiveLnaGainInDb(gain);
+
+    if (success)
+    {
+      if (gain == 99999)
+      {
+        nprintf(stderr,"LNA gain set to Auto\n");
+      } // if
+      else
+      {
+        nprintf(stderr,"LNA gain set to %udB.\n",gain);
+      } // else
+    } // if
+    else
+    {
+      nprintf(stderr,"Error: Could not set the LNA gain.\n");
+    } // else
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: 0 <= gain <= 34.\n");
+  } // else
+
+  return;
+
+} // cmdSetRxLnaGain
+
+/*****************************************************************************
+
+  Name: cmdSetRxMixerGain
+
+  Purpose: The purpose of this function is to set the mixer gain of
+  the system.
+
+  The syntax for the corresponding command is the following:
+
+    "set rxmixergain gain"
+
+  // Note that if 'a' or 'A' was chosen, the AGC will be enabled.
+
+  Calling Sequence: cmdSetRxMixerGain(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetRxMixerGain(char *bufferPtr)
+{
+  bool success;
+  uint32_t gain;
+  char alphaBuffer[80];
+
+  // Retrieve numeric context.
+  sscanf(bufferPtr,"%u",&gain);
+
+  // Retrieve alpha context.
+  sscanf(bufferPtr,"%s",alphaBuffer);
+
+  switch (alphaBuffer[0])
+  { 
+    case 'a':
+    case 'A':
+    {
+      // Enable AGC.
+      gain = RADIO_RECEIVE_AUTO_GAIN;
+      break;
+    } // case
+
+    default:
+    {
+      break;
+    } // case
+  } // switch
+
+  if (((gain >= 0) && (gain <= 17)) || (gain == RADIO_RECEIVE_AUTO_GAIN))
+  {
+    // Set the tuner LNA gain.
+    success = diagUi_radioPtr->setReceiveMixerGainInDb(gain);
+
+    if (success)
+    {
+      if (gain == 99999)
+      {
+        nprintf(stderr,"Mixer gain set to Auto\n");
+      } // if
+      else
+      {
+        nprintf(stderr,"Mixer gain set to %udB.\n",gain);
+      } // else
+    } // if
+    else
+    {
+      nprintf(stderr,"Error: Could not set the mixsr gain.\n");
+    } // else
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: 0 <= gain <= 17.\n");
+  } // else
+
+  return;
+
+} // cmdSetRxMixerGain
 
 /*****************************************************************************
 
@@ -2400,6 +2570,8 @@ static void cmdHelp(void)
   nprintf(stderr,"set wbfmdemodgain <gain>\n");
   nprintf(stderr,"set ssbdemodgain <gain>\n");
   nprintf(stderr,"set rxgain [<gain in dB> | a | A]\n");
+  nprintf(stderr,"set rxlnagain <gain in dB>\n");
+  nprintf(stderr,"set rxmixergain <gain in dB>\n");
   nprintf(stderr,"set rxifgain <gain in dB>\n");
   nprintf(stderr,"enable agc\n");
   nprintf(stderr,"disable agc\n");
