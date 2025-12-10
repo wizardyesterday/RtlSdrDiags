@@ -789,6 +789,162 @@ bool Radio::setReceiveGainInDb(uint32_t gain)
 
 /**************************************************************************
 
+  Name: setReceiveLnaGainInDb
+
+  Purpose: The purpose of this function is to set the LNA gain of the
+  receiver.  
+  Note that the definition of receiver enabled is that devicePtr is not
+  equal to zero.
+
+  Calling Sequence: success = setReceiveLnaGainInDb(gain)
+
+  Inputs:
+
+    gain - The gain in decibels.  A value of 0xffffffff indicates that
+    the LNA should be set to automatic gain mode.
+
+  Outputs:
+
+    success - A boolean that indicates the outcome of the operation.  A
+    value of true indicates success, and a value of false indicates
+    failure.
+
+**************************************************************************/
+bool Radio::setReceiveLnaGainInDb(uint32_t gain)
+
+{
+  bool success;
+  int nearestGain;
+  int autoGain;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  // Default to manual gain.
+  autoGain = 0;
+
+  if (devicePtr != 0)
+  {
+    // Notify the driver of the new gain.
+    if (gain == RADIO_RECEIVE_AUTO_GAIN)
+    {
+      // Set to automatic gain mode.
+      autoGain = 1;
+    } // if
+    else
+    {
+      // Set the nearest gain value in 0.1 decibel.
+      nearestGain = (int)(gain * 10);
+
+      // Set the gain.
+      error = rtlsdr_setLnaGain((rtlsdr_dev_t *)devicePtr,
+                                autoGain,
+                                nearestGain);
+    } // else
+
+    if (error == 0)
+    {
+      // indicate success.
+      success = true;
+    } // if
+  } // if
+  else
+  {
+    // indicate success.
+    success = true;
+  } // else
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+  
+} // setReceiveLnaGainInDb
+
+/**************************************************************************
+
+  Name: setReceiveMixerGainInDb
+
+  Purpose: The purpose of this function is to set the mixer gain of the
+  receiver.  
+  Note that the definition of receiver enabled is that devicePtr is not
+  equal to zero.
+
+  Calling Sequence: success = setReceiveMixerGainInDb(gain)
+
+  Inputs:
+
+    gain - The gain in decibels.  A value of 0xffffffff indicates that
+    the mixer should be set to automatic gain mode.
+
+  Outputs:
+
+    success - A boolean that indicates the outcome of the operation.  A
+    value of true indicates success, and a value of false indicates
+    failure.
+
+**************************************************************************/
+bool Radio::setReceiveMixerGainInDb(uint32_t gain)
+
+{
+  bool success;
+  int nearestGain;
+  int autoGain;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  // Default to manual gain.
+  autoGain = 0;
+
+  if (devicePtr != 0)
+  {
+    // Notify the driver of the new gain.
+    if (gain == RADIO_RECEIVE_AUTO_GAIN)
+    {
+      // Set to automatic gain mode.
+      autoGain = 1;
+    } // if
+    else
+    {
+      // Set the nearest gain value in 0.1 decibel.
+      nearestGain = (int)(gain * 10);
+
+      // Set the gain.
+      error = rtlsdr_setMixerGain((rtlsdr_dev_t *)devicePtr,
+                                  autoGain,
+                                  nearestGain);
+    } // else
+
+    if (error == 0)
+    {
+      // indicate success.
+      success = true;
+    } // if
+  } // if
+  else
+  {
+    // indicate success.
+    success = true;
+  } // else
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+  
+} // setReceiveMixerGainInDb
+
+/**************************************************************************
+
   Name: setReceiveIfGainInDb
 
   Purpose: The purpose of this function is to set the If gain of the
@@ -827,14 +983,14 @@ bool Radio::setReceiveIfGainInDb(uint8_t stage,uint32_t gain)
   success = false;
 
   // Kludge to honor the librtlsdr interface.
-  nearestGain = (int)gain;
+  nearestGain = (int)(gain * 10);
 
   if (devicePtr != 0)
   {
     // Set the gain.
     error = rtlsdr_set_tuner_if_gain((rtlsdr_dev_t *)devicePtr,
                                      stage,
-                                     (gain * 10));
+                                     nearestGain);
 
     if (error == 0)
     {
