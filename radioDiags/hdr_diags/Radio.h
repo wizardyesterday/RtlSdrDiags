@@ -37,6 +37,8 @@ class Radio
   bool setReceiveFrequency(uint64_t frequency);
   bool setReceiveBandwidth(uint32_t bandwidth);
   bool setReceiveGainInDb(uint32_t gain);
+  bool setReceiveLnaGainInDb(uint32_t gain);
+  bool setReceiveMixerGainInDb(uint32_t gain);
   bool setReceiveIfGainInDb(uint8_t stage,uint32_t gain);
   bool setReceiveSampleRate(uint32_t sampleRate);
   bool setReceiveWarpInPartsPerMillion(int warp);
