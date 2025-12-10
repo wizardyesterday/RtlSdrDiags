@@ -2345,3 +2345,71 @@ int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
 
 }
 
+int rtlsdr_setLnaGain(rtlsdr_dev_t *dev,
+                      int  auto_gain,
+                      int gain)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Configure the LNA.
+      rc  = r82xx_set_lna_gain(&dev->r82xx_p,auto_gain,gain);
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: Not an  R82xx tuner.\n");
+      break;
+    } // case
+    
+  } // switch
+
+  return (rc);
+
+}
+
+int rtlsdr_setMixerGain(rtlsdr_dev_t *dev,
+                        int  auto_gain,
+                        int gain)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Configure the mixer.
+      rc  = r82xx_set_mixer_gain(&dev->r82xx_p,auto_gain,gain);
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: Not an  R82xx tuner.\n");
+      break;
+    } // case
+    
+  } // switch
+
+  return (rc);
+
+}
+
