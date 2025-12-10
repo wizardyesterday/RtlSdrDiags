@@ -142,4 +142,7 @@ int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
                                uint8_t  detectorNumber,
                                uint8_t takeoffPoint);
 
+int r82xx_set_lna_gain(struct r82xx_priv *priv,int auto_gain, int gain);
+int r82xx_set_mixer_gain(struct r82xx_priv *priv, int auto_gain, int gain);
+
 #endif

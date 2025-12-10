@@ -2442,6 +2442,13 @@ static void cmdHelp(void)
 
   nprintf(stderr,"stop ringoscillator\n");
 
+  nprintf(stderr,"enable powerdetector <detectornumber>\n");
+  nprintf(stderr,"disable powerdetector <detectornumber>\n");
+  nprintf(stderr,"set powerdetectortop <detectornumber> <takeoffpoint>\n");
+
+  nprintf(stderr,"set powerdetectorthresholds <detectornumber> "
+          "<lowerthreshold> <upperthreshold>\n");
+
   nprintf(stderr,"exit system\n");
   nprintf(stderr,"help\n");
   nprintf(stderr,"Type <^B><enter> key sequence to repeat last command\n");

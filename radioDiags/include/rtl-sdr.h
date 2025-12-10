@@ -440,6 +440,14 @@ RTLSDR_API int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
                                                  uint8_t lowerThreshold,
                                                  uint8_t upperThreshold);
 
+RTLSDR_API int rtlsdr_setLnaGain(rtlsdr_dev_t *dev,
+                                 int  auto_gain,
+                                 int gain);
+
+RTLSDR_API int rtlsdr_setMixerGain(rtlsdr_dev_t *dev,
+                                   int  auto_gain,
+                                   int gain);
+
 #ifdef __cplusplus
 }
 #endif
