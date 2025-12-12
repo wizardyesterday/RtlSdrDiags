@@ -51,7 +51,7 @@ the demodulator gains.
 
 What if you don't have a sound card on the computer for which the software
 is executing on?  For example, I use a BeagleBone Black to run the SDR code
-(it's fast enough to do all the signal processing), and I use a 200MHz
+(it's fast enough to do all the signal processing), and I use a 300MHz
 Pentium 2 computer to play the sound?  Here's what I do.
 
 On the BeagleBone Black, type the following (note that the -u argument to
