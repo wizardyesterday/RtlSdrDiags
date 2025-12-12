@@ -84,8 +84,8 @@ set fmdemodgain <gain>
 set wbfmdemodgain <gain>
 set ssbdemodgain <gain>
 set rxgain [<gain in dB> | a | A]
-set rxlnagain <gain in dB>
-set rxmixergain <gain in dB>
+set rxlnagain [<gain in dB> | a | A]
+set rxmixergain [<gain in dB> | a | A]
 set rxifgain <gain in dB>
 enable agc
 disable agc
@@ -114,7 +114,7 @@ get sweeperinfo
 select vfourblogradio
 select normalradio
 get agcinfo
-start ringoscillator <vcoDivider> <outputDivider> <outputGain>
+start ringoscillator <n_ring> <outputDivider> <outputGain>
 stop ringoscillator
 enable powerdetector <detectornumber>
 disable powerdetector <detectornumber>

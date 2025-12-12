@@ -2570,8 +2570,8 @@ static void cmdHelp(void)
   nprintf(stderr,"set wbfmdemodgain <gain>\n");
   nprintf(stderr,"set ssbdemodgain <gain>\n");
   nprintf(stderr,"set rxgain [<gain in dB> | a | A]\n");
-  nprintf(stderr,"set rxlnagain <gain in dB>\n");
-  nprintf(stderr,"set rxmixergain <gain in dB>\n");
+  nprintf(stderr,"set rxlnagain [<gain in dB> | a | A]\n");
+  nprintf(stderr,"set rxmixergain [<gain in dB> | a | A]\n");
   nprintf(stderr,"set rxifgain <gain in dB>\n");
   nprintf(stderr,"enable agc\n");
   nprintf(stderr,"disable agc\n");
