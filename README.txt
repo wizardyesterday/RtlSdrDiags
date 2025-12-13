@@ -119,7 +119,8 @@ stop ringoscillator
 enable powerdetector <detectornumber>
 disable powerdetector <detectornumber>
 set powerdetectortop <detectornumber> <takeoffpoint>
-set powerdetectorthresholds <detectornumber> <lowerthreshold> <upperthreshold>
+set lnaagcthresholds <lowerthreshold> <upperthreshold>
+set mixeragcthresholds <lowerthreshold> <upperthreshold>
 exit system
 help
 Type <^B><enter> key sequence to repeat last command
