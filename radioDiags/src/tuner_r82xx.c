@@ -1451,6 +1451,11 @@ int r82xx_init(struct r82xx_priv *priv)
 
 	rc = r82xx_sysfreq_sel(priv, 0, TUNER_DIGITAL_TV, SYS_DVBT);
 
+
+	// This maps power detector 3 thresholds to mixer thresholds.
+        // Chris G. 12/12/2025
+	rc = r82xx_write_reg_mask(priv,0x1e,0x80,0x80);
+
 	priv->init_done = 1;
 
 err:
@@ -1725,6 +1730,7 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,
 {
   int rc;
 
+
   switch (detectorNumber)
   {
     case 1:
@@ -1954,17 +1960,17 @@ int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
 
     case 2:
     {
-      // Configure power detector 2.
-      rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
-      rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
+      // Power detector 2 has no threshold settings.
+      // Indicate failure.
+      rc = -1;
       break;
     } // case
 
     case 3:
     {
-      // Power detector 3 has no threshold settings.
-      // Indicate failure.
-      rc = -1;
+      // Configure power detector 3.
+      rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
+      rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
       break;
     } // case
 
