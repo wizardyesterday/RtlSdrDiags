@@ -123,7 +123,8 @@ static void cmdStopRingOscillator(char *bufferPtr);
 static void cmdEnablePowerDetector(char *bufferPtr);
 static void cmdDisablePowerDetector(char *bufferPtr);
 static void cmdSetPowerDetectorTop(char *bufferPtr);
-static void cmdSetPowerDetectorThresholds(char *bufferPtr);
+static void cmdSetLnaAgcThresholds(char *bufferPtr);
+static void cmdSetMixerAgcThresholds(char *bufferPtr);
 static void cmdExitSystem(char *bufferPtr);
 static void cmdHelp(void);
 
@@ -194,8 +195,10 @@ static const commandEntry commandTable[] =
     // disable powerdetector detectornumber
   {"set","powerdetectortop",cmdSetPowerDetectorTop},
     // set powerdetectortop detectornumber takeoffpoint
-  {"set","powerdetectorthresholds",cmdSetPowerDetectorThresholds},
-   // set powerdetectorthresholds detectornumber lowerthreshold upperthreshold
+  {"set","lnaagcthresholds",cmdSetLnaAgcThresholds},
+   // set lnaagcthresholds lowerthreshold upperthreshold
+  {"set","mixeragcthresholds",cmdSetMixerAgcThresholds},
+   // set mixeragcthresholds lowerthreshold upperthreshold
   {"exit","system",cmdExitSystem},       // exit system
   {"\0","\0",0}                          // last entry in command table
 };
@@ -2287,16 +2290,16 @@ static void cmdSetPowerDetectorTop(char *bufferPtr)
 
 /*****************************************************************************
 
-  Name: cmdPowerDetectorThresholds
+  Name: cmdSetLnaAgcThresholds
 
-  Purpose: The purpose of this function is to set a power detector
+  Purpose: The purpose of this function is to set the LNA AGC
   thresholds in the tuner.
 
   The syntax for the corresponding command is the following:
 
-    "set powerdetectorthresholds detectornumber lowerthreshold upperthreshold"
+    "set lnaagcthresholds lowerthreshold upperthreshold"
 
-  Calling Sequence: cmdSetPowerDetectorTresholds(bufferPtr)
+  Calling Sequence: cmdSetLnaAgcThresholds(bufferPtr)
 
   Inputs:
 
@@ -2307,34 +2310,81 @@ static void cmdSetPowerDetectorTop(char *bufferPtr)
     None.
 
 *****************************************************************************/
-static void cmdSetPowerDetectorThresholds(char *bufferPtr)
+static void cmdSetLnaAgcThresholds(char *bufferPtr)
 {
   bool success;
-  uint32_t detectorNumber;
   uint32_t lowerThreshold;
   uint32_t upperThreshold;
 
   success = true;
 
-  sscanf(bufferPtr,"%u %u %u",&detectorNumber,&lowerThreshold,&upperThreshold);
+  sscanf(bufferPtr,"%u %u",&lowerThreshold,&upperThreshold);
 
   success =
-     diagUi_radioPtr->setPowerDetectorThresholds((uint8_t)detectorNumber,
-                                                 (uint8_t)lowerThreshold,
-                                                 (uint8_t)upperThreshold);
+     diagUi_radioPtr->setLnaAgcThresholds((uint8_t)lowerThreshold,
+                                          (uint8_t)upperThreshold);
  
   if (success)
   {
-    nprintf(stderr,"Power detectoe thresholds set.\n");
+    nprintf(stderr,"LNA AGC thresholds set.\n");
   } // if
   else
   {
-    nprintf(stderr,"Error: Could not the power detector thresholds.\n");
+    nprintf(stderr,"Error: Could set the LNA AGC thresholds.\n");
   } // else
 
   return;
 
-} // cmdAetPowerDetectorThresholds
+} // cmdSetLnaAgcThresholds
+
+/*****************************************************************************
+
+  Name: cmdSetMixerAgcThresholds
+
+  Purpose: The purpose of this function is to set the LNA AGC
+  thresholds in the tuner.
+
+  The syntax for the corresponding command is the following:
+
+    "set mixeragcthresholds lowerthreshold upperthreshold"
+
+  Calling Sequence: cmdSetLnaAgcThresholds(bufferPtr)
+
+  Inputs:
+
+    bufferPtr - A pointer to the command parameters.
+
+  Outputs:
+
+    None.
+
+*****************************************************************************/
+static void cmdSetMixerAgcThresholds(char *bufferPtr)
+{
+  bool success;
+  uint32_t lowerThreshold;
+  uint32_t upperThreshold;
+
+  success = true;
+
+  sscanf(bufferPtr,"%u %u",&lowerThreshold,&upperThreshold);
+
+  success =
+     diagUi_radioPtr->setMixerAgcThresholds((uint8_t)lowerThreshold,
+                                          (uint8_t)upperThreshold);
+  
+  if (success)
+  {
+    nprintf(stderr,"Mixer AGC thresholds set.\n");
+  } // if
+  else
+  {
+    nprintf(stderr,"Error: Could set the mixer AGC thresholds.\n");
+  } // else
+
+  return;
+
+} // cmdSetMixerAgcThresholds
 
 /*****************************************************************************
 
@@ -2618,8 +2668,8 @@ static void cmdHelp(void)
   nprintf(stderr,"disable powerdetector <detectornumber>\n");
   nprintf(stderr,"set powerdetectortop <detectornumber> <takeoffpoint>\n");
 
-  nprintf(stderr,"set powerdetectorthresholds <detectornumber> "
-          "<lowerthreshold> <upperthreshold>\n");
+  nprintf(stderr,"set lnaagcthresholds <lowerthreshold> <upperthreshold>\n");
+  nprintf(stderr,"set mixeragcthresholds <lowerthreshold> <upperthreshold>\n");
 
   nprintf(stderr,"exit system\n");
   nprintf(stderr,"help\n");

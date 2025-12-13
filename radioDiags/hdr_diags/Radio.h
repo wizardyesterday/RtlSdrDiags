@@ -95,6 +95,8 @@ class Radio
   bool setPowerDetectorTop(uint8_t detectorNumber,
                            uint8_t takeoffPoint);
 
+
+  // New LNA and mixer autogain support.
   bool setLnaAgcThresholds(uint8_t lowerThreshold,
                            uint8_t upperThreshold);
 

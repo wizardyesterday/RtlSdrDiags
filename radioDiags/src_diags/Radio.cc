@@ -2182,7 +2182,7 @@ bool Radio::setPowerDetectorTop(uint8_t detectorNumber,
 
 **************************************************************************/
 bool Radio::setLnaAgcThresholds(uint8_t lowerThreshold,
-                                uint8_t upperThreshold);
+                                uint8_t upperThreshold)
 {
   bool success;
   int error;
@@ -2235,7 +2235,7 @@ bool Radio::setLnaAgcThresholds(uint8_t lowerThreshold,
 
 **************************************************************************/
 bool Radio::setMixerAgcThresholds(uint8_t lowerThreshold,
-                                uint8_t upperThreshold);
+                                uint8_t upperThreshold)
 {
   bool success;
   int error;
