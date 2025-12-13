@@ -1451,11 +1451,6 @@ int r82xx_init(struct r82xx_priv *priv)
 
 	rc = r82xx_sysfreq_sel(priv, 0, TUNER_DIGITAL_TV, SYS_DVBT);
 
-
-	// This maps power detector 3 thresholds to mixer thresholds.
-        // Chris G. 12/12/2025
-	rc = r82xx_write_reg_mask(priv,0x1e,0x80,0x80);
-
 	priv->init_done = 1;
 
 err:
@@ -1903,25 +1898,23 @@ int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
 
 /**************************************************************************
 
-  Name: r82xx_setPowerDetectorThresholds
+  Name: r82xx_setLnaAgcThresholds
 
-  Purpose: The purpose of this function is to set the thresholds of
-  the window comparator, associated with a power detector, in an R82xx
-  tuner device.
+  Purpose: The purpose of this function is to set the thresholds of the
+  LNA AGC in an R82xx tuner device.
 
-  Calling Sequence: status = r82xx_setPowerDetectorThresholds(priv,
-                                                              detectorNumber,
-                                                              lowerThreshold,
-                                                              upperThreshold)
+  Calling Sequence: status = r82xx_setLnaAgcThresholds(priv,
+                                                       lowerThreshold,
+                                                       upperThreshold)
   Inputs:
 
     priv - A pointer to a structure that represents device state.
 
-    detectorNumber - The detector number. Valid values are 1, 2, and 3.
+    lowerThreshold - The lower threshold of the window comparator
+    associated with the LNA AGC.
 
-    lowerThreshold - The lower threshold of the window comparator.
-
-    upperThreshold - The upper thrwshold of the wwindow comparator.
+    upperThreshold - The lower threshold of the window comparator
+    associated with the LNA AGC.
 
   Outputs:
 
@@ -1929,8 +1922,7 @@ int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
     and a value of -1 implies failure.
 
 **************************************************************************/
-int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
-                                     uint8_t detectorNumber,
+int r82xx_setLnaAgcThresholds(struct r82xx_priv *priv,
                                      uint8_t  lowerThreshold,
                                      uint8_t upperThreshold)
 {
@@ -1948,40 +1940,63 @@ int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
     upperThreshold = 15;
   } // if
 
-  switch (detectorNumber)
-  {
-    case 1:
-    {
-      // Configure power detector 1.
-      rc = r82xx_write_reg_mask(priv,0x0d,upperThreshold << 4,0xf0);
-      rc = r82xx_write_reg_mask(priv,0x0d,lowerThreshold,0x0f);
-      break;
-    } // case
-
-    case 2:
-    {
-      // Power detector 2 has no threshold settings.
-      // Indicate failure.
-      rc = -1;
-      break;
-    } // case
-
-    case 3:
-    {
-      // Configure power detector 3.
-      rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
-      rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
-      break;
-    } // case
-
-    default: break;
-    {
-      break;
-    } // case
-
-  } // switch
+  // Set lower and upper thresholds for the LNA AGC.
+  rc = r82xx_write_reg_mask(priv,0x0d,lowerThreshold,0x0f);
+  rc = r82xx_write_reg_mask(priv,0x0d,upperThreshold << 4,0xf0);
 
   return (rc);
 
-} // r82xx_setPowerDetectorThresholds
+} // r82xx_setLnaAgcThresholds
+
+/**************************************************************************
+
+  Name: r82xx_setLnaAgcThresholds
+
+  Purpose: The purpose of this function is to set the thresholds of the
+  mixer AGC in an R82xx tuner device.
+
+  Calling Sequence: status = r82xx_setMixerAgcThresholds(priv,
+                                                         lowerThreshold,
+                                                         upperThreshold)
+  Inputs:
+
+    priv - A pointer to a structure that represents device state.
+
+    lowerThreshold - The lower threshold of the window comparator
+    associated with the mixer AGC.
+
+    upperThreshold - The lower threshold of the window comparator
+    associated with the mixer AGC.
+
+  Outputs:
+
+    status - The status of the operation. A value of 0 implies success,
+    and a value of -1 implies failure.
+
+**************************************************************************/
+int r82xx_setMixerAgcThresholds(struct r82xx_priv *priv,
+                                     uint8_t  lowerThreshold,
+                                     uint8_t upperThreshold)
+{
+  int rc;
+
+  if (lowerThreshold > 15)
+  {
+    // Clip it.
+    lowerThreshold = 0;
+  } // if
+
+  if (upperThreshold > 15)
+  {
+    // Clip it.
+    upperThreshold = 15;
+  } // if
+
+  // Set lower and upper thresholds for the mixer AGC.
+  rc = r82xx_write_reg_mask(priv,0x0e,lowerThreshold,0x0f);
+  rc = r82xx_write_reg_mask(priv,0x0e,upperThreshold << 4,0xf0);
+
+  return (rc);
+
+} // r82xx_setMixerAgcThresholds
 

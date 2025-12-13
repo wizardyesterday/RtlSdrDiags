@@ -2307,10 +2307,9 @@ int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
 
 }
 
-int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
-                                      uint8_t detectorNumber,
-                                      uint8_t lowerThreshold,
-                                      uint8_t upperThreshold)
+int rtlsdr_setLnaAgcThresholds(rtlsdr_dev_t *dev,
+                               uint8_t lowerThreshold,
+                               uint8_t upperThreshold)
 {
   int rc;
 
@@ -2322,11 +2321,10 @@ int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
       // Enable the I2C repeater.
       rtlsdr_set_i2c_repeater(dev,1);
 
-      // Configure the selected  power  detector.
-      rc = r82xx_setPowerDetectorThresholds(&dev->r82xx_p,
-                                            detectorNumber,
-                                            lowerThreshold,
-                                            upperThreshold);
+      // Set lower and upper thresholds..
+      rc = r82xx_setLnaAgcThresholds(&dev->r82xx_p,
+                                     lowerThreshold,
+                                     upperThreshold);
 
       // Disable the I2C repeater.
       rtlsdr_set_i2c_repeater(dev,0);
@@ -2335,7 +2333,43 @@ int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
 
     default:
     {
-      fprintf(stderr,"Error: tuner does not have a power detector.\n");
+      fprintf(stderr,"Error: Not an R82xx runwe.\n");
+      break;
+    } // case
+    
+  } // switch
+
+  return (rc);
+
+}
+
+int rtlsdr_setMixerAgcThresholds(rtlsdr_dev_t *dev,
+                                 uint8_t lowerThreshold,
+                                 uint8_t upperThreshold)
+{
+  int rc;
+
+  switch (dev->tuner_type)
+  {
+    case RTLSDR_TUNER_R820T:
+    case RTLSDR_TUNER_R828D:
+    {
+      // Enable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,1);
+
+      // Set lower and upper thresholds..
+      rc = r82xx_setMixerAgcThresholds(&dev->r82xx_p,
+                                       lowerThreshold,
+                                       upperThreshold);
+
+      // Disable the I2C repeater.
+      rtlsdr_set_i2c_repeater(dev,0);
+      break;
+    } // case
+
+    default:
+    {
+      fprintf(stderr,"Error: Not an R82xx runwe.\n");
       break;
     } // case
     

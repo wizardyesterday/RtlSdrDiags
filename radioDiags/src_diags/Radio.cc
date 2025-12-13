@@ -2162,35 +2162,27 @@ bool Radio::setPowerDetectorTop(uint8_t detectorNumber,
 
 /**************************************************************************
 
-  Name: r82xx_setPowerDetectorThresholds
+  Name: setLnaAgcThresholds
 
   Purpose: The purpose of this function is to set the thresholds of
-  the window comparator, associated with a power detector, in an R82xx
-  tuner device.
+  yje LNA AGC in an R82xx tuner device.
 
-  Calling Sequence: status = r82xx_setPowerDetectorThresholds(priv,
-                                                              detectorNumber,
-                                                              lowerThreshold,
-                                                              upperThreshold)
+  Calling Sequence: status = setLnaAgcThresholds(lowerThreshold,
+                                                 upperThreshold)
   Inputs:
 
-    priv - A pointer to a structure that represents device state.
+    lowerThreshold - The lower threshold of the LNA AGC.
 
-    detectorNumber - The detector number. Valid values are 1, 2, and 3.
-
-    lowerThreshold - The lower threshold of the window comparator.
-
-    upperThreshold - The upper thrwshold of the wwindow comparator.
+    upperThreshold - The upper thrwshold of the LNA AGC.
 
   Outputs:
 
-    status - The status of the operation. A value of 0 implies success,
-    and a value of -1 implies failure.
+    status - The status of the operation. A value of true implies success,
+    and a value of false implies failure.
 
 **************************************************************************/
-bool Radio::setPowerDetectorThresholds(uint8_t detectorNumber,
-                                       uint8_t lowerThreshold,
-                                       uint8_t upperThreshold)
+bool Radio::setLnaAgcThresholds(uint8_t lowerThreshold,
+                                uint8_t upperThreshold);
 {
   bool success;
   int error;
@@ -2204,10 +2196,9 @@ bool Radio::setPowerDetectorThresholds(uint8_t detectorNumber,
   if (devicePtr != 0)
   {
     // Configure.
-    error = rtlsdr_setPowerDetectorThresholds((rtlsdr_dev_t *)devicePtr,
-                                              detectorNumber,
-                                              lowerThreshold,
-                                              upperThreshold);
+    error = rtlsdr_setLnaAgcThresholds((rtlsdr_dev_t *)devicePtr,
+                                       lowerThreshold,
+                                       upperThreshold);
 
     if (error == 0)
     {
@@ -2220,7 +2211,60 @@ bool Radio::setPowerDetectorThresholds(uint8_t detectorNumber,
 
   return (success);
 
-} // setPowerDetectorThresholds
+} // setLnaAgcThresholds
+
+/**************************************************************************
+
+  Name: setMixerAgcThresholds
+
+  Purpose: The purpose of this function is to set the thresholds of
+  the mixer AGC in an R82xx tuner device.
+
+  Calling Sequence: status = setMixerAgcThresholds(lowerThreshold,
+                                                  upperThreshold)
+  Inputs:
+
+    lowerThreshold - The lower threshold of the mixer AGC.
+
+    upperThreshold - The upper thrwshold of the mixer AGC.
+
+  Outputs:
+
+    status - The status of the operation. A value of true implies success,
+    and a value of false implies failure.
+
+**************************************************************************/
+bool Radio::setMixerAgcThresholds(uint8_t lowerThreshold,
+                                uint8_t upperThreshold);
+{
+  bool success;
+  int error;
+
+  // Acquire the I/O subsystem lock.
+  pthread_mutex_lock(&ioSubsystemLock);
+
+  // Default to failure.
+  success = false;
+
+  if (devicePtr != 0)
+  {
+    // Configure.
+    error = rtlsdr_setMixerAgcThresholds((rtlsdr_dev_t *)devicePtr,
+                                         lowerThreshold,
+                                         upperThreshold);
+
+    if (error == 0)
+    {
+     success = true;
+    } // if
+  } // if
+
+  // Release the I/O subsystem lock.
+  pthread_mutex_unlock(&ioSubsystemLock);
+
+  return (success);
+
+} // setMixerAgcThresholds
 
 /**************************************************************************
 

@@ -435,10 +435,13 @@ RTLSDR_API int rtlsdr_setPowerDetectorTop(rtlsdr_dev_t *dev,
                                           uint8_t detectorNumber,
                                           uint8_t takeoffPoint);
 
-RTLSDR_API int rtlsdr_setPowerDetectorThresholds(rtlsdr_dev_t *dev,
-                                                 uint8_t detectorNumber,
-                                                 uint8_t lowerThreshold,
-                                                 uint8_t upperThreshold);
+RTLSDR_API int rtlsdr_setLnaAgcThresholds(rtlsdr_dev_t *dev,
+                                          uint8_t lowerThreshold,
+                                          uint8_t upperThreshold);
+
+RTLSDR_API int rtlsdr_setMixerAgcThresholds(rtlsdr_dev_t *dev,
+                                            uint8_t lowerThreshold,
+                                            uint8_t upperThreshold);
 
 RTLSDR_API int rtlsdr_setLnaGain(rtlsdr_dev_t *dev,
                                  int  auto_gain,

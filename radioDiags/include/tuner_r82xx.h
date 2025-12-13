@@ -133,14 +133,17 @@ int r82xx_enablePowerDetector(struct r82xx_priv *priv,
 int r82xx_disablePowerDetector(struct r82xx_priv *priv,
                                uint8_t detectorNumber);
 
-int r82xx_setPowerDetectorThresholds(struct r82xx_priv *priv,
-                                     uint8_t  detectorNumber,
-                                     uint8_t  lowerThreshold,
-                                     uint8_t upperThreshold);
-
 int r82xx_setPowerDetectorTop(struct r82xx_priv *priv,
                                uint8_t  detectorNumber,
                                uint8_t takeoffPoint);
+
+int r82xx_setLnaAgcThresholds(struct r82xx_priv *priv,
+                              uint8_t  lowerThreshold,
+                              uint8_t upperThreshold);
+
+int r82xx_setMixerAgcThresholds(struct r82xx_priv *priv,
+                                uint8_t  lowerThreshold,
+                                uint8_t upperThreshold);
 
 int r82xx_set_lna_gain(struct r82xx_priv *priv,int auto_gain, int gain);
 int r82xx_set_mixer_gain(struct r82xx_priv *priv, int auto_gain, int gain);

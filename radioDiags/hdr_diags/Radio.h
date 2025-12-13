@@ -95,9 +95,11 @@ class Radio
   bool setPowerDetectorTop(uint8_t detectorNumber,
                            uint8_t takeoffPoint);
 
-  bool setPowerDetectorThresholds(uint8_t detectorNumber,
-                                  uint8_t lowerThreshold,
-                                  uint8_t upperThreshold);
+  bool setLnaAgcThresholds(uint8_t lowerThreshold,
+                           uint8_t upperThreshold);
+
+  bool setMixerAgcThresholds(uint8_t lowerThreshold,
+                             uint8_t upperThreshold);
 
 
   void displayInternalInformation(void);
