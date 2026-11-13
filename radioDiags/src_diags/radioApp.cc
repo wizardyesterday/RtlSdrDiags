@@ -205,7 +205,7 @@ bool getUserArguments(int argc,char **argv,struct MyParameters parameters)
       case 's':
       {
         // Retrieve the host listener port.
-        *parameters.stdoutFlagPtr = atoi(optarg);
+        *parameters.stdoutFlagPtr = 1;
         break;
       } // case
 
