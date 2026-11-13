@@ -8,4 +8,4 @@
 # is the IP address of the the computer that is to receive the data
 # that is sent # to stdout.
 #**********************************************************************
-bin/radioDiags | netcat -u $1 8000
+bin/radioDiags -s | netcat -u $1 8000
