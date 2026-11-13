@@ -13,19 +13,29 @@
 #include "Radio.h"
 #include "FrequencyScanner.h"
 #include "FrequencySweeper.h"
+#include "UdpClient.h"
 #include "diagUi.h"
 
 #define ENGINEERING_CONSOLE_PORT (20280)
 
 #define DEFAULT_HOST_IP_ADDRESS "192.93.16.87"
 #define DEFAULT_HOST_PORT (8001)
+#define DEFAULT_HOST_PCM_PORT (8000)
 
 // This structure is used to consolidate user parameters.
 struct MyParameters
 {
   char *hostIpAddressPtr;
   int *hostPortPtr;
+  int *hostPcmPortPtr;
+  int *stdoutFlagPtr;
 };
+
+// We're sending PCM data via UDP.
+static UdpClient *networkInterfacePtr;
+
+// An indicator that PCM data should be sent to stdout.
+static int stdoutFlag;
 
 extern bool diagUi_timeToExit;
 
@@ -74,7 +84,7 @@ FrequencySweeper *diagUi_frequencySweeperPtr;
 //
 // To run this program, type,
 //
-// ./radioApp -a hostIpAddress -p hostPort
+// ./radioApp -a hostIpAddress -p hostPort -P hostPcmPort [-s]
 //
 //
 // Anyway, enjoy! Chris G.06/06/2017
@@ -103,8 +113,16 @@ FrequencySweeper *diagUi_frequencySweeperPtr;
 static void processPcmData(int16_t *bufferPtr,uint32_t bufferLength)
 {
 
-  // Send the PCM samples to stdout for now.
-  fwrite(bufferPtr,2,bufferLength,stdout);
+  if (stdoutFlag)
+  {
+    // Write PCM data to stdout.
+    fwrite(bufferPtr,2,bufferLength,stdout);
+  } // if
+  else
+  {
+    // Send the PCM data to the host computer.
+    networkInterfacePtr->sendData(bufferPtr,2*bufferLength);
+  } // else
 
   return;
 
@@ -149,6 +167,12 @@ bool getUserArguments(int argc,char **argv,struct MyParameters parameters)
  
   // The host listener port.
   *parameters.hostPortPtr = DEFAULT_HOST_PORT;
+
+  // The host PCM listener port.
+  *parameters.hostPcmPortPtr = DEFAULT_HOST_PCM_PORT;
+
+  // Default to a netwoek connection for PCM data.
+  *parameters.stdoutFlagPtr = 0;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
   // Set up for loop entry.
@@ -160,7 +184,7 @@ bool getUserArguments(int argc,char **argv,struct MyParameters parameters)
   while (!done)
   {
     // Retrieve the next option.
-    opt = getopt(argc,argv,"a:p:h");
+    opt = getopt(argc,argv,"a:p:P:s:h");
 
     switch (opt)
     {
@@ -178,11 +202,18 @@ bool getUserArguments(int argc,char **argv,struct MyParameters parameters)
         break;
       } // case
 
+      case 's':
+      {
+        // Retrieve the host listener port.
+        *parameters.stdoutFlagPtr = atoi(optarg);
+        break;
+      } // case
+
       case 'h':
       {
         // Display usage.
         fprintf(stderr,"./radioDiags -a <hostIpAddress: x.x.x.x> "
-                "-p <hostPort>\n");
+                "-p <hostPort> -P <hostPcmPort> -s\n");
 
         // Indicate that program must be exited.
         exitProgram = true;
@@ -215,12 +246,15 @@ int main(int argc,char **argv)
   uint32_t sampleRate;
   struct timeval timeout;
   int hostPort;
+  int hostPcmPort;
   char hostIpAddress[32];
   struct MyParameters parameters;
 
   // Set up for parameter transmission.
   parameters.hostPortPtr = &hostPort;
+  parameters.hostPcmPortPtr = &hostPcmPort;
   parameters.hostIpAddressPtr = hostIpAddress;
+  parameters.stdoutFlagPtr = &stdoutFlag;
 
   // Retrieve the system parameters.
   exitProgram = getUserArguments(argc,argv,parameters);
@@ -233,6 +267,9 @@ int main(int argc,char **argv)
 
   receiveFrequency = 162550000;
   sampleRate = 256000;
+
+  // Instatiate a UDP client.
+  networkInterfacePtr = new UdpClient(hostIpAddress,hostPcmPort);
 
   // Instantiate a radio.
   diagUi_radioPtr = new Radio(0,
