@@ -171,7 +171,7 @@ bool getUserArguments(int argc,char **argv,struct MyParameters parameters)
   // The host PCM listener port.
   *parameters.hostPcmPortPtr = DEFAULT_HOST_PCM_PORT;
 
-  // Default to a netwoek connection for PCM data.
+  // Default to a network connection for PCM data.
   *parameters.stdoutFlagPtr = 0;
   //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
@@ -199,6 +199,13 @@ bool getUserArguments(int argc,char **argv,struct MyParameters parameters)
       {
         // Retrieve the host listener port.
         *parameters.hostPortPtr = atoi(optarg);
+        break;
+      } // case
+
+      case 'P':
+      {
+        // Retrieve the host listener port.
+        *parameters.hostPcmPortPtr = atoi(optarg);
         break;
       } // case
 
@@ -315,6 +322,11 @@ int main(int argc,char **argv)
   if (diagUi_frequencySweeperPtr != 0)
   {
     delete diagUi_frequencySweeperPtr;
+  } // if
+
+  if (networkInterfacePtr != 0)
+  {
+    delete networkInterfacePtr;
   } // if
 
   if (diagUi_radioPtr != 0)
